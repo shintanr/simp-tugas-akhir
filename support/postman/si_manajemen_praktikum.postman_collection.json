@@ -1,0 +1,2990 @@
+{
+	"info": {
+		"_postman_id": "13947bff-a4be-493c-a8a6-e588743a928a",
+		"name": "si_manajemen_praktikum",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16997799",
+		"_collection_link": "https://iqi-developer.postman.co/workspace/Sistem-Informasi-Manajemen-Prak~8764baae-a06c-47dc-abe4-566eb931da03/collection/16997799-13947bff-a4be-493c-a8a6-e588743a928a?action=share&source=collection_link&creator=16997799"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"full_name\": \"John Doe\",\r\n  \"email\": \"johndoe@example.com\",\r\n  \"nim\": \"12345618\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"praktikan\",\r\n  \"angkatan\": 2022\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/auth/register",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code == 200){\r",
+											"    var response = pm.response.json();\r",
+											"    pm.environment.set(\"jwt_token\", response.user.token);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"packages": {},
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"johndoe@example.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/auth/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"email\": \"praktikan1@email.com\",\r\n  \"password\": \"password123\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}/api/auth/login",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:3000"
+										},
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6InByYWt0aWthbiIsImlhdCI6MTc0NDQyNDgzNiwiZXhwIjoxNzQ0NDI4NDM2fQ.RbRkjUo3BkaSD8_pVctzzazPu0XuN2ljZSxkz7hLrHU; Max-Age=60; Path=/; Expires=Sat, 12 Apr 2025 02:28:16 GMT; HttpOnly; SameSite=Lax"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "283"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"11b-WOTM7WDE0B1HOxrlcrvHKW8g7+U\""
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Apr 2025 02:27:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Login berhasil!\",\n    \"user\": {\n        \"id\": 3,\n        \"full_name\": \"Praktikan Satu\",\n        \"role\": \"praktikan\",\n        \"angkatan\": 2021,\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6InByYWt0aWthbiIsImlhdCI6MTc0NDQyNDgzNiwiZXhwIjoxNzQ0NDI4NDM2fQ.RbRkjUo3BkaSD8_pVctzzazPu0XuN2ljZSxkz7hLrHU\"\n    }\n}"
+								},
+								{
+									"name": "400 - Error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"email\": \"praktikan1@email.com\",\r\n  \"password\": \"password123s\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}/api/auth/login",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:3000"
+										},
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "29"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1d-hXFx/bbe4w50x1TIyvrh6584iuo\""
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Apr 2025 02:23:07 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Password salah!\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login Praktikan",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code == 200){\r",
+											"    var response = pm.response.json();\r",
+											"    pm.environment.set(\"jwt_token\", response.user.token);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"praktikan1@email.com\",\r\n  \"password\": \"password123\"\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/auth/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200 - OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"email\": \"praktikan1@email.com\",\r\n  \"password\": \"password123\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}/api/auth/login",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:3000"
+										},
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6InByYWt0aWthbiIsImlhdCI6MTc0NDQyNDgzNiwiZXhwIjoxNzQ0NDI4NDM2fQ.RbRkjUo3BkaSD8_pVctzzazPu0XuN2ljZSxkz7hLrHU; Max-Age=60; Path=/; Expires=Sat, 12 Apr 2025 02:28:16 GMT; HttpOnly; SameSite=Lax"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "283"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"11b-WOTM7WDE0B1HOxrlcrvHKW8g7+U\""
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Apr 2025 02:27:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Login berhasil!\",\n    \"user\": {\n        \"id\": 3,\n        \"full_name\": \"Praktikan Satu\",\n        \"role\": \"praktikan\",\n        \"angkatan\": 2021,\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6InByYWt0aWthbiIsImlhdCI6MTc0NDQyNDgzNiwiZXhwIjoxNzQ0NDI4NDM2fQ.RbRkjUo3BkaSD8_pVctzzazPu0XuN2ljZSxkz7hLrHU\"\n    }\n}"
+								},
+								{
+									"name": "400 - Error",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"email\": \"praktikan1@email.com\",\r\n  \"password\": \"password123s\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}/api/auth/login",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:3000"
+										},
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "29"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1d-hXFx/bbe4w50x1TIyvrh6584iuo\""
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 12 Apr 2025 02:23:07 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Password salah!\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/api/auth/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1d-lXPU149qIJrCpTYGgbakQc2k18w\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 12 Apr 2025 02:51:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Logout berhasil\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/users?page=1&limit=10&search&orderBy=&sortDirection",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": null
+								},
+								{
+									"key": "orderBy",
+									"value": ""
+								},
+								{
+									"key": "sortDirection",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"full_name\": \"Shintaneee\",\r\n  \"nim\": \"1234561262\",\r\n  \"email\": \"shintanre@gmail.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"praktikan\",\r\n  \"angkatan\": \"2021\"\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1652"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"674-371BiP2kwBsQHwv+MEEhu02QwEE\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 12 Apr 2025 02:52:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id_user\": 1,\n        \"full_name\": \"Admin User\",\n        \"nim\": \"123456\",\n        \"email\": \"admin@email.com\",\n        \"password\": \"$2b$10$LMQeeOeGSNdMxvjvP/8WI.xooUzyWicJa66AA3EOvuSP2b.xKxmCG\",\n        \"role\": \"admin\",\n        \"angkatan\": 2021,\n        \"created_at\": \"2025-03-01T08:53:27.000Z\",\n        \"updated_at\": \"2025-04-12T02:31:41.000Z\"\n    },\n    {\n        \"id_user\": 3,\n        \"full_name\": \"Praktikan Satu\",\n        \"nim\": \"12345678\",\n        \"email\": \"praktikan1@email.com\",\n        \"password\": \"$2b$10$LMQeeOeGSNdMxvjvP/8WI.xooUzyWicJa66AA3EOvuSP2b.xKxmCG\",\n        \"role\": \"praktikan\",\n        \"angkatan\": 2021,\n        \"created_at\": \"2025-03-02T04:35:04.000Z\",\n        \"updated_at\": \"2025-04-12T02:22:47.000Z\"\n    },\n    {\n        \"id_user\": 4,\n        \"full_name\": \"Asisten Praktikum Satu\",\n        \"nim\": \"11223344\",\n        \"email\": \"asisten1@email.com\",\n        \"password\": \"$2b$10$hOeXo7CBzUKxFPfBPudsyuLe3jQU74Ykzs5YOckj25tfFJEZd1qGi\",\n        \"role\": \"asisten\",\n        \"angkatan\": 2021,\n        \"created_at\": \"2025-03-02T04:42:26.000Z\",\n        \"updated_at\": \"2025-03-02T09:34:45.000Z\"\n    },\n    {\n        \"id_user\": 5,\n        \"full_name\": \"Nama Asisten\",\n        \"nim\": \"12345690\",\n        \"email\": \"asisten2@email.com\",\n        \"password\": \"$2b$10$i4C7y1i.Kf3mYZzKueb7hOLAkOhmLujO0wddtzfbtw9L1/Y8Y9V/O\",\n        \"role\": \"asisten\",\n        \"angkatan\": 2023,\n        \"created_at\": \"2025-03-02T11:03:06.000Z\",\n        \"updated_at\": \"2025-03-02T11:03:06.000Z\"\n    },\n    {\n        \"id_user\": 7,\n        \"full_name\": \"Praktikan 3\",\n        \"nim\": \"12345691\",\n        \"email\": \"Praktikan3@email.com\",\n        \"password\": \"$2b$10$pbQLsAk5hvroKM20.e2zsOY6LZ00c.wB0VsZ0Us3Db4ihgHfg8esG\",\n        \"role\": \"asisten\",\n        \"angkatan\": 2021,\n        \"created_at\": \"2025-03-02T11:11:50.000Z\",\n        \"updated_at\": \"2025-03-02T11:11:50.000Z\"\n    },\n    {\n        \"id_user\": 8,\n        \"full_name\": \"John Doe\",\n        \"nim\": \"12345618\",\n        \"email\": \"johndoe@example.com\",\n        \"password\": \"$2b$10$LMQeeOeGSNdMxvjvP/8WI.xooUzyWicJa66AA3EOvuSP2b.xKxmCG\",\n        \"role\": \"praktikan\",\n        \"angkatan\": 2022,\n        \"created_at\": \"2025-04-12T02:22:31.000Z\",\n        \"updated_at\": \"2025-04-12T02:22:31.000Z\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/users/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/users/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "279"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"117-/TVnsKWlrMAmyaM7htVrPYZhhws\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 12 Apr 2025 02:52:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id_user\": 3,\n    \"full_name\": \"Praktikan Satu\",\n    \"nim\": \"12345678\",\n    \"email\": \"praktikan1@email.com\",\n    \"password\": \"$2b$10$LMQeeOeGSNdMxvjvP/8WI.xooUzyWicJa66AA3EOvuSP2b.xKxmCG\",\n    \"role\": \"praktikan\",\n    \"angkatan\": 2021,\n    \"created_at\": \"2025-03-02T04:35:04.000Z\",\n    \"updated_at\": \"2025-04-12T02:22:47.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"full_name\": \"Praktikan Satu\",\r\n        \"nim\": \"12345671\",\r\n        \"email\": \"praktikan2@email.com\",\r\n        \"password\": \"password123\",\r\n        \"role\": \"praktikan\",\r\n        \"angkatan\": 2021\r\n    }"
+						},
+						"url": {
+							"raw": "{{url}}/api/users/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n        \"full_name\": \"Praktikan Satu\",\r\n        \"nim\": \"12345671\",\r\n        \"email\": \"praktikan2@email.com\",\r\n        \"password\": \"password123\",\r\n        \"role\": \"praktikan\",\r\n        \"angkatan\": 2021\r\n    }"
+								},
+								"url": {
+									"raw": "{{url}}/api/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"1"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-dfFyQgR3GE+Pkj6o/3TrBgkhH1g\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 12 Apr 2025 02:54:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/users/7",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"7"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/users/7",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"7"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-27o4zzUjhHNmthTJyia4gBCjpos\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 12 Apr 2025 02:56:13 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User deleted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Check Data Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/me",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"full_name\": \"John Doe\",\r\n  \"email\": \"johndoe@example.coms\",\r\n  \"nim\": \"123456181\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"praktikan\",\r\n  \"angkatan\": 2022\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Labs",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/lab",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"lab"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Praktikum",
+			"item": [
+				{
+					"name": "List Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/praktikum?page=1&limit=10&search=&orderBy=id_praktikum&sortDirection=DESC",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"praktikum"
+							],
+							"query": [
+								{
+									"key": "lab_id",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "orderBy",
+									"value": "id_praktikum"
+								},
+								{
+									"key": "sortDirection",
+									"value": "DESC"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lab_id\": 1,\n  \"name\": \"Praktikum Elektronika Lanjutan\",\n  \"modul\": \"Modul 1: Pengenalan, Modul 2: Komponen\",\n  \"code\": null,\n  \"modules\": [\n    {\n      \"judul_modul\": \"Pengantar Elektronika\",\n      \"deskripsi\": \"Modul ini membahas dasar-dasar elektronika.\",\n    //   \"file_modul\": \"modul_pengantar.pdf\"\n    },\n    {\n      \"judul_modul\": \"Komponen Elektronika\",\n      \"deskripsi\": \"Modul ini menjelaskan berbagai komponen elektronik.\",\n    //   \"file_modul\": \"modul_komponen.pdf\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/praktikum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"praktikum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/praktikum/:id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"praktikum",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "17"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lab_id\": 1,\n  \"name\": \"Praktikum Elektronika Dasar (Update)\",\n  \"modul\": \"Modul 1: Update Elektronika\",\n  \"code\": null,\n  \"modules\": [\n    {\n      \"judul_modul\": \"Modul Updated\",\n      \"deskripsi\": \"Isi modul sudah diperbarui.\",\n      \"file_modul\": \"modul_updated.pdf\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/praktikum/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"praktikum",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/praktikum/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"praktikum",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Praktikum",
+			"item": [
+				{
+					"name": "Get User Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user-praktikum?lab_id=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user-praktikum"
+							],
+							"query": [
+								{
+									"key": "lab_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/user-praktikum/:id_praktikum",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user-praktikum",
+										":id_praktikum"
+									],
+									"variable": [
+										{
+											"key": "id_praktikum",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "291"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"123-1fjPVlFLqWBwNHSK+bcai2t9tzg\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Apr 2025 02:14:33 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User praktikum found\",\n    \"data\": {\n        \"id\": 3,\n        \"id_user\": 3,\n        \"id_praktikum\": 1,\n        \"id_kelompok\": 2,\n        \"is_asisten\": 0,\n        \"praktikum\": {\n            \"id_praktikum\": 1,\n            \"lab_id\": 1,\n            \"name\": \"Praktikum Pemrograman Dasar\",\n            \"modul\": \"Modul 1: Python, Modul 2: Java\",\n            \"code\": null\n        },\n        \"kelompok\": {\n            \"id\": 2,\n            \"nama_kelompok\": \"Kelompok 2\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Detail User Praktikum",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user-praktikum/:id_praktikum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user-praktikum",
+								":id_praktikum"
+							],
+							"variable": [
+								{
+									"key": "id_praktikum",
+									"value": "17"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/user-praktikum/:id_praktikum",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user-praktikum",
+										":id_praktikum"
+									],
+									"variable": [
+										{
+											"key": "id_praktikum",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "291"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"123-1fjPVlFLqWBwNHSK+bcai2t9tzg\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Apr 2025 02:14:33 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User praktikum found\",\n    \"data\": {\n        \"id\": 3,\n        \"id_user\": 3,\n        \"id_praktikum\": 1,\n        \"id_kelompok\": 2,\n        \"is_asisten\": 0,\n        \"praktikum\": {\n            \"id_praktikum\": 1,\n            \"lab_id\": 1,\n            \"name\": \"Praktikum Pemrograman Dasar\",\n            \"modul\": \"Modul 1: Python, Modul 2: Java\",\n            \"code\": null\n        },\n        \"kelompok\": {\n            \"id\": 2,\n            \"nama_kelompok\": \"Kelompok 2\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Inquiry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"testingg\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/user-praktikum/inquiry",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user-praktikum",
+								"inquiry"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"code\": \"elektro\"\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/user-praktikum/inquiry",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user-praktikum",
+										"inquiry"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "173"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ad-8MDF5i4jWjo1QJGfwW9Y0HsTkeY\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Apr 2025 01:54:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Praktikum found\",\n    \"data\": {\n        \"id_praktikum\": 16,\n        \"lab_id\": 1,\n        \"name\": \"Praktikum Elektronika Lanjutan\",\n        \"modul\": \"Modul 1: Pengenalan, Modul 2: Komponen\",\n        \"code\": \"elektro\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id_praktikum\": 1,\r\n  \"id_shift\": 1,\r\n  \"is_asisten\": 0\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/user-praktikum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user-praktikum"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Presensi",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/presensi?id_user=3&id_praktikum=17&order_by=id_modul&sort=asc",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"presensi"
+							],
+							"query": [
+								{
+									"key": "id_user",
+									"value": "3"
+								},
+								{
+									"key": "id_praktikum",
+									"value": "17"
+								},
+								{
+									"key": "id_modul",
+									"value": "13",
+									"disabled": true
+								},
+								{
+									"key": "id_shift",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "order_by",
+									"value": "id_modul"
+								},
+								{
+									"key": "sort",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/presensi?id_user&id_praktikum&id_modul&id_shift&order_by=id_modul&sort=asc",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"presensi"
+									],
+									"query": [
+										{
+											"key": "id_user",
+											"value": null
+										},
+										{
+											"key": "id_praktikum",
+											"value": null
+										},
+										{
+											"key": "id_modul",
+											"value": null
+										},
+										{
+											"key": "id_shift",
+											"value": null
+										},
+										{
+											"key": "order_by",
+											"value": "id_modul"
+										},
+										{
+											"key": "sort",
+											"value": "asc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "893"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"37d-/DMYNE/pc608+wu84je7L8K7J7Q\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 06:59:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Berhasil mengambil data presensi\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"id_user\": 3,\n            \"id_praktikum\": 1,\n            \"id_modul\": 1,\n            \"id_shift\": 1,\n            \"status\": \"Sakit\",\n            \"waktu_presensi\": \"2025-04-18T06:54:50.000Z\",\n            \"nama_user\": \"Praktikan Satu\",\n            \"nim\": \"12345678\",\n            \"nama_praktikum\": \"Praktikum Pemrograman Dasar\",\n            \"nama_modul\": \"Pengantar Elektronika\",\n            \"nama_shift\": \"Shift 1\"\n        },\n        {\n            \"id\": 1,\n            \"id_user\": 3,\n            \"id_praktikum\": 1,\n            \"id_modul\": 2,\n            \"id_shift\": 1,\n            \"status\": \"Sakit\",\n            \"waktu_presensi\": \"2025-04-18T06:32:39.000Z\",\n            \"nama_user\": \"Praktikan Satu\",\n            \"nim\": \"12345678\",\n            \"nama_praktikum\": \"Praktikum Pemrograman Dasar\",\n            \"nama_modul\": \"Komponen Elektronika\",\n            \"nama_shift\": \"Shift 1\"\n        },\n        {\n            \"id\": 3,\n            \"id_user\": 3,\n            \"id_praktikum\": 1,\n            \"id_modul\": 3,\n            \"id_shift\": 1,\n            \"status\": \"Hadir\",\n            \"waktu_presensi\": \"2025-04-18T06:55:02.000Z\",\n            \"nama_user\": \"Praktikan Satu\",\n            \"nim\": \"12345678\",\n            \"nama_praktikum\": \"Praktikum Pemrograman Dasar\",\n            \"nama_modul\": \"Rangkaian Seri dan Paralel\",\n            \"nama_shift\": \"Shift 1\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Absen",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id_user\": 3,\r\n  \"id_praktikum\": 17,\r\n  \"id_modul\": 13,\r\n  \"id_shift\": 1,\r\n  \"status\": \"Hadir\" //'Hadir', 'Izin', 'Sakit', atau 'Alpa'\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/presensi",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"presensi"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id_user\": 3,\r\n  \"id_praktikum\": 1,\r\n  \"id_modul\": 2,\r\n  \"id_shift\": 1,\r\n  \"status\": \"Sakit\" //'Hadir', 'Izin', 'Sakit', atau 'Alpa'\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/presensi",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"presensi"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2a-kkRvLCkbAvqDlbqdeCGWBEwBls0\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 06:32:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Presensi berhasil diperbarui\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id_user\": 3,\r\n  \"id_praktikum\": 1,\r\n  \"id_modul\": 2,\r\n  \"id_shift\": 1,\r\n  \"status\": \"Izin\" //'Hadir', 'Izin', 'Sakit', atau 'Alpa'\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/presensi/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"presensi",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id_user\": 3,\r\n  \"id_praktikum\": 1,\r\n  \"id_modul\": 2,\r\n  \"id_shift\": 1,\r\n  \"status\": \"Sakit\" //'Hadir', 'Izin', 'Sakit', atau 'Alpa'\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/presensi",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"presensi"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2a-kkRvLCkbAvqDlbqdeCGWBEwBls0\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 06:32:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Presensi berhasil diperbarui\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/presensi/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"presensi",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/presensi/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"presensi",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "178"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"b2-Tm7wuR6puHGyTbHRll6Sqgh8xUM\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 06:43:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Berhasil mengambil data presensi\",\n    \"data\": {\n        \"id\": 1,\n        \"id_user\": 3,\n        \"id_praktikum\": 1,\n        \"id_modul\": 2,\n        \"id_shift\": 1,\n        \"status\": \"Sakit\",\n        \"waktu_presensi\": \"2025-04-18T06:32:39.000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/presensi-summary?id_praktikum=17&id_user=3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"presensi-summary"
+							],
+							"query": [
+								{
+									"key": "id_shift",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "id_praktikum",
+									"value": "17"
+								},
+								{
+									"key": "id_modul",
+									"value": "14",
+									"disabled": true
+								},
+								{
+									"key": "id_user",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/presensi-summary?id_shift=1&id_praktikum=1&id_modul=3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"presensi-summary"
+									],
+									"query": [
+										{
+											"key": "id_shift",
+											"value": "1"
+										},
+										{
+											"key": "id_praktikum",
+											"value": "1"
+										},
+										{
+											"key": "id_modul",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "133"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"85-ywApAoPTBkbax+xI25mGhIp7uzw\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 07:19:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Berhasil mengambil summary presensi\",\n    \"data\": {\n        \"total_praktikan\": 2,\n        \"belum_hadir\": 1,\n        \"hadir\": 1,\n        \"telat\": 0,\n        \"sakit\": 0,\n        \"izin\": 0\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Penilaian",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/penilaian?id_user=3&id_praktikum=17",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"penilaian"
+							],
+							"query": [
+								{
+									"key": "id_user",
+									"value": "3"
+								},
+								{
+									"key": "id_praktikum",
+									"value": "17"
+								},
+								{
+									"key": "id_modul",
+									"value": "13",
+									"disabled": true
+								},
+								{
+									"key": "id_shift",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/penilaian/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"penilaian",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "578"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"242-iWETpI0sNBF5tqfrPND/qAbtSww\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 07:58:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Berhasil mengambil data penilaian\",\n    \"data\": [\n        {\n            \"id\": 3,\n            \"id_user\": 1,\n            \"id_kelompok\": 1,\n            \"id_modul\": 1,\n            \"id_shift\": 1,\n            \"nilai_tp\": 80,\n            \"nilai_praktikum\": 75,\n            \"nilai_fd\": 70,\n            \"nilai_laporan_tugas\": 80,\n            \"nilai_responsi\": 65,\n            \"nilai_total\": 95\n        },\n        {\n            \"id\": 4,\n            \"id_user\": 1,\n            \"id_kelompok\": 1,\n            \"id_modul\": 1,\n            \"id_shift\": 1,\n            \"nilai_tp\": 80,\n            \"nilai_praktikum\": 75,\n            \"nilai_fd\": 70,\n            \"nilai_laporan_tugas\": 80,\n            \"nilai_responsi\": 65,\n            \"nilai_total\": 95\n        },\n        {\n            \"id\": 5,\n            \"id_user\": 1,\n            \"id_kelompok\": 1,\n            \"id_modul\": 1,\n            \"id_shift\": 1,\n            \"nilai_tp\": 80,\n            \"nilai_praktikum\": 75,\n            \"nilai_fd\": 70,\n            \"nilai_laporan_tugas\": 80,\n            \"nilai_responsi\": 65,\n            \"nilai_total\": 95\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/penilaian/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"penilaian",
+								"3"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/penilaian/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"penilaian",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "228"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"e4-4dOkUKeotgj68h7gPAPYQ2HaObA\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 22 Apr 2025 05:57:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Berhasil mengambil data penilaian\",\n    \"data\": {\n        \"id\": 3,\n        \"id_user\": 1,\n        \"id_kelompok\": 1,\n        \"id_modul\": 1,\n        \"id_shift\": 1,\n        \"nilai_tp\": 70,\n        \"nilai_praktikum\": 75,\n        \"nilai_fd\": 70,\n        \"nilai_laporan_tugas\": 80,\n        \"nilai_responsi\": 65,\n        \"nilai_total\": 95\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_user\": 1,\r\n    \"id_praktikum\": 1,\r\n    \"id_modul\": 1,\r\n    \"id_shift\": 1,\r\n    \"nilai_tp\": 80,\r\n    \"nilai_fd\": 70,\r\n    \"nilai_praktikum\": 75,\r\n    \"nilai_laporan_tugas\": 80,\r\n    \"nilai_responsi\": 65,\r\n    \"nilai_total\": 95\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/penilaian",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"penilaian"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id_user\": 1,\r\n    \"id_kelompok\": 1,\r\n    \"id_modul\": 1,\r\n    \"id_shift\": 1,\r\n    \"nilai_tp\": 80,\r\n    \"nilai_fd\": 70,\r\n    \"nilai_praktikum\": 75,\r\n    \"nilai_laporan_tugas\": 80,\r\n    \"nilai_responsi\": 65,\r\n    \"nilai_total\": 95\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/penilaian",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"penilaian"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "218"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"da-bN5pBxN8kfDwMseXdVY0ecyb+eU\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Apr 2025 07:57:19 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Penilaian created successfully\",\n    \"data\": {\n        \"id_user\": 1,\n        \"id_kelompok\": 1,\n        \"id_modul\": 1,\n        \"id_shift\": 1,\n        \"nilai_tp\": 80,\n        \"nilai_fd\": 70,\n        \"nilai_praktikum\": 75,\n        \"nilai_laporan_tugas\": 80,\n        \"nilai_responsi\": 65,\n        \"nilai_total\": 95\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nilai_tp\": 70,\r\n    \"nilai_fd\": 70,\r\n    \"nilai_praktikum\": 75,\r\n    \"nilai_laporan_tugas\": 80,\r\n    \"nilai_responsi\": 65,\r\n    \"nilai_total\": 95\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/penilaian/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"penilaian",
+								"3"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nilai_tp\": 70,\r\n    \"nilai_fd\": 70,\r\n    \"nilai_praktikum\": 75,\r\n    \"nilai_laporan_tugas\": 80,\r\n    \"nilai_responsi\": 65,\r\n    \"nilai_total\": 95\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/penilaian/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"penilaian",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:3000"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "164"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"a4-JVoho2fyCI8B8LKDQK1W4My4X5c\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 22 Apr 2025 05:56:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Penilaian updated successfully\",\n    \"data\": {\n        \"nilai_tp\": 70,\n        \"nilai_fd\": 70,\n        \"nilai_praktikum\": 75,\n        \"nilai_laporan_tugas\": 80,\n        \"nilai_responsi\": 65,\n        \"nilai_total\": 95\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "http://localhost:8080/api/auth/register",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"full_name\": \"John Doe\",\r\n  \"email\": \"johndoe@example.com\",\r\n  \"nim\": \"12345678\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"praktikan\",\r\n  \"angkatan\": 2022\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/auth/login?",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"admin@email.com\",\r\n  \"password\": \"password123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login?",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/auth/login?",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"shintanre@gmail.com\",\r\n  \"password\": \"password123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login?",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/presensi/2",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id_user\": 3,\r\n    \"id_praktikum\": 2,\r\n    \"id_modul\": 2,\r\n    \"id_shift\": 2,\r\n    \"status\": \"Hadir\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/presensi/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"presensi",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/presensi/1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/presensi/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"presensi",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/presensi/summary/4",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/presensi/summary/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"presensi",
+						"summary",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/presensi/module/3",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/presensi/module/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"presensi",
+						"module",
+						"3"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
