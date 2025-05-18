@@ -1,153 +1,46 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import FileViewer from '@/components/ui/filepreview';
+import { usePathname } from "next/navigation";
+import Navbar from "@/components/shared/navbar";
 
-const PreviewFilePage = () => {
-  const params = useParams();
-  const router = useRouter();
-  const [fileUrl, setFileUrl] = useState<string>('');
-  const [fileType, setFileType] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    
-    const fetchFileDetails = async () => {
-      try {
-        const id = params.id;
-        
-        if (!id) {
-          setError('ID file tidak ditemukan');
-          return;
-        }
+  // Daftar path yang ingin disembunyikan navbarnya
+  const hiddenRoutes = [
+    "/modul",
+    "/praktikum/prak-lab-sister/prak-eldas/admin",
+    "/praktikum/prak-lab-sister/prak-sdl/admin",
+  ];
 
-        if (id === 'undefined') {
-          setError('ID submission tidak valid atau tidak ditemukan');
-          return;
-        }
+  // Periksa apakah path sekarang cocok dengan salah satu dari daftar
+  const hideNavbar = hiddenRoutes.some((route) => pathname.includes(route));
 
-        // Simulasi progress
-        intervalId = setInterval(() => {
-          setProgress(prev => {
-            if (prev >= 90) return prev;
-            return prev + 10;
-          });
-        }, 100);
-
-        // Gunakan endpoint existing yang sudah ada
-        const viewUrl = `/api/submission/view/${id}`;
-        console.log('Fetching URL:', viewUrl);
-        
-        // Test endpoint first
-        const response = await fetch(viewUrl, { method: 'HEAD' });
-        if (!response.ok) {
-          throw new Error('File tidak ditemukan atau tidak dapat diakses');
-        }
-
-        const contentType = response.headers.get('content-type');
-        let fileExtension = '';
-        
-        if (contentType?.includes('pdf')) {
-          fileExtension = 'pdf';
-        } else if (contentType?.includes('msword') || contentType?.includes('wordprocessingml')) {
-          fileExtension = 'docx';
-        } else {
-          // Fallback to parsing from content type
-          fileExtension = contentType?.split('/').pop()?.toLowerCase() || '';
-        }
-
-        setFileUrl(viewUrl);
-        setFileType(fileExtension);
-        setProgress(100);
-      } catch (err) {
-        console.error('Error fetching file:', err);
-        setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat memuat file');
-      } finally {
-        setLoading(false);
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-      }
-    };
-
-    fetchFileDetails();
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [params.id]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
-        <div className="w-64 bg-gray-200 rounded-full h-2.5 mb-4">
-          <div 
-            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-        <p className="text-gray-600">Memuat file... {progress}%</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-200px)]">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-red-100 p-3 rounded-full">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold text-center text-gray-900 mb-2">
-            Gagal Memuat File
-          </h3>
-          <p className="text-gray-600 text-center mb-6">{error}</p>
-          <button 
-            onClick={() => router.back()} 
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Kembali
-          </button>
-        </div>
-      </div>
-    );
+  // Jika perlu sembunyikan layout, tampilkan children saja
+  if (hideNavbar) {
+    return <>{children}</>;
   }
 
   return (
-    <div className="w-full">
-      <div className="relative">
-        <div className="sticky top-20 left-4 z-50 mb-4">
-          <button 
-            onClick={() => router.back()} 
-            className="bg-white px-4 py-2 rounded-md shadow-md hover:bg-gray-50 flex items-center group transition-all duration-200"
-          >
-            <svg 
-              className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Kembali
-          </button>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1">
+        <div className="relative">
+          <div className="absolute top-0 left-0 w-full h-72 bg-[#0267FE] z-0"></div>
+          <div className="relative z-10 pt-4">
+            {/* Navbar */}
+            <Navbar />
+
+            {/* Konten */}
+            <div className="px-8 py-12">{children}</div>
+          </div>
         </div>
-        <div className="mt-2 bg-white rounded-lg shadow-md p-2">
-          <FileViewer fileUrl={fileUrl} fileType={fileType} />
-        </div>
-      </div>
+      </main>
+
+      <footer className="text-center text-gray-500 text-xs py-4">
+        © 2025 Sistem Informasi Manajemen Praktikum
+      </footer>
     </div>
   );
 };
 
-export default PreviewFilePage;
+export default Layout;

@@ -104,7 +104,7 @@ export async function saveUserAnswer(userId, quizId, userAnswer) {
 export async function createModule(moduleData) {
   const { judul_modul, id_praktikum } = moduleData;
   const [result] = await pool.query(
-    'INSERT INTO modul (judul_modul, id_praktikum) VALUES (?, ?)',
+    'INSERT INTO modul_eldas (judul_modul, id_praktikum) VALUES (?, ?)',
     [judul_modul, id_praktikum]
   );
   return { id_modul: result.insertId, ...moduleData };
@@ -113,7 +113,7 @@ export async function createModule(moduleData) {
 export async function updateModule(moduleId, moduleData) {
   const { judul_modul } = moduleData;
   const [result] = await pool.query(
-    'UPDATE modul SET judul_modul = ? WHERE id_modul = ?',
+    'UPDATE modul_eldas SET judul_modul = ? WHERE id_modul = ?',
     [judul_modul, moduleId]
   );
   return { id_modul: moduleId, ...moduleData, affectedRows: result.affectedRows };

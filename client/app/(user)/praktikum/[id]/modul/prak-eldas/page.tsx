@@ -273,8 +273,8 @@ const handleSubmoduleClick = useCallback((submodule: Submodule) => {
         </div>
         <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
         {userPraktikum?.data?.is_asisten == 1 && (
-            <Link
-                href={"/praktikum/prak-lab-sister/prak-eldas/admin"}
+           <Link
+                href={`/praktikum/${params.id}/modul/prak-eldas/admin`}
                 className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
             >
                 <FaUserShield className="mr-2" />

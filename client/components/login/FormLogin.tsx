@@ -123,7 +123,7 @@ export default function FormLogin() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="praktikan@email.com" {...field} />
+                      <Input placeholder="praktikan@students.undip.ac.id" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -185,7 +185,7 @@ export default function FormLogin() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="asisten@email.com" {...field} />
+                      <Input placeholder="asisten@students.undip.ac.id" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

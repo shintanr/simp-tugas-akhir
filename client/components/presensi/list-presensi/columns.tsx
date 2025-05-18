@@ -5,9 +5,6 @@ import StatusActionButton from "./statusActionButton";
 import { ListPresensiType } from "@/types/presensi";
 import DialogComplaintAsisten from "./dialogComplaintAsisten";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-
 export const getColumns = (
   selectedModul: string
 ): ColumnDef<ListPresensiType>[] => [
@@ -22,10 +19,15 @@ export const getColumns = (
   {
     accessorKey: "nama_kelompok",
     header: "Kelompok",
+    sortingFn: (a, b) => {
+      const aValue = parseInt(a.getValue("nama_kelompok") as string);
+      const bValue = parseInt(b.getValue("nama_kelompok") as string);
+      return aValue - bValue;
+    },
   },
   {
     accessorKey: "status",
-    header: () => <div className=" w-full">Status</div>,
+    header: () => <div className="w-full">Status</div>,
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">

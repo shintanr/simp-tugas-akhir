@@ -22,14 +22,17 @@ function PraktikumList({ praktikum, selectedLab }: praktikumListProps) {
   const router = useRouter();
   return (
     <div className="flex min-h-screen">
+      
       {/* Main content */}
-      <main className="flex-1 px-8 ">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-black">
-            {selectedLab || "Select a Lab"}
-          </h1>
+      <main className="flex-1 ">
+        
+        <div className="flex justify-between items-center shadow-md border-b border-gray-300 pb-4 px-14 ">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">{selectedLab || "Dashboard"}</h1>
+              <p className="text-sm text-gray-500">Sistem Informasi Manajemen Praktikum</p>
+            </div>
           <div className="flex items-center gap-4 mt-[-50px]">
-          <div className="relative w-10 h-10 rounded-full bg-gray-200">
+          <div className="relative w-10 h-10 rounded-full bg-gray-200  mt-10 ">
             <Image 
               src="/profile-dummy.png" 
               alt="Profile" 
@@ -42,7 +45,7 @@ function PraktikumList({ praktikum, selectedLab }: praktikumListProps) {
             </div>
           </div>
             <Popover>
-              <PopoverTrigger>{session.data?.user?.name}</PopoverTrigger>
+              <PopoverTrigger className="mt-10 ">{session.data?.user?.name}</PopoverTrigger>
               <PopoverContent className="w-56 mt-4">
                 <div className="flex flex-col gap-2 p-1 bg-white">
                   <Button
@@ -69,7 +72,7 @@ function PraktikumList({ praktikum, selectedLab }: praktikumListProps) {
             </Popover>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 p-14">
           {praktikum.length > 0 &&
             praktikum.map((module, index) => (
               <Link

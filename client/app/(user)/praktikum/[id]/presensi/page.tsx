@@ -98,12 +98,13 @@ function Page() {
     );
   }
 
+
   return (
     <>
       <section className="px-8 py-4 text-white text-3xl font-bold">
         {userPraktikum && userPraktikum.data.is_asisten == 1
-          ? "Presensi"
-          : "History Presensi"}
+          ? "PRESENSI"
+          : "HISTORI PRESENSI"}
       </section>
 
       {/* Statistik */}
