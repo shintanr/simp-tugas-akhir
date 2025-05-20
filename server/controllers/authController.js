@@ -152,6 +152,7 @@ export const forgotPassword = async (req, res) => {
 
     res.status(200).json({ message: "Password baru telah dikirim ke email Anda." });
   } catch (error) {
+    console.log("🚀 ~ error:", error  )
     res.status(500).json({ message: "Terjadi kesalahan!", error: error.message });
   }
 };

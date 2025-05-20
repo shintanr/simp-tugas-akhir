@@ -65,8 +65,8 @@ export default function AdminDashboard() {
           <Card
             title="Manajemen Praktikum"
             description="Kelola data praktikum seperti menambah dan mengedit praktikum."
-            icon={<FileText className="w-6 h-6 text-green-600" />}
-            bgColor="bg-green-100"
+            icon={<FileText className="w-6 h-6 text-blue-500" />}
+            bgColor="bg-blue-100"
           />
  
           

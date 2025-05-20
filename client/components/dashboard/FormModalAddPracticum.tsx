@@ -31,6 +31,7 @@ import {
   useInquiryPraktikumMutation,
 } from "@/redux/services/userPraktikum";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 const codeOnlySchema = z.object({
   code: z.string().min(2, "Kode praktikum wajib diisi"),
@@ -45,6 +46,13 @@ function FormModalAddPracticum() {
   const [codeFound, setCodeFound] = useState(false);
   const [praktikumId, setPraktikumId] = useState("");
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
+  
+  // Check if user has asisten role
+  const hasAsistenRole = useMemo(() => {
+    if (!session?.user?.role) return false;
+    return session.user.role === "asisten" || session.user.role === "admin";
+  }, [session]);
 
   const [inquiryPraktikum, { isLoading }] = useInquiryPraktikumMutation();
 
@@ -72,18 +80,6 @@ function FormModalAddPracticum() {
     },
   });
 
-  // useEffect(() => {
-  //   console.log("Form errors:", errors);
-  // }, [errors]);
-
-  // useEffect(() => {
-  //   const subscription = watch((data) => {
-  //     console.log("Form Data:", data);
-  //   });
-
-  //   return () => subscription.unsubscribe();
-  // }, [watch]);
-
   const onSubmit = async (values: z.infer<typeof fullFormSchema>) => {
     if (!codeFound) {
       try {
@@ -106,7 +102,7 @@ function FormModalAddPracticum() {
       }
     } else {
       console.log("Final submit:", values);
-      const isAsisten = values.asisten ? 1 : 0;
+      const isAsisten = hasAsistenRole && values.asisten ? 1 : 0;
       try {
         await createUserPraktikum({
           id_praktikum: praktikumId,
@@ -199,17 +195,20 @@ function FormModalAddPracticum() {
                 )}
               </div>
 
-              <div className="flex gap-2 items-center">
-                <Label htmlFor="asisten" className="">
-                  Sebagai Asisten
-                </Label>
-                <Checkbox
-                  id="asisten"
-                  checked={watch("asisten")}
-                  onCheckedChange={(checked) => setValue("asisten", !!checked)}
-                  className="col-span-3"
-                />
-              </div>
+              {/* Only show checkbox if user has asisten role */}
+              {hasAsistenRole && (
+                <div className="flex gap-2 items-center">
+                  <Label htmlFor="asisten" className="">
+                    Sebagai Asisten
+                  </Label>
+                  <Checkbox
+                    id="asisten"
+                    checked={watch("asisten")}
+                    onCheckedChange={(checked) => setValue("asisten", !!checked)}
+                    className="col-span-3"
+                  />
+                </div>
+              )}
             </>
           )}
 

@@ -194,7 +194,7 @@ const AdminUserForm = ({ user }: UserFormProps) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {Array.from({ length: 15 }, (_, i) => (
+                    {Array.from({ length: 7 }, (_, i) => (
                       <SelectItem
                         key={i}
                         value={(new Date().getFullYear() - i).toString()}
