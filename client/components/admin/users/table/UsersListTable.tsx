@@ -65,7 +65,7 @@ export default function UsersListTable() {
   if (!data || error || isLoading ) return null;
 
   return (
-    <div className="container mx-auto w-full">
+    <div className="container mx-auto w-full p-8">
       <div className="flex justify-between">
         <div className="flex flex-col justify-center mb-5">
           <h5 className="text-2xl font-bold text-gray-900">List Pengguna</h5>

@@ -61,7 +61,7 @@ export default function FormLogin() {
     if (res && res.ok && res.error === null) {
       form.reset();
       toast.success("Login berhasil", {
-        description: "Selamat datang di Sistem Penilaian Praktikum",
+        description: "Selamat datang di Sistem Informasi Manajemen Praktikum",
       });
       const session = await getSession();
 

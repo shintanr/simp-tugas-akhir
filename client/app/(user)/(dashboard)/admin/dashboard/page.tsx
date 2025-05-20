@@ -39,8 +39,8 @@ export default function AdminDashboard() {
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div>
-                <p className="font-semibold text-gray-800">Admin</p>
-                <p className="text-sm text-gray-500">admin@lab.com</p>
+                <h2 className="text-lg font-semibold">{session.data?.user?.name}</h2>
+                <p className="text-sm text-gray-500">{session.data?.user?.email}</p>
               </div>
             </div>
             <button
@@ -55,24 +55,21 @@ export default function AdminDashboard() {
 
         {/* Menu Cards */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card
-            title="Kelola Akun Praktikan"
-            description="Tambah, edit, dan hapus akun praktikan."
+         <Card
+            title="Manajemen User"
+            description="Tambah, edit, dan hapus akun pengguna."
             icon={<Users className="w-6 h-6 text-blue-500" />}
             bgColor="bg-blue-100"
           />
+
           <Card
-            title="Kelola Laporan Praktikum"
-            description="Pantau dan nilai laporan dari praktikan."
+            title="Manajemen Praktikum"
+            description="Kelola data praktikum seperti menambah dan mengedit praktikum."
             icon={<FileText className="w-6 h-6 text-green-600" />}
             bgColor="bg-green-100"
           />
-          <Card
-            title="Pengaturan Sistem"
-            description="Atur konfigurasi dan data praktikum."
-            icon={<Settings className="w-6 h-6 text-yellow-500" />}
-            bgColor="bg-yellow-100"
-          />
+ 
+          
         </section>
       </div>
     </main>
