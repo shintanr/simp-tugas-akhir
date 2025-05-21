@@ -74,7 +74,7 @@ export default function PraktikumListTable() {
           </h5>
         </div>
         <Button asChild>
-          <Link href="praktikum/create">Tambah Praktikum</Link>
+          <Link href="praktikum/create">+Tambah Praktikum</Link>
         </Button>
       </div>
 

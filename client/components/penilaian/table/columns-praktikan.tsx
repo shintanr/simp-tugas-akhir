@@ -12,7 +12,7 @@ import DialogComplaintPraktikan from "./dialogComplaintPraktikan";
 export const columns: ColumnDef<PenilaianType>[] = [
   {
     accessorKey: "id_modul",
-    header: "No",
+    header: "Pertemuan",
     cell: ({ row }) => {
       return row.index + 1;
     },

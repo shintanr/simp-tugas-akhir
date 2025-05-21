@@ -74,7 +74,7 @@ export default function UsersListTable() {
           </h5>
         </div>
         <Button asChild>
-          <Link href="users/create">Tambah Pengguna</Link>
+          <Link href="users/create">+Tambah Pengguna</Link>
         </Button>
       </div>
 
