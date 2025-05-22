@@ -84,7 +84,8 @@ function PenilaianPage() {
       <section className="px-8 py-4 text-white text-3xl font-bold">
         TABEL PENILAIAN
       </section>
-      <section className="mt-8 px-8">
+
+      <section className=" px-8">
         <Card className="shadow-2xl border-0 ">
           <CardHeader className="border-b">
             <CardTitle>
@@ -93,14 +94,14 @@ function PenilaianPage() {
                   <h1 className="text-2xl font-bold pt-10">
                     Penilaian{" "}
                     {userPraktikum?.data?.is_asisten == 1 ? (
-                      "Praktikan"
+                      <>
+                        Praktikan 
+                      </>
                     ) : (
-                      <span>
-                        {" "}
-                        <span className="text-primary">{praktikum?.name}</span>
-                      </span>
+                      <span className="text-primary">{praktikum?.name}</span>
                     )}
                   </h1>
+
                 </div>
                 <div className="flex items-center space-x-2">
                   {userPraktikum?.data?.is_asisten == 1 && (

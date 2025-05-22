@@ -26,11 +26,11 @@ function StatusActionButton({ data, selectedModul }: statusActionButtonProps) {
   let statusColorClass = "" 
   if (status === "Hadir") {
     statusColorClass = "bg-green-500 text-white rounded-full w-1/2";
-  } else if (status === "Sakit") {
+  } else if (status === "Telat"){
     statusColorClass = "bg-yellow-500 text-white rounded-full w-1/2";
   } else if (status === "Izin") {
     statusColorClass = "bg-blue-500 text-white rounded-full w-1/2";
-  } else if (status === "Alpa") {
+  } else if (status === "Alpha") {
     statusColorClass = "bg-red-500 text-white rounded-full w-1/2";
   } else {
     statusColorClass = "bg-gray-500 text-white rounded-full w-1/2";
@@ -73,9 +73,9 @@ function StatusActionButton({ data, selectedModul }: statusActionButtonProps) {
               <SelectContent>
                 <SelectItem value="Belum Hadir">Belum Hadir</SelectItem>
                 <SelectItem value="Hadir">Hadir</SelectItem>
-                <SelectItem value="Sakit">Sakit</SelectItem>
+                <SelectItem value="Telat">Telat</SelectItem>
                 <SelectItem value="Izin">Izin</SelectItem>
-                <SelectItem value="Alpa">Alpa</SelectItem>
+                <SelectItem value="Alpha">Alpha</SelectItem>
               </SelectContent>
             </Select>
           </DialogDescription>

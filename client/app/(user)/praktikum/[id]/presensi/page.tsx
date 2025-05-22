@@ -101,11 +101,17 @@ function Page() {
 
   return (
     <>
-      <section className="px-8 py-4 text-white text-3xl font-bold">
-        {userPraktikum && userPraktikum.data.is_asisten == 1
-          ? "PRESENSI"
-          : "HISTORI PRESENSI"}
+      <section className="px-8 py-4 text-white">
+        <h1 className="text-3xl font-bold">
+          {userPraktikum && userPraktikum.data.is_asisten == 1
+            ? "PRESENSI"
+            : "HISTORI PRESENSI"}
+        </h1>
+        <p className="text-lg text-yellow-300 font-semibold">
+          {praktikum?.name}
+        </p>
       </section>
+
 
       {/* Statistik */}
       <section className="px-8">

@@ -4,8 +4,8 @@ export type PresensiSummary = {
   belum_hadir: number;
   hadir: number;
   telat: number;
-  sakit: number;
   izin: number;
+  alpha: number;
 };
 
 export type ListPresensiType = {

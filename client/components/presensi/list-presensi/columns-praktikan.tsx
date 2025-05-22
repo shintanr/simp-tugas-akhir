@@ -38,11 +38,11 @@ export const columns: ColumnDef<ListPresensiType>[] = [
       let statusClassName = "";
       if (status === "Hadir") {
         statusClassName = "bg-green-500";
-      } else if (status === "Sakit") {
+      } else if (status === "Telat") {
         statusClassName = "bg-yellow-500";
       } else if (status === "Izin") {
         statusClassName = "bg-blue-500";
-      } else if (status === "Alpa") {
+      } else if (status === "Alpha") {
         statusClassName = "bg-red-500";
       } else {
         statusClassName = "bg-gray-500";

@@ -36,12 +36,12 @@ function StatisticCard({ data }: StatisticCardProps) {
           <p className="text-xl font-bold text-yellow-500">{data.telat}</p>
         </div>
         <div className="text-center border-2 border-gray-200 p-4 rounded-xl">
-          <p className="text-sm text-gray-500">Sakit</p>
-          <p className="text-xl font-bold text-red-400">{data.sakit}</p>
-        </div>
-        <div className="text-center border-2 border-gray-200 p-4 rounded-xl">
           <p className="text-sm text-gray-500">Izin</p>
           <p className="text-xl font-bold text-blue-400">{data.izin}</p>
+        </div>
+        <div className="text-center border-2 border-gray-200 p-4 rounded-xl">
+          <p className="text-sm text-gray-500">Alpha</p>
+          <p className="text-xl font-bold text-red-400">{data.alpha}</p>
         </div>
       </div>
     </div>

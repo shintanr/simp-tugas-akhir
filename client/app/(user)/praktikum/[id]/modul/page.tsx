@@ -5,8 +5,12 @@ type ModulMap = {
 };
 
 const modulMap: ModulMap = {
+  5: 'prak-sbd',
+  6: 'prak-mulmed',
+  7: 'prak-pjk',
   9: 'prak-eldas',
   12: 'prak-sdl',
+
 };
 
 const ModulIndexPage = async ({
