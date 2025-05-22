@@ -24,10 +24,19 @@ import {
   getPraktikumByLabId, 
   getSubModulesSDLByModulId, 
   getSubModulesEldasByModulId, 
+  getSubModulesPJKByModulId,
+  getSubModulesSBDByModulId,
+  getSubModulesMulmedByModulId,
   getVideosSubModulesEldasBySubModulId, 
   getVideosSubModulesSDLBySubModulId, 
+  getVideosSubModulesPJKBySubModulId,
+  getVideosSubModulesSBDBySubModulId,
+  getVideosSubModulesMulmedBySubModulId,
   getQuizEldasBySubModulId, 
   getQuizSDLBySubModulId,
+  getQuizPJKBySubModulId,
+  getQuizSBDBySubModulId,
+  getQuizMulmedBySubModulId,
   checkAnswer, 
   createModule,
   updateModule, 
@@ -43,7 +52,26 @@ import {
   deleteQuizEldas,
   createSubmoduleEldas,
   updateSubmoduleEldas,
-  deleteSubmoduleEldas} from "./config/database.js";
+  deleteSubmoduleEldas,
+  createSubmodulePJK,
+  updateSubmodulePJK,
+  deleteSubmodulePJK,
+  createQuizPJK,
+  updateQuizPJK,
+  deleteQuizPJK,
+  createSubmoduleSBD,
+  updateSubmoduleSBD,
+  deleteSubmoduleSBD,
+  createQuizSBD,
+  updateQuizSBD,
+  deleteQuizSBD,
+  createSubmoduleMulmed,
+  updateSubmoduleMulmed,
+  deleteSubmoduleMulmed,
+  createQuizMulmed,
+  updateQuizMulmed,
+  deleteQuizMulmed,
+  pool} from "./config/database.js";
 
 
 // import dari kode airin
@@ -57,8 +85,7 @@ import { getPraktikumById,
   getSubmissionFilePath,
   deleteSubmission, 
   getPertemuan, 
-  getPraktikum, 
-  pool } from "./config/database.js";
+  getPraktikum } from "./config/database.js";
 
 
 
@@ -206,48 +233,50 @@ app.get("/api/praktikum/submodul/prak-sdl/:modulId", async (req, res) => {
   }
 })
 
-app.post("/api/submodul/upload-video/eldas/:submodulId", upload.single("file"), async (req, res) => {
-  try {
-    const { submodulId } = req.params;
-    const videoUrl = `http://localhost:8080/server/video_file/${req.file.filename}`;
+app.get("/api/praktikum/submodul/prak-pjk/:modulId", async (req, res) => {
+  try{
+    const { modulId } = req.params;
+    const subModules = await getSubModulesPJKByModulId(modulId);
 
-    // Debugging: Cek apakah submodulId benar
-    console.log("Updating submodulId:", submodulId);
-    console.log("New video URL:", videoUrl);
-
-    const result = await pool.query("UPDATE submodul_eldas SET video_url = ? WHERE id_submodul = ?", [videoUrl, submodulId]);
-
-    // Debugging: Pastikan update berhasil
-    console.log("Database update result:", result);
-
-    res.json({ message: "Video uploaded successfully", videoUrl });
+    res.json({
+      message: `Sub Modules of Modul Prak PJK ${modulId}`,
+      data: subModules,
+    });
   } catch (error) {
-    console.error("Error uploading video:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("error fetching modules:", error);
+    res.status(500).json({ message: "Internal Server Error"});
   }
-});
+})
 
-app.post("/api/submodul/upload-video/sdl/:submodulId", upload.single("file"), async (req, res) => {
-  try {
-    const { submodulId } = req.params;
-    const videoUrl = `http://localhost:8080/server/video_file/${req.file.filename}`;
+app.get("/api/praktikum/submodul/prak-sbd/:modulId", async (req, res) => {
+  try{
+    const { modulId } = req.params;
+    const subModules = await getSubModulesSBDByModulId(modulId);
 
-    // Debugging: Cek apakah submodulId benar
-    console.log("Updating submodulId:", submodulId);
-    console.log("New video URL:", videoUrl);
-
-    const result = await pool.query("UPDATE submodul_sdl SET video_url = ? WHERE id_submodul = ?", [videoUrl, submodulId]);
-
-    // Debugging: Pastikan update berhasil
-    console.log("Database update result:", result);
-
-    res.json({ message: "Video uploaded successfully", videoUrl });
+    res.json({
+      message: `Sub Modules of Modul Prak PJK ${modulId}`,
+      data: subModules,
+    });
   } catch (error) {
-    console.error("Error uploading video:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("error fetching modules:", error);
+    res.status(500).json({ message: "Internal Server Error"});
   }
-});
+})
 
+app.get("/api/praktikum/submodul/prak-mulmed/:modulId", async (req, res) => {
+  try{
+    const { modulId } = req.params;
+    const subModules = await getSubModulesMulmedByModulId(modulId);
+
+    res.json({
+      message: `Sub Modules of Modul Prak Mulmed ${modulId}`,
+      data: subModules,
+    });
+  } catch (error) {
+    console.error("error fetching modules:", error);
+    res.status(500).json({ message: "Internal Server Error"});
+  }
+})
 
 app.get("/api/submodul/video/eldas/:submodulId", async (req, res) => {
   try{
@@ -279,6 +308,51 @@ app.get("/api/submodul/video/sdl/:submodulId", async (req, res) => {
   }
 })
 
+app.get("/api/submodul/video/pjk/:submodulId", async (req, res) => {
+  try{
+    const { submodulId } = req.params;
+    const videos = await getVideosSubModulesPJKBySubModulId(submodulId);
+
+    res.json({
+      message: `Sub Modules of Modul 1 Prak PJK ${submodulId}`,
+      data: videos,
+    });
+  } catch (error) {
+    console.error("error fetching modules:", error);
+    res.status(500).json({ message: "Internal Server Error"});
+  }
+})
+
+app.get("/api/submodul/video/sbd/:submodulId", async (req, res) => {
+  try{
+    const { submodulId } = req.params;
+    const videos = await getVideosSubModulesSBDBySubModulId(submodulId);
+
+    res.json({
+      message: `Sub Modules of Modul 1 Prak PJK ${submodulId}`,
+      data: videos,
+    });
+  } catch (error) {
+    console.error("error fetching modules:", error);
+    res.status(500).json({ message: "Internal Server Error"});
+  }
+})
+
+app.get("/api/submodul/video/mulmed/:submodulId", async (req, res) => {
+  try{
+    const { submodulId } = req.params;
+    const videos = await getVideosSubModulesMulmedBySubModulId(submodulId);
+
+    res.json({
+      message: `Sub Modules of Modul 1 Prak PJK ${submodulId}`,
+      data: videos,
+    });
+  } catch (error) {
+    console.error("error fetching modules:", error);
+    res.status(500).json({ message: "Internal Server Error"});
+  }
+})
+
 app.get('/api/submodul/quiz-eldas/:submodulId', async (req, res) => {
   const { submodulId } = req.params;
   try {
@@ -293,6 +367,36 @@ app.get('/api/submodul/quiz-sdl/:submodulId', async (req, res) => {
   const { submodulId } = req.params;
   try {
     const quiz = await getQuizSDLBySubModulId(submodulId);
+    res.json({ success: true, data: quiz });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.get('/api/submodul/quiz-pjk/:submodulId', async (req, res) => {
+  const { submodulId } = req.params;
+  try {
+    const quiz = await getQuizPJKBySubModulId(submodulId);
+    res.json({ success: true, data: quiz });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.get('/api/submodul/quiz-sbd/:submodulId', async (req, res) => {
+  const { submodulId } = req.params;
+  try {
+    const quiz = await getQuizSBDBySubModulId(submodulId);
+    res.json({ success: true, data: quiz });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.get('/api/submodul/quiz-mulmed/:submodulId', async (req, res) => {
+  const { submodulId } = req.params;
+  try {
+    const quiz = await getQuizMulmedBySubModulId(submodulId);
     res.json({ success: true, data: quiz });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -709,6 +813,11 @@ app.post('/admin/post/submodul/sdl/upload-video/:submoduleId', upload.single('fi
   }
 });
 
+
+// =============================================
+// Eldas SUBMODULE MANAGEMENT ROUTES
+// =============================================
+
 // Create a new ELdas submodule
 app.post('/admin/post/submodul/eldas', upload.fields([
   { name: 'file', maxCount: 1 }, // for PDF
@@ -737,6 +846,8 @@ app.post('/admin/post/submodul/eldas', upload.fields([
     
     if (req.files && req.files['video'] && req.files['video'][0]) {
       videoUrl = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+    } else if (req.body.video_url) {
+      videoUrl = req.body.video_url; // ✅ Tambahkan ini
     }
     
     // Buat objek submodul baru
@@ -762,7 +873,7 @@ app.post('/admin/post/submodul/eldas', upload.fields([
     console.error('Error stack:', error.stack);
     res.status(500).json({
       status: 'error',
-      message: 'Failed to create Eldas submodule',
+      message: 'Failed to create Eldas  submodule',
       error: error.message
     });
   }
@@ -898,8 +1009,6 @@ app.delete('/admin/delete/quiz/eldas/:quizId', async (req, res) => {
   }
 });
 
-
-
 // Delete an Eldas submodule
 app.delete('/admin/delete/submodul/eldas/:submoduleId', async (req, res) => {
   try {
@@ -960,6 +1069,704 @@ app.post('/admin/post/submodul/eldas/upload-video/:submoduleId', upload.single('
   }
 });
 
+// =============================================
+// PJK SUBMODULE MANAGEMENT ROUTES
+// =============================================
+app.post('/admin/post/submodul/pjk', upload.fields([
+  { name: 'file', maxCount: 1 }, // for PDF
+  { name: 'video', maxCount: 1 } // for Video
+]), async (req, res) => {
+  try {
+    const { judul_submodul, id_modul } = req.body;
+    console.log("Received body:", req.body);
+    console.log("Received files:", req.files);
+    
+    // Validasi field wajib
+    if (!judul_submodul || !id_modul) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Missing required fields: judul_submodul or id_modul'
+      });
+    }
+    
+    // Process file uploads and get URLs
+    let pdfUrl = null;
+    let videoUrl = null;
+    
+    if (req.files && req.files['file'] && req.files['file'][0]) {
+      pdfUrl = `http://localhost:8080/server/video_file/${req.files['file'][0].filename}`;
+    }
+    
+    if (req.files && req.files['video'] && req.files['video'][0]) {
+      videoUrl = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+    } else if (req.body.video_url) {
+      videoUrl = req.body.video_url; // ✅ Tambahkan ini
+    }
+    
+    // Buat objek submodul baru
+    const newSubmoduleData = {
+      judul_submodul,
+      video_url: videoUrl,
+      pdf_url: pdfUrl,
+      id_modul: parseInt(id_modul) // Convert to number to ensure proper type
+    };
+    
+    console.log("Preparing to insert:", newSubmoduleData);
+    
+    // Insert ke database
+    const newSubmodule = await createSubmodulePJK(newSubmoduleData);
+    
+    res.status(201).json({
+      status: 'success',
+      data: newSubmodule,
+      message: 'PJK submodule created successfully'
+    });
+  } catch (error) {
+    console.error('Error creating PJK submodule:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to create PJK submodule',
+      error: error.message
+    });
+  }
+});
+
+app.put('/admin/put/submodul/pjk/:submoduleId', upload.fields([
+  { name: 'file', maxCount: 1 },  // for pdf
+  { name: 'video', maxCount: 1 }  // for video
+]), async (req, res) => {
+  try {
+    const submoduleId = parseInt(req.params.submoduleId);
+    const { judul_submodul, pdf_url, video_url } = req.body;
+
+    if (!judul_submodul) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Submodule title is required'
+      });
+    }
+
+    // Prepare update data
+    const updateData = {
+      judul_submodul
+    };
+
+    // Handle PDF file upload
+    if (req.files['file']) {
+      const pdfUrl = `http://localhost:8080/server/video_file/${req.files['file'][0].filename}`;
+      updateData.pdf_url = pdfUrl;
+    } else if (pdf_url) {
+      updateData.pdf_url = pdf_url;
+    }
+
+    // Handle video file upload
+    if (req.files['video']) {
+      const videoUrl = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+      updateData.video_url = videoUrl;
+    } else if (video_url) {
+      updateData.video_url = video_url;
+    }
+
+    // Update the submodule
+    const updatedSubmodule = await updateSubmodulePJK(submoduleId, updateData);
+
+    if (updatedSubmodule.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Eldas submodule not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...updateData,
+        id_submodul: submoduleId
+      },
+      message: 'Eldas submodule updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating Eldas submodule:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to update Eldas submodule',
+      error: error.message
+    });
+  }
+});
+
+app.post('/admin/post/quiz/pjk/:id_submodul', async (req, res) => {
+  try {
+    const { id_submodul } = req.params;
+    const quiz = await createQuizPJK({
+      ...req.body,
+      id_submodul: id_submodul  // pastikan dikirim ke createQuizEldas
+    });
+    res.status(201).json(quiz);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create quiz Eldas', details: err.message });
+  }
+});
+
+
+app.put('/admin/update/quiz/pjk/:quizId', async (req, res) => {
+  try {
+    const quizId = req.params.quizId; // Ensure you're using quizId here
+    console.log("Quiz ID from URL:", quizId); // Log the quiz ID to see if it's coming in
+
+    const quizData = req.body;
+    console.log("Quiz Data:", JSON.stringify(quizData, null, 2));
+
+    // Call the function to update the quiz in the database
+    const updatedQuiz = await updateQuizPJK(quizId, quizData);
+    
+    res.status(200).json({
+      message: 'Quiz updated successfully',
+      data: updatedQuiz
+    });
+
+  } catch (err) {
+    console.error("Route Update Error:", err);
+    res.status(500).json({ 
+      error: 'Failed to update quiz Eldas', 
+      details: err.message 
+    });
+  }
+});
+
+app.delete('/admin/delete/quiz/pjk/:quizId', async (req, res) => {
+  try {
+    const quizId = parseInt(req.params.quizId);
+    const result = await deleteQuizPJK(quizId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Quiz not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Quiz deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to delete quiz',
+      error: error.message
+    });
+  }
+});
+
+app.delete('/admin/delete/submodul/pjk/:submoduleId', async (req, res) => {
+  try {
+    const submoduleId = parseInt(req.params.submoduleId);
+    const result = await deleteSubmodulePJK(submoduleId);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Eldas submodule not found'
+      });
+    }
+    
+    res.status(200).json({
+      status: 'success',
+      message: 'Eldas submodule deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting Eldas submodule:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to delete Eldas submodule',
+      error: error.message
+    });
+  }
+});
+
+app.post('/admin/post/submodul/pjk/upload-video/:submoduleId', upload.single('file'), async (req, res) => {
+  try {
+    const { submoduleId } = req.params;
+    const videoUrl = `http://localhost:8080/server/video_file/${req.file.filename}`;
+
+    const result = await updateSubmodulePJK(submoduleId, {
+      judul_submodul: req.body.judul_submodul,
+      video_url: videoUrl
+    });
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Eldas submodule not found'
+      });
+    }
+
+    res.json({ 
+      status: 'success',
+      message: "Video uploaded and linked to Eldas submodule successfully", 
+      videoUrl 
+    });
+  } catch (error) {
+    console.error("Error uploading Eldas video:", error);
+    res.status(500).json({ 
+      status: 'error',
+      message: "Failed to upload Eldas video",
+      error: error.message
+    });
+  }
+});
+
+// =============================================
+// SBD SUBMODULE MANAGEMENT ROUTES
+// =============================================
+app.post('/admin/post/submodul/sbd', upload.fields([
+  { name: 'file', maxCount: 1 }, // PDF
+  { name: 'video', maxCount: 1 } // Video
+]), async (req, res) => {
+  try {
+    const { judul_submodul, id_modul } = req.body;
+
+    if (!judul_submodul || !id_modul) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Missing required fields: judul_submodul or id_modul'
+      });
+    }
+
+    let pdfUrl = null;
+    let videoUrl = null;
+
+    if (req.files['file']) {
+      pdfUrl = `http://localhost:8080/server/video_file/${req.files['file'][0].filename}`;
+    }
+
+    if (req.files['video']) {
+      videoUrl = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+    } else if (req.body.video_url) {
+      videoUrl = req.body.video_url;
+    }
+
+    const newSubmoduleData = {
+      judul_submodul,
+      video_url: videoUrl,
+      pdf_url: pdfUrl,
+      id_modul: parseInt(id_modul)
+    };
+
+    const newSubmodule = await createSubmoduleSBD(newSubmoduleData);
+
+    res.status(201).json({
+      status: 'success',
+      data: newSubmodule,
+      message: 'SBD submodule created successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to create SBD submodule',
+      error: error.message
+    });
+  }
+});
+
+app.put('/admin/put/submodul/sbd/:submoduleId', upload.fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'video', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const submoduleId = parseInt(req.params.submoduleId);
+    const { judul_submodul, pdf_url, video_url } = req.body;
+
+    if (!judul_submodul) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Submodule title is required'
+      });
+    }
+
+    const updateData = { judul_submodul };
+
+    if (req.files['file']) {
+      updateData.pdf_url = `http://localhost:8080/server/video_file/${req.files['file'][0].filename}`;
+    } else if (pdf_url) {
+      updateData.pdf_url = pdf_url;
+    }
+
+    if (req.files['video']) {
+      updateData.video_url = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+    } else if (video_url) {
+      updateData.video_url = video_url;
+    }
+
+    const updatedSubmodule = await updateSubmoduleSBD(submoduleId, updateData);
+
+    if (updatedSubmodule.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'SBD submodule not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...updateData,
+        id_submodul: submoduleId
+      },
+      message: 'SBD submodule updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to update SBD submodule',
+      error: error.message
+    });
+  }
+});
+
+app.delete('/admin/delete/submodul/sbd/:submoduleId', async (req, res) => {
+  try {
+    const submoduleId = parseInt(req.params.submoduleId);
+    const result = await deleteSubmoduleSBD(submoduleId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'SBD submodule not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'SBD submodule deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to delete SBD submodule',
+      error: error.message
+    });
+  }
+});
+
+app.post('/admin/post/quiz/sbd/:id_submodul', async (req, res) => {
+  try {
+    const { id_submodul } = req.params;
+    const quiz = await createQuizSBD({
+      ...req.body,
+      id_submodul
+    });
+    res.status(201).json(quiz);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create quiz SBD', details: err.message });
+  }
+});
+
+app.put('/admin/update/quiz/sbd/:quizId', async (req, res) => {
+  try {
+    const quizId = req.params.quizId;
+    const updatedQuiz = await updateQuizSBD(quizId, req.body);
+
+    res.status(200).json({
+      message: 'Quiz updated successfully',
+      data: updatedQuiz
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'Failed to update quiz SBD',
+      details: err.message
+    });
+  }
+});
+
+app.delete('/admin/delete/quiz/sbd/:quizId', async (req, res) => {
+  try {
+    const quizId = parseInt(req.params.quizId);
+    const result = await deleteQuizSBD(quizId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Quiz not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Quiz deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to delete quiz',
+      error: error.message
+    });
+  }
+});
+
+app.post('/admin/post/submodul/sbd/upload-video/:submoduleId', upload.single('file'), async (req, res) => {
+  try {
+    const { submoduleId } = req.params;
+    const videoUrl = `http://localhost:8080/server/video_file/${req.file.filename}`;
+
+    const result = await updateSubmoduleSBD(submoduleId, {
+      judul_submodul: req.body.judul_submodul,
+      video_url: videoUrl
+    });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'SBD submodule not found'
+      });
+    }
+
+    res.json({
+      status: 'success',
+      message: "Video uploaded and linked to SBD submodule successfully",
+      videoUrl
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: "Failed to upload SBD video",
+      error: error.message
+    });
+  }
+});
+
+// =============================================
+// MULMED SUBMODULE MANAGEMENT ROUTES
+// =============================================
+
+app.post('/admin/post/submodul/mulmed', upload.fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'video', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const { judul_submodul, id_modul } = req.body;
+
+    if (!judul_submodul || !id_modul) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Missing required fields: judul_submodul or id_modul'
+      });
+    }
+
+    let pdfUrl = null;
+    let videoUrl = null;
+
+    if (req.files['file']) {
+      pdfUrl = `http://localhost:8080/server/video_file/${req.files['file'][0].filename}`;
+    }
+
+    if (req.files['video']) {
+      videoUrl = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+    } else if (req.body.video_url) {
+      videoUrl = req.body.video_url;
+    }
+
+    const newSubmoduleData = {
+      judul_submodul,
+      video_url: videoUrl,
+      pdf_url: pdfUrl,
+      id_modul: parseInt(id_modul)
+    };
+
+    const newSubmodule = await createSubmoduleMulmed(newSubmoduleData);
+
+    res.status(201).json({
+      status: 'success',
+      data: newSubmodule,
+      message: 'Mulmed submodule created successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to create Mulmed submodule',
+      error: error.message
+    });
+  }
+});
+
+app.put('/admin/put/submodul/mulmed/:submoduleId', upload.fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'video', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const submoduleId = parseInt(req.params.submoduleId);
+    const { judul_submodul, pdf_url, video_url } = req.body;
+
+    if (!judul_submodul) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Submodule title is required'
+      });
+    }
+
+    const updateData = { judul_submodul };
+
+    if (req.files['file']) {
+      updateData.pdf_url = `http://localhost:8080/server/video_file/${req.files['file'][0].filename}`;
+    } else if (pdf_url) {
+      updateData.pdf_url = pdf_url;
+    }
+
+    if (req.files['video']) {
+      updateData.video_url = `http://localhost:8080/server/video_file/${req.files['video'][0].filename}`;
+    } else if (video_url) {
+      updateData.video_url = video_url;
+    }
+
+    const updatedSubmodule = await updateSubmoduleMulmed(submoduleId, updateData);
+
+    if (updatedSubmodule.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Mulmed submodule not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...updateData,
+        id_submodul: submoduleId
+      },
+      message: 'Mulmed submodule updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to update Mulmed submodule',
+      error: error.message
+    });
+  }
+});
+
+app.delete('/admin/delete/submodul/mulmed/:submoduleId', async (req, res) => {
+  try {
+    const submoduleId = parseInt(req.params.submoduleId);
+    const result = await deleteSubmoduleMulmed(submoduleId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Mulmed submodule not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Mulmed submodule deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to delete Mulmed submodule',
+      error: error.message
+    });
+  }
+});
+
+app.post('/admin/post/quiz/mulmed/:id_submodul', async (req, res) => {
+  try {
+    const { id_submodul } = req.params;
+    const quiz = await createQuizMulmed({
+      ...req.body,
+      id_submodul
+    });
+    res.status(201).json(quiz);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create quiz Mulmed', details: err.message });
+  }
+});
+
+app.put('/admin/update/quiz/mulmed/:quizId', async (req, res) => {
+  try {
+    const quizId = req.params.quizId;
+    const updatedQuiz = await updateQuizMulmed(quizId, req.body);
+
+    res.status(200).json({
+      message: 'Quiz updated successfully',
+      data: updatedQuiz
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'Failed to update quiz Mulmed',
+      details: err.message
+    });
+  }
+});
+
+app.delete('/admin/delete/quiz/mulmed/:quizId', async (req, res) => {
+  try {
+    const quizId = parseInt(req.params.quizId);
+    const result = await deleteQuizMulmed(quizId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Quiz not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Quiz deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to delete quiz',
+      error: error.message
+    });
+  }
+});
+
+app.post('/admin/post/submodul/mulmed/upload-video/:submoduleId', upload.single('file'), async (req, res) => {
+  try {
+    const { submoduleId } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No video file uploaded'
+      });
+    }
+
+    const videoUrl = `http://localhost:8080/server/video_file/${req.file.filename}`;
+
+    const updatedSubmodule = await updateSubmoduleMulmed(parseInt(submoduleId), {
+      video_url: videoUrl
+    });
+
+    if (updatedSubmodule.affectedRows === 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Submodule not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Video uploaded and linked to submodule successfully',
+      data: {
+        id_submodul: parseInt(submoduleId),
+        video_url: videoUrl
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to upload and update video for submodule',
+      error: error.message
+    });
+  }
+});
 
 // =============================================
 // kode airin

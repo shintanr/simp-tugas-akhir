@@ -202,8 +202,8 @@ export const createPresensi = async (req, res) => {
       return res.status(400).json({ message: "Semua field harus diisi" });
     }
 
-    // Validasi ENUM status (Pastikan hanya menerima 'Hadir', 'Izin', 'Sakit', atau 'Alpa')
-    const validStatuses = ["Hadir", "Izin", "Sakit", "Alpa", "Belum Hadir"];
+    // Validasi ENUM status (Pastikan hanya menerima 'Hadir', 'Izin', atau 'alpha')
+    const validStatuses = ["Hadir", "Izin", "Alpha", "Belum Hadir", "Telat"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Status tidak valid" });
     }
@@ -347,7 +347,7 @@ export const getPresensiSummary = async (req, res) => {
     let presensiData = {
       hadir: 0,
       telat: 0,
-      sakit: 0,
+      alpha: 0,
       izin: 0,
     };
 
@@ -376,8 +376,9 @@ export const getPresensiSummary = async (req, res) => {
         `SELECT
             COUNT(CASE WHEN p.status = 'hadir' THEN 1 END) AS hadir,
             COUNT(CASE WHEN p.status = 'telat' THEN 1 END) AS telat,
-            COUNT(CASE WHEN p.status = 'sakit' THEN 1 END) AS sakit,
             COUNT(CASE WHEN p.status = 'izin' THEN 1 END) AS izin
+            COUNT(CASE WHEN p.status = 'alpha' THEN 1 END) AS alpha,
+            COUNT(CASE WHEN p.status = 'belum hadir' THEN 1 END) AS belum_hadir
           FROM presensi p
           WHERE p.id_praktikum = ? AND p.id_user = ?`,
         [id_praktikum, id_user]
@@ -397,9 +398,8 @@ export const getPresensiSummary = async (req, res) => {
         `SELECT
             COUNT(CASE WHEN p.status = 'hadir' THEN 1 END) AS hadir,
             COUNT(CASE WHEN p.status = 'telat' THEN 1 END) AS telat,
-            COUNT(CASE WHEN p.status = 'sakit' THEN 1 END) AS sakit,
             COUNT(CASE WHEN p.status = 'izin' THEN 1 END) AS izin,
-            COUNT(CASE WHEN p.status = 'alpa' THEN 1 END) AS alpa,
+            COUNT(CASE WHEN p.status = 'alpha' THEN 1 END) AS alpha,
             COUNT(CASE WHEN p.status = 'belum hadir' THEN 1 END) AS belum_hadir
           FROM presensi p
           WHERE p.id_shift = ? AND p.id_praktikum = ? AND p.id_modul = ?`,
@@ -442,8 +442,8 @@ export const getPresensiSummary = async (req, res) => {
         belum_hadir,
         hadir: presensiData.hadir,
         telat: presensiData.telat,
-        sakit: presensiData.sakit,
         izin: presensiData.izin,
+        alpha: presensiData.alpha,
       },
     });
   } catch (error) {
@@ -480,7 +480,7 @@ export const getPresensiSummaryByPraktikum = async (req, res) => {
                 SUM(CASE WHEN status = 'Belum Hadir' THEN 1 ELSE 0 END) AS belum_hadir,
                 SUM(CASE WHEN status = 'Telat' THEN 1 ELSE 0 END) AS telat,
                 SUM(CASE WHEN status = 'Izin' THEN 1 ELSE 0 END) AS izin,
-                SUM(CASE WHEN status = 'Alpa' THEN 1 ELSE 0 END) AS alpa
+                SUM(CASE WHEN status = 'Alpha' THEN 1 ELSE 0 END) AS alpha
             FROM presensi
             WHERE id_praktikum = ?`,
       [id_praktikum]
@@ -493,7 +493,7 @@ export const getPresensiSummaryByPraktikum = async (req, res) => {
       belumHadir: presensiData[0].belum_hadir || 0,
       hadir: presensiData[0].hadir || 0,
       telat: presensiData[0].telat || 0,
-      alpa: presensiData[0].alpa || 0,
+      alpha: presensiData[0].alpha || 0,
       izin: presensiData[0].izin || 0,
     });
   } catch (error) {

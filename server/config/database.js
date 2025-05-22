@@ -52,6 +52,21 @@ export async function getSubModulesSDLByModulId(modulId) {
   return rows;
 }
 
+export async function getSubModulesPJKByModulId(modulId) {
+  const [rows] = await pool.query('SELECT * FROM submodul_pjk WHERE id_modul = ?', [modulId]);
+  return rows;
+}
+
+export async function getSubModulesSBDByModulId(modulId) {
+  const [rows] = await pool.query('SELECT * FROM submodul_sbd WHERE id_modul = ?', [modulId]);
+  return rows;
+}
+
+export async function getSubModulesMulmedByModulId(modulId) {
+  const [rows] = await pool.query('SELECT * FROM submodul_mulmed WHERE id_modul = ?', [modulId]);
+  return rows;
+}
+
 export async function getVideosSubModulesEldasBySubModulId(submodulId) {
   const [rows] = await pool.query('SELECT video_url FROM submodul_eldas WHERE id_submodul = ?', [submodulId]);
   return rows;
@@ -59,6 +74,21 @@ export async function getVideosSubModulesEldasBySubModulId(submodulId) {
 
 export async function getVideosSubModulesSDLBySubModulId(submodulId) {
   const [rows] = await pool.query('SELECT video_url FROM submodul_sdl WHERE id_submodul = ?', [submodulId]);
+  return rows;
+}
+
+export async function getVideosSubModulesPJKBySubModulId(submodulId) {
+  const [rows] = await pool.query('SELECT video_url FROM submodul_pjk WHERE id_submodul = ?', [submodulId]);
+  return rows;
+}
+
+export async function getVideosSubModulesSBDBySubModulId(submodulId) {
+  const [rows] = await pool.query('SELECT video_url FROM submodul_sbd WHERE id_submodul = ?', [submodulId]);
+  return rows;
+}
+
+export async function getVideosSubModulesMulmedBySubModulId(submodulId) {
+  const [rows] = await pool.query('SELECT video_url FROM submodul_mulmed WHERE id_submodul = ?', [submodulId]);
   return rows;
 }
 
@@ -74,6 +104,30 @@ export async function getQuizSDLBySubModulId(submodulId) {
   const [rows] = await pool.query(`
    SELECT id_quiz, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar
    FROM quiz_sdl
+   WHERE id_submodul IN (?)`, [submodulId]);
+  return rows;
+}
+
+export async function getQuizPJKBySubModulId(submodulId) {
+  const [rows] = await pool.query(`
+   SELECT id_quiz, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar
+   FROM quiz_pjk
+   WHERE id_submodul IN (?)`, [submodulId]);
+  return rows;
+}
+
+export async function getQuizSBDBySubModulId(submodulId) {
+  const [rows] = await pool.query(`
+   SELECT id_quiz, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar
+   FROM quiz_sbd
+   WHERE id_submodul IN (?)`, [submodulId]);
+  return rows;
+}
+
+export async function getQuizMulmedBySubModulId(submodulId) {
+  const [rows] = await pool.query(`
+   SELECT id_quiz, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar
+   FROM quiz_mulmed
    WHERE id_submodul IN (?)`, [submodulId]);
   return rows;
 }
@@ -104,7 +158,7 @@ export async function saveUserAnswer(userId, quizId, userAnswer) {
 export async function createModule(moduleData) {
   const { judul_modul, id_praktikum } = moduleData;
   const [result] = await pool.query(
-    'INSERT INTO modul_eldas (judul_modul, id_praktikum) VALUES (?, ?)',
+    'INSERT INTO modul (judul_modul, id_praktikum) VALUES (?, ?)',
     [judul_modul, id_praktikum]
   );
   return { id_modul: result.insertId, ...moduleData };
@@ -113,7 +167,7 @@ export async function createModule(moduleData) {
 export async function updateModule(moduleId, moduleData) {
   const { judul_modul } = moduleData;
   const [result] = await pool.query(
-    'UPDATE modul_eldas SET judul_modul = ? WHERE id_modul = ?',
+    'UPDATE modul SET judul_modul = ? WHERE id_modul = ?',
     [judul_modul, moduleId]
   );
   return { id_modul: moduleId, ...moduleData, affectedRows: result.affectedRows };
@@ -123,13 +177,16 @@ export async function deleteModule(moduleId) {
   // First delete associated submodules for SDL and Eldas
   await pool.query('DELETE FROM submodul_sdl WHERE id_modul = ?', [moduleId]);
   await pool.query('DELETE FROM submodul_eldas WHERE id_modul = ?', [moduleId]);
+  await pool.query('DELETE FROM submodul_pjk WHERE id_modul = ?', [moduleId]);
   
   // Then delete the module
   const [result] = await pool.query('DELETE FROM modul_eldas WHERE id_modul = ?', [moduleId]);
   return { affectedRows: result.affectedRows };
 }
 
-// Submodule Admin Functions for SDL
+// ===========================================
+// SDL Admin Dashboard Functions
+// ===========================================
 export async function createSubmoduleSDL(submoduleData) {
   const { judul_submodul, video_url, pdf_url, id_modul } = submoduleData;
   const [result] = await pool.query(
@@ -170,49 +227,6 @@ export async function deleteSubmoduleSDL(submoduleId) {
   const [result] = await pool.query('DELETE FROM submodul_sdl WHERE id_submodul = ?', [submoduleId]);
   return { affectedRows: result.affectedRows };
 }
-
-// Submodule Admin Functions for ELDAS
-export async function createSubmoduleEldas(submoduleData) {
-  const { judul_submodul, video_url, pdf_url, id_modul } = submoduleData;
-  const [result] = await pool.query(
-    'INSERT INTO submodul_eldas (judul_submodul, video_url, pdf_url, id_modul) VALUES (?, ?, ?, ?)',
-    [judul_submodul, video_url, pdf_url, id_modul]
-  );
-  return { id_submodul: result.insertId, ...submoduleData };
-}
-
-export async function updateSubmoduleEldas(submoduleId, submoduleData) {
-  try {
-    const { judul_submodul, video_url, pdf_url } = submoduleData;
-    console.log('Updating ELDAS Submodule:', { submoduleId, judul_submodul, video_url, pdf_url });
-
-    const [result] = await pool.query(
-      'UPDATE submodul_eldas SET judul_submodul = ?, video_url = ?, pdf_url = ? WHERE id_submodul = ?',
-      [judul_submodul, video_url, pdf_url, submoduleId]
-    );
-
-    console.log('Update Result:', result);
-
-    if (result.affectedRows === 0) {
-      throw new Error('No submodule found with this ID');
-    }
-
-    return { id_submodul: submoduleId, ...submoduleData, affectedRows: result.affectedRows };
-  } catch (error) {
-    console.error('Detailed Update Error:', error);
-    throw error;
-  }
-}
-
-export async function deleteSubmoduleEldas(submoduleId) {
-  // First delete associated quizzes
-  await pool.query('DELETE FROM quiz_eldas WHERE id_submodul = ?', [submoduleId]);
-
-  // Then delete the submodule
-  const [result] = await pool.query('DELETE FROM submodul_eldas WHERE id_submodul = ?', [submoduleId]);
-  return { affectedRows: result.affectedRows };
-}
-
 
 // Quiz Admin Functions for SDL
 export async function createQuizSDL(quizData) {
@@ -311,6 +325,52 @@ export async function deleteQuizSDL(quizId) {
   return { affectedRows: result.affectedRows };
 }
 
+
+
+// ===========================================
+// Eldas Admin Dashboard Functions
+// ===========================================
+export async function createSubmoduleEldas(submoduleData) {
+  const { judul_submodul, video_url, pdf_url, id_modul } = submoduleData;
+  const [result] = await pool.query(
+    'INSERT INTO submodul_eldas (judul_submodul, video_url, pdf_url, id_modul) VALUES (?, ?, ?, ?)',
+    [judul_submodul, video_url, pdf_url, id_modul]
+  );
+  return { id_submodul: result.insertId, ...submoduleData };
+}
+
+export async function updateSubmoduleEldas(submoduleId, submoduleData) {
+  try {
+    const { judul_submodul, video_url, pdf_url } = submoduleData;
+    console.log('Updating ELDAS Submodule:', { submoduleId, judul_submodul, video_url, pdf_url });
+
+    const [result] = await pool.query(
+      'UPDATE submodul_eldas SET judul_submodul = ?, video_url = ?, pdf_url = ? WHERE id_submodul = ?',
+      [judul_submodul, video_url, pdf_url, submoduleId]
+    );
+
+    console.log('Update Result:', result);
+
+    if (result.affectedRows === 0) {
+      throw new Error('No submodule found with this ID');
+    }
+
+    return { id_submodul: submoduleId, ...submoduleData, affectedRows: result.affectedRows };
+  } catch (error) {
+    console.error('Detailed Update Error:', error);
+    throw error;
+  }
+}
+
+export async function deleteSubmoduleEldas(submoduleId) {
+  // First delete associated quizzes
+  await pool.query('DELETE FROM quiz_eldas WHERE id_submodul = ?', [submoduleId]);
+
+  // Then delete the submodule
+  const [result] = await pool.query('DELETE FROM submodul_eldas WHERE id_submodul = ?', [submoduleId]);
+  return { affectedRows: result.affectedRows };
+}
+
 // Quiz Admin Functions for Eldas
 export async function createQuizEldas(quizData) {
   const { 
@@ -362,6 +422,284 @@ export async function deleteQuizEldas(quizId) {
   return { affectedRows: result.affectedRows };
 }
 
+
+// ===========================================
+// PJK Admin Dashboard Functions
+// ===========================================
+export async function createSubmodulePJK(submoduleData) {
+  const { judul_submodul, video_url, pdf_url, id_modul } = submoduleData;
+  const [result] = await pool.query(
+    'INSERT INTO submodul_pjk (judul_submodul, video_url, pdf_url, id_modul) VALUES (?, ?, ?, ?)',
+    [judul_submodul, video_url, pdf_url, id_modul]
+  );
+  return { id_submodul: result.insertId, ...submoduleData };
+}
+
+export async function updateSubmodulePJK(submoduleId, submoduleData) {
+  try {
+    const { judul_submodul, video_url, pdf_url } = submoduleData;
+    console.log('Updating Submodule:', { submoduleId, judul_submodul, video_url, pdf_url });
+
+    const [result] = await pool.query(
+      'UPDATE submodul_pjk SET judul_submodul = ?, video_url = ?, pdf_url = ? WHERE id_submodul = ?',
+      [judul_submodul, video_url, pdf_url, submoduleId]
+    );
+
+    console.log('Update Result:', result);
+
+    if (result.affectedRows === 0) {
+      throw new Error('No submodule found with this ID');
+    }
+
+    return { id_submodul: submoduleId, ...submoduleData, affectedRows: result.affectedRows };
+  } catch (error) {
+    console.error('Detailed Update Error:', error);
+    throw error;
+  }
+}
+
+export async function deleteSubmodulePJK(submoduleId) {
+  // First delete associated quizzes
+  await pool.query('DELETE FROM quiz_pjk WHERE id_submodul = ?', [submoduleId]);
+  
+  // Then delete the submodule
+  const [result] = await pool.query('DELETE FROM submodul_pjk WHERE id_submodul = ?', [submoduleId]);
+  return { affectedRows: result.affectedRows };
+}
+
+// Quiz Admin Functions for PJK
+export async function createQuizPJK(quizData) {
+  const { 
+    id_submodul, 
+    pertanyaan, 
+    pilihan_a, 
+    pilihan_b, 
+    pilihan_c, 
+    pilihan_d, 
+    jawaban_benar 
+  } = quizData;
+  
+  const [result] = await pool.query(
+    `INSERT INTO quiz_pjk 
+     (id_submodul, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar) 
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [id_submodul, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar]
+  );
+  
+  return { id_quiz: result.insertId, ...quizData };
+}
+
+export async function updateQuizPJK(quizId, quizData) {
+  const { 
+    pertanyaan, 
+    pilihan_a, 
+    pilihan_b, 
+    pilihan_c, 
+    pilihan_d, 
+    jawaban_benar 
+  } = quizData;
+  
+  const [result] = await pool.query(
+    `UPDATE quiz_pjk 
+     SET pertanyaan = ?, pilihan_a = ?, pilihan_b = ?, pilihan_c = ?, pilihan_d = ?, jawaban_benar = ? 
+     WHERE id_quiz = ?`,
+    [pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar, quizId]
+  );
+  
+  return { id_quiz: quizId, ...quizData, affectedRows: result.affectedRows };
+}
+
+export async function deleteQuizPJK(quizId) {
+  // Delete user answers related to this quiz if needed
+  // await pool.query('DELETE FROM user_answers WHERE id_quiz = ?', [quizId]);
+  
+  // Delete the quiz
+  const [result] = await pool.query('DELETE FROM quiz_pjk WHERE id_quiz = ?', [quizId]);
+  return { affectedRows: result.affectedRows };
+}
+
+// ===========================================
+// SBD Admin Dashboard Functions
+// ===========================================
+export async function createSubmoduleSBD(submoduleData) {
+  const { judul_submodul, video_url, pdf_url, id_modul } = submoduleData;
+  const [result] = await pool.query(
+    'INSERT INTO submodul_sbd (judul_submodul, video_url, pdf_url, id_modul) VALUES (?, ?, ?, ?)',
+    [judul_submodul, video_url, pdf_url, id_modul]
+  );
+  return { id_submodul: result.insertId, ...submoduleData };
+}
+
+export async function updateSubmoduleSBD(submoduleId, submoduleData) {
+  try {
+    const { judul_submodul, video_url, pdf_url } = submoduleData;
+    console.log('Updating Submodule:', { submoduleId, judul_submodul, video_url, pdf_url });
+
+    const [result] = await pool.query(
+      'UPDATE submodul_sbd SET judul_submodul = ?, video_url = ?, pdf_url = ? WHERE id_submodul = ?',
+      [judul_submodul, video_url, pdf_url, submoduleId]
+    );
+
+    console.log('Update Result:', result);
+
+    if (result.affectedRows === 0) {
+      throw new Error('No submodule found with this ID');
+    }
+
+    return { id_submodul: submoduleId, ...submoduleData, affectedRows: result.affectedRows };
+  } catch (error) {
+    console.error('Detailed Update Error:', error);
+    throw error;
+  }
+}
+
+export async function deleteSubmoduleSBD(submoduleId) {
+  // First delete associated quizzes
+  await pool.query('DELETE FROM quiz_sbd WHERE id_submodul = ?', [submoduleId]);
+  
+  // Then delete the submodule
+  const [result] = await pool.query('DELETE FROM submodul_sbd WHERE id_submodul = ?', [submoduleId]);
+  return { affectedRows: result.affectedRows };
+}
+
+// Quiz Admin Functions for SBD
+export async function createQuizSBD(quizData) {
+  const { 
+    id_submodul, 
+    pertanyaan, 
+    pilihan_a, 
+    pilihan_b, 
+    pilihan_c, 
+    pilihan_d, 
+    jawaban_benar 
+  } = quizData;
+  
+  const [result] = await pool.query(
+    `INSERT INTO quiz_sbd 
+     (id_submodul, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar) 
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [id_submodul, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar]
+  );
+  
+  return { id_quiz: result.insertId, ...quizData };
+}
+
+export async function updateQuizSBD(quizId, quizData) {
+  const { 
+    pertanyaan, 
+    pilihan_a, 
+    pilihan_b, 
+    pilihan_c, 
+    pilihan_d, 
+    jawaban_benar 
+  } = quizData;
+  
+  const [result] = await pool.query(
+    `UPDATE quiz_sbd 
+     SET pertanyaan = ?, pilihan_a = ?, pilihan_b = ?, pilihan_c = ?, pilihan_d = ?, jawaban_benar = ? 
+     WHERE id_quiz = ?`,
+    [pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar, quizId]
+  );
+  
+  return { id_quiz: quizId, ...quizData, affectedRows: result.affectedRows };
+}
+
+export async function deleteQuizSBD(quizId) {
+  // Delete the quiz
+  const [result] = await pool.query('DELETE FROM quiz_sbd WHERE id_quiz = ?', [quizId]);
+  return { affectedRows: result.affectedRows };
+}
+
+// ===========================================
+// Mulmed Admin Dashboard Functions
+// ===========================================
+export async function createSubmoduleMulmed(submoduleData) {
+  const { judul_submodul, video_url, pdf_url, id_modul } = submoduleData;
+  const [result] = await pool.query(
+    'INSERT INTO submodul_mulmed (judul_submodul, video_url, pdf_url, id_modul) VALUES (?, ?, ?, ?)',
+    [judul_submodul, video_url, pdf_url, id_modul]
+  );
+  return { id_submodul: result.insertId, ...submoduleData };
+}
+
+export async function updateSubmoduleMulmed(submoduleId, submoduleData) {
+  try {
+    const { judul_submodul, video_url, pdf_url } = submoduleData;
+    console.log('Updating Mulmed Submodule:', { submoduleId, judul_submodul, video_url, pdf_url });
+
+    const [result] = await pool.query(
+      'UPDATE submodul_mulmed SET judul_submodul = ?, video_url = ?, pdf_url = ? WHERE id_submodul = ?',
+      [judul_submodul, video_url, pdf_url, submoduleId]
+    );
+
+    console.log('Update Result:', result);
+
+    if (result.affectedRows === 0) {
+      throw new Error('No Mulmed submodule found with this ID');
+    }
+
+    return { id_submodul: submoduleId, ...submoduleData, affectedRows: result.affectedRows };
+  } catch (error) {
+    console.error('Mulmed Submodule Update Error:', error);
+    throw error;
+  }
+}
+
+export async function deleteSubmoduleMulmed(submoduleId) {
+  // Delete associated quizzes first
+  await pool.query('DELETE FROM quiz_mulmed WHERE id_submodul = ?', [submoduleId]);
+
+  // Then delete the submodule
+  const [result] = await pool.query('DELETE FROM submodul_mulmed WHERE id_submodul = ?', [submoduleId]);
+  return { affectedRows: result.affectedRows };
+}
+
+export async function createQuizMulmed(quizData) {
+  const { 
+    id_submodul, 
+    pertanyaan, 
+    pilihan_a, 
+    pilihan_b, 
+    pilihan_c, 
+    pilihan_d, 
+    jawaban_benar 
+  } = quizData;
+
+  const [result] = await pool.query(
+    `INSERT INTO quiz_mulmed 
+     (id_submodul, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar) 
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [id_submodul, pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar]
+  );
+
+  return { id_quiz: result.insertId, ...quizData };
+}
+
+export async function updateQuizMulmed(quizId, quizData) {
+  const { 
+    pertanyaan, 
+    pilihan_a, 
+    pilihan_b, 
+    pilihan_c, 
+    pilihan_d, 
+    jawaban_benar 
+  } = quizData;
+
+  const [result] = await pool.query(
+    `UPDATE quiz_mulmed 
+     SET pertanyaan = ?, pilihan_a = ?, pilihan_b = ?, pilihan_c = ?, pilihan_d = ?, jawaban_benar = ? 
+     WHERE id_quiz = ?`,
+    [pertanyaan, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar, quizId]
+  );
+
+  return { id_quiz: quizId, ...quizData, affectedRows: result.affectedRows };
+}
+
+export async function deleteQuizMulmed(quizId) {
+  const [result] = await pool.query('DELETE FROM quiz_mulmed WHERE id_quiz = ?', [quizId]);
+  return { affectedRows: result.affectedRows };
+}
+
 // User Authentication Functions (for Admin)
 export async function checkAdminAuth(username, password) {
   const [rows] = await pool.query(
@@ -375,6 +713,13 @@ export async function checkAdminAuth(username, password) {
   
   return { authenticated: true, adminData: rows[0] };
 }
+
+
+// ============================================
+// Batas Kode Farhan || Update 21 Mei 2025
+// ============================================
+
+
 
 
 // kode airin
@@ -853,6 +1198,8 @@ export async function getFilteredSubmissionsPraktikanForAsprak(idPraktikum, idPe
     return { success: false, message: 'Database error' };
   }
 }
+
+
 
 // Panggil testDatabaseQueries hanya jika file ini dijalankan langsung, bukan diimpor
 if (import.meta.url === `file://${process.argv[1]}`) {
