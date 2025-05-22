@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";  
 import { 
   FaChevronLeft, 
@@ -18,20 +18,21 @@ import {
   FaGraduationCap,
   FaBookmark
 } from "react-icons/fa";
-// import Modul_1 from "./modul/modul1";
-// import Modul_2 from "./modul/modul2";
-// import Modul_3 from "./modul/modul3";
-// import Modul_4 from "./modul/modul4";
-// import Modul_5 from "./modul/modul5";
-// import Modul_6 from "./modul/modul6";
-// import Modul_7 from "./modul/modul7";
-// import Quiz_1 from "./quiz/quiz1";
-// import Quiz_2 from "./quiz/quiz2";
-// import Quiz_3 from "./quiz/quiz3";
-// import Quiz_4 from "./quiz/quiz4";
-// import Quiz_5 from "./quiz/quiz5";
-// import Quiz_6 from "./quiz/quiz6";
-// import Quiz_7 from "./quiz/quiz7";
+import Modul_1 from "../../../prak-lab-jaringan/prak-pjk/modul/modul1";
+import Modul_2 from "../../../prak-lab-jaringan/prak-pjk/modul/modul2";
+import Modul_3 from "../../../prak-lab-jaringan/prak-pjk/modul/modul3";
+import Modul_4 from "../../../prak-lab-jaringan/prak-pjk/modul/modul4";
+import Modul_5 from "../../../prak-lab-jaringan/prak-pjk/modul/modul5";
+import Quiz_1 from "../../../prak-lab-jaringan/prak-pjk/quiz/quiz1";
+import Quiz_2 from "../../../prak-lab-jaringan/prak-pjk/quiz/quiz2";
+import Quiz_3 from "../../../prak-lab-jaringan/prak-pjk/quiz/quiz3";
+import Quiz_4 from "../../../prak-lab-jaringan/prak-pjk/quiz/quiz4";
+import Quiz_5 from "../../../prak-lab-jaringan/prak-pjk/quiz/quiz5";
+import { signOut, useSession } from "next-auth/react";
+import { useDetailuserPraktikumQuery } from "@/redux/services/userPraktikum";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Button } from "@/components/ui/button";
+
 
 // Define interfaces for type safety
 interface Module {
@@ -68,7 +69,7 @@ interface ApiResponse<T> {
   message?: string;
 }
 
-function PrakMulmedPage() {
+function PrakPJKPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [selectedSubmodule, setSelectedSubmodule] = useState<Submodule | null>(null);
@@ -79,13 +80,18 @@ function PrakMulmedPage() {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<ProgressMap>({});
   const router = useRouter();
+  const session = useSession();
+      
+    const params = useParams();
+    const { data: userPraktikum } = useDetailuserPraktikumQuery(params.id);
+   
 
   // Fetch modules data
   const fetchModules = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:8080/api/praktikum/modul/6");
+      const response = await fetch("http://localhost:8080/api/praktikum/modul/7");
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
       }
@@ -120,7 +126,7 @@ function PrakMulmedPage() {
   // Fetch submodules for a specific module
   const fetchSubmodules = useCallback(async (moduleId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/praktikum/submodul/prak-mulmed/${moduleId}`);
+      const response = await fetch(`http://localhost:8080/api/praktikum/submodul/prak-pjk/${moduleId}`);
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
       }
@@ -212,28 +218,24 @@ function PrakMulmedPage() {
 
   const currentVideoUrl = selectedSubmodule?.video_url || selectedModule?.video_url || null;
 
-//   const renderSubmoduleComponent = useCallback((id_submodul: number) => {
-//     // Make sure pdfUrl is string | null, not undefined
-//     const pdfUrl: string | null = selectedSubmodule?.pdf_url || null;
+  const renderSubmoduleComponent = useCallback((id_submodul: number) => {
+    // Make sure pdfUrl is string | null, not undefined
+    const pdfUrl: string | null = selectedSubmodule?.pdf_url || null;
     
-//     switch (id_submodul) {
-//       case 2: return <Modul_1 pdfUrl={pdfUrl} />;
-//       case 3: return <Quiz_1 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={1} />;
-//       case 5: return <Modul_2 pdfUrl={pdfUrl} />;
-//       case 6: return <Quiz_2 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={2} />;
-//       case 8: return <Modul_3 pdfUrl={pdfUrl} />;
-//       case 9: return <Quiz_3 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={3} />;
-//       case 11: return <Modul_4 pdfUrl={pdfUrl} />;
-//       case 12: return <Quiz_4 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={4} />;
-//       case 14: return <Modul_5 pdfUrl={pdfUrl} />;
-//       case 15: return <Quiz_5 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={5} />;
-//       case 17: return <Modul_6 pdfUrl={pdfUrl} />;
-//       case 18: return <Quiz_6 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={6} />;
-//       case 20: return <Modul_7 pdfUrl={pdfUrl} />;
-//       case 21: return <Quiz_7 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={6} />;
-//       default: return null;
-//     }
-//   }, [selectedSubmodule]);
+    switch (id_submodul) {
+      case 2: return <Modul_1 pdfUrl={pdfUrl} />;
+      case 3: return <Quiz_1 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={1} />;
+      case 5: return <Modul_2 pdfUrl={pdfUrl} />;
+      case 6: return <Quiz_2 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={2} />;
+      case 8: return <Modul_3 pdfUrl={pdfUrl} />;
+      case 9: return <Quiz_3 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={3} />;
+      case 11: return <Modul_4 pdfUrl={pdfUrl} />;
+      case 12: return <Quiz_4 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={4} />;
+      case 14: return <Modul_5 pdfUrl={pdfUrl} />;
+      case 15: return <Quiz_5 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={5} />;
+      default: return null;
+    }
+  }, [selectedSubmodule]);
 
   // Helper function to determine if content is a quiz
   const isQuiz = useCallback((id_submodul: number): boolean => {
@@ -361,24 +363,53 @@ const getSubmoduleIcon = useCallback((submodule) => {
           </button>
           <div className="flex items-center">
             <FaGraduationCap className="text-2xl mr-2" />
-            <h1 className="text-2xl font-bold">Praktikum Multimedia</h1>
+            <h1 className="text-2xl font-bold">Praktikum Pengenalan Jaringan Komputer</h1>
           </div>
         </div>
         <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
-        <Link
-            href={"/praktikum/prak-lab-mulmed/prak-mulmed/admin"}
-            className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
-          >
-            <FaUserShield className="mr-2" />
-            <span>Aprak Dashboard</span>
-          </Link>
-          {/* User Info */}
-          <div className="flex items-center gap-2 bg-black bg-opacity-20 py-2 px-4 rounded-full backdrop-blur-sm">
-            <FaUserCircle className="text-2xl" />
-            <span className="text-lg font-medium">Florencia</span>
-          </div>
-
-        </div>
+                  {/* User Info */}
+                <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
+                {userPraktikum?.data?.is_asisten == 1 && (
+                   <Link
+                        href={`/praktikum/${params.id}/modul/prak-sbd/admin`}
+                        className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
+                    >
+                        <FaUserShield className="mr-2" />
+                        <span>Admin Dashboard</span>
+                    </Link>
+                    )}
+                </div>
+        
+                <div className="flex items-center gap-2 ml-6">
+                          <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                          <Popover>
+                            <PopoverTrigger>{session.data?.user?.name}</PopoverTrigger>
+                            <PopoverContent className="w-56 mt-4">
+                              <div className="flex flex-col gap-2 p-1 bg-white">
+                                <Button
+                                  className="w-full"
+                                  onClick={() => {
+                                    router.push("/profile");
+                                  }}
+                                >
+                                  Profile
+                                </Button>
+                                <Button
+                                  className="w-full"
+                                  variant={"outline"}
+                                  onClick={() =>
+                                    signOut({
+                                      callbackUrl: "/login",
+                                    })
+                                  }
+                                >
+                                  Keluar
+                                </Button>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                    </div>
       </div>
 
       <div className="flex flex-grow relative">
@@ -648,7 +679,7 @@ const getSubmoduleIcon = useCallback((submodule) => {
                       <FaGraduationCap className="text-3xl" />
                     </div>
 
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-3">Welcome to Praktikum Multimedia</h3>
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-3">Welcome to Praktikum Pengenalan Jaringan Komputer</h3>
 
                     <p className="text-gray-600 max-w-md mx-auto mb-6">
                       Select a module from the sidebar to begin your digital systems laboratory journey. Track your progress and complete quizzes to test your knowledge.
@@ -708,4 +739,4 @@ const getSubmoduleIcon = useCallback((submodule) => {
   );
 }
 
-export default PrakMulmedPage;
+export default PrakPJKPage;

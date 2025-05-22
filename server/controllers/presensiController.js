@@ -376,7 +376,7 @@ export const getPresensiSummary = async (req, res) => {
         `SELECT
             COUNT(CASE WHEN p.status = 'hadir' THEN 1 END) AS hadir,
             COUNT(CASE WHEN p.status = 'telat' THEN 1 END) AS telat,
-            COUNT(CASE WHEN p.status = 'izin' THEN 1 END) AS izin
+            COUNT(CASE WHEN p.status = 'izin' THEN 1 END) AS izin,
             COUNT(CASE WHEN p.status = 'alpha' THEN 1 END) AS alpha,
             COUNT(CASE WHEN p.status = 'belum hadir' THEN 1 END) AS belum_hadir
           FROM presensi p

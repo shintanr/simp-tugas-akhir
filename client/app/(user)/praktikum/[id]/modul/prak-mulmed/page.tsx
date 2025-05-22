@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";  
 import { 
   FaChevronLeft, 
   FaUserShield, 
-  FaUserCircle,
   FaChevronDown, 
   FaChevronUp, 
   FaChevronRight,
@@ -18,6 +17,10 @@ import {
   FaGraduationCap,
   FaBookmark
 } from "react-icons/fa";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { signOut, useSession } from "next-auth/react";
+import { useDetailuserPraktikumQuery } from "@/redux/services/userPraktikum";
 // import Modul_1 from "./modul/modul1";
 // import Modul_2 from "./modul/modul2";
 // import Modul_3 from "./modul/modul3";
@@ -79,6 +82,11 @@ function PrakMulmedPage() {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<ProgressMap>({});
   const router = useRouter();
+    const session = useSession();
+    
+  const params = useParams();
+  const { data: userPraktikum } = useDetailuserPraktikumQuery(params.id);
+  
 
   // Fetch modules data
   const fetchModules = useCallback(async () => {
@@ -334,16 +342,16 @@ const getSubmoduleIcon = useCallback((submodule) => {
       submodule.judul_submodul.toLowerCase().includes("bahan praktikum")) {
     return {
       icon: <FaBookOpen className="text-xs" />,
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-500'
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-500'
     };
   }
   
   // Default case: use book icon
   return {
     icon: <FaBookOpen className="text-xs" />,
-    bgColor: 'bg-purple-50',
-    textColor: 'text-purple-500'
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-500'
   };
 }, [isQuiz]);
 
@@ -365,21 +373,47 @@ const getSubmoduleIcon = useCallback((submodule) => {
           </div>
         </div>
         <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
-        <Link
-            href={"/praktikum/prak-lab-mulmed/prak-mulmed/admin"}
-            className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
-          >
-            <FaUserShield className="mr-2" />
-            <span>Aprak Dashboard</span>
-          </Link>
-          {/* User Info */}
-          <div className="flex items-center gap-2 bg-black bg-opacity-20 py-2 px-4 rounded-full backdrop-blur-sm">
-            <FaUserCircle className="text-2xl" />
-            <span className="text-lg font-medium">Florencia</span>
-          </div>
-
+        {userPraktikum?.data?.is_asisten == 1 && (
+           <Link
+                href={`/praktikum/${params.id}/modul/prak-mulmed/admin`}
+                className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
+            >
+                <FaUserShield className="mr-2" />
+                <span>Admin Dashboard</span>
+            </Link>
+            )}
         </div>
-      </div>
+
+        <div className="flex items-center gap-2 ml-6">
+                  <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                  <Popover>
+                    <PopoverTrigger>{session.data?.user?.name}</PopoverTrigger>
+                    <PopoverContent className="w-56 mt-4">
+                      <div className="flex flex-col gap-2 p-1 bg-white">
+                        <Button
+                          className="w-full"
+                          onClick={() => {
+                            router.push("/profile");
+                          }}
+                        >
+                          Profile
+                        </Button>
+                        <Button
+                          className="w-full"
+                          variant={"outline"}
+                          onClick={() =>
+                            signOut({
+                              callbackUrl: "/login",
+                            })
+                          }
+                        >
+                          Keluar
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+            </div>
 
       <div className="flex flex-grow relative">
         {/* Sidebar Toggle Button (visible on all screen sizes) */}

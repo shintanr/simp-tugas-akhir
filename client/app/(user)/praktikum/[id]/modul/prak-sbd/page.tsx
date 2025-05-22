@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { useRouter, useParams } from "next/navigation";
-
-
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";  
 import { 
   FaChevronLeft, 
   FaChevronDown, 
@@ -26,18 +25,16 @@ import Modul_1 from "../../../prak-lab-rpl/prak-sbd/modul/modul1";
 // import Modul_6 from "./modul/modul6";
 // import Modul_7 from "./modul/modul7";
 import Quiz_1 from "../../../prak-lab-rpl/prak-sbd/quiz/quiz1";
-import { Link } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { Button } from "@/components/ui/button";
-import { useDetailuserPraktikumQuery } from "@/redux/services/userPraktikum";
 import { signOut, useSession } from "next-auth/react";
+import { useDetailuserPraktikumQuery } from "@/redux/services/userPraktikum";
 // import Quiz_2 from "./quiz/quiz2";
 // import Quiz_3 from "./quiz/quiz3";
 // import Quiz_4 from "./quiz/quiz4";
 // import Quiz_5 from "./quiz/quiz5";
 // import Quiz_6 from "./quiz/quiz6";
 // import Quiz_7 from "./quiz/quiz7";
-
 
 // Define interfaces for type safety
 interface Module {
@@ -85,13 +82,11 @@ function PrakSBDPage() {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<ProgressMap>({});
   const router = useRouter();
-
-  const session = useSession();
-  
-  const params = useParams();
-  const { data: userPraktikum } = useDetailuserPraktikumQuery(params.id);
-  
-  
+      const session = useSession();
+      
+    const params = useParams();
+    const { data: userPraktikum } = useDetailuserPraktikumQuery(params.id);
+    
 
   // Fetch modules data
   const fetchModules = useCallback(async () => {
@@ -378,18 +373,20 @@ const getSubmoduleIcon = useCallback((submodule) => {
           </div>
         </div>
         <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
-                  <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
-                  {userPraktikum?.data?.is_asisten == 1 && (
-                      <Link
-                          href={`/praktikum/${params.id}/modul/prak-sbd/admin`}
-                          className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
-                      >
-                          <FaUserShield className="mr-2" />
-                          <span>Admin Dashboard</span>
-                      </Link>
-                      )}
-                  </div>
-            <div className="flex items-center gap-2 ml-6">
+          {/* User Info */}
+        <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
+        {userPraktikum?.data?.is_asisten == 1 && (
+           <Link
+                href={`/praktikum/${params.id}/modul/prak-sbd/admin`}
+                className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
+            >
+                <FaUserShield className="mr-2" />
+                <span>Admin Dashboard</span>
+            </Link>
+            )}
+        </div>
+
+        <div className="flex items-center gap-2 ml-6">
                   <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                   <Popover>
                     <PopoverTrigger>{session.data?.user?.name}</PopoverTrigger>
@@ -419,7 +416,8 @@ const getSubmoduleIcon = useCallback((submodule) => {
                   </Popover>
                 </div>
             </div>
-        
+
+
       </div>
 
       <div className="flex flex-grow relative pt-16">

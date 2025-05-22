@@ -158,7 +158,7 @@ export async function saveUserAnswer(userId, quizId, userAnswer) {
 export async function createModule(moduleData) {
   const { judul_modul, id_praktikum } = moduleData;
   const [result] = await pool.query(
-    'INSERT INTO modul (judul_modul, id_praktikum) VALUES (?, ?)',
+    'INSERT INTO modul_eldas (judul_modul, id_praktikum) VALUES (?, ?)',
     [judul_modul, id_praktikum]
   );
   return { id_modul: result.insertId, ...moduleData };

@@ -971,7 +971,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
             <h3 className="text-lg font-semibold mb-3">Uploading {uploadType.toUpperCase()}</h3>
             <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
               <div 
-                className="bg-purple-600 h-2.5 rounded-full" 
+                className="bg-blue-600 h-2.5 rounded-full" 
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
@@ -1004,7 +1004,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
       <div className="flex flex-grow">
         {/* Sidebar Toggle Button for Mobile */}
         <button 
-          className="lg:hidden fixed bottom-6 right-6 z-10 bg-purple-600 text-white p-3 rounded-full shadow-lg"
+          className="lg:hidden fixed bottom-6 right-6 z-10 bg-blue-600 text-white p-3 rounded-full shadow-lg"
           onClick={() => setIsSidebarExpanded(prev => !prev)}
         >
           <FaBars />
@@ -1019,17 +1019,17 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
             {isSidebarExpanded ? (
               <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                <FaBookOpen className="mr-2 text-purple-600" />
+                <FaBookOpen className="mr-2 text-blue-600" />
                 Modules
               </h2>
             ) : (
-              <span className="mx-auto text-purple-600">
+              <span className="mx-auto text-blue-600">
                 <FaBookOpen className="text-xl" />
               </span>
             )}
             <button
               onClick={() => setIsSidebarExpanded(prev => !prev)}
-              className="text-purple-600 hover:bg-purple-50 p-2 rounded-full transition-colors"
+              className="text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
               aria-label={isSidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
             >
               {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
@@ -1059,7 +1059,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           <div className="overflow-y-auto flex-grow">
             {loading ? (
               <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : error ? (
               <div className="p-4 text-center">
@@ -1069,7 +1069,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 </div>
                 <button 
                   onClick={handleRetry}
-                  className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
                 >
                   Retry Loading
                 </button>
@@ -1082,13 +1082,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <div
                         className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600' 
+                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
                             : 'hover:bg-gray-50 border-l-4 border-transparent'
                         }`}
                         onClick={() => handleModuleClick(module)}
                       >
                         <div className="flex items-center">
-                          <div className="mr-3 text-purple-600 bg-purple-50 p-2 rounded-full">
+                          <div className="mr-3 text-blue-600 bg-blue-50 p-2 rounded-full">
                             <FaBookOpen className="text-sm" />
                           </div>
                           <div>
@@ -1112,7 +1112,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             event.stopPropagation();
                             toggleDropdown(module.id_modul);
                           }}
-                          className="text-gray-500 hover:text-purple-600 p-1 rounded-full hover:bg-gray-100"
+                          className="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100"
                           aria-label={openDropdowns.includes(module.id_modul) ? "Collapse module" : "Expand module"}
                         >
                           {openDropdowns.includes(module.id_modul) ? (
@@ -1131,12 +1131,12 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                   key={submodule.id_submodul}
                                   className={`p-2 rounded-md cursor-pointer transition-colors flex items-center ${
                                     selectedSubmodule?.id_submodul === submodule.id_submodul
-                                      ? 'bg-purple-50 text-purple-700'
+                                      ? 'bg-blue-50 text-blue-700'
                                       : 'hover:bg-gray-50'
                                   }`}
                                   onClick={() => handleSubmoduleClick(submodule)}
                                 >
-                                  <div className="mr-2 text-purple-500">
+                                  <div className="mr-2 text-blue-500">
                                     {isQuiz(submodule.id_submodul) ? (
                                       <FaClipboardList className="text-xs" />
                                     ) : (
@@ -1164,7 +1164,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                               <li className="text-gray-500 text-sm p-2">
                                 {submodules[module.id_modul] === undefined ? (
                                   <div className="flex items-center">
-                                    <div className="w-4 h-4 border-t-2 border-l-2 border-purple-500 rounded-full animate-spin mr-2"></div>
+                                    <div className="w-4 h-4 border-t-2 border-l-2 border-blue-500 rounded-full animate-spin mr-2"></div>
                                     Loading...
                                   </div>
                                 ) : (
@@ -1190,7 +1190,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                     id_modul: module.id_modul
                                   });
                                 }}
-                                className="text-sm flex items-center text-purple-600 hover:text-purple-700 p-1 rounded"
+                                className="text-sm flex items-center text-blue-600 hover:text-blue-700 p-1 rounded"
                               >
                                 <FaPlus className="mr-1 text-xs" />
                                 Add Submodule
@@ -1211,13 +1211,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <div
                         className={`p-2 rounded-lg cursor-pointer flex justify-center items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600' 
+                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
                             : 'hover:bg-gray-50 border-l-4 border-transparent'
                         }`}
                         onClick={() => handleModuleClick(module)}
                         title={module.judul_modul}
                       >
-                        <FaBookOpen className="text-purple-600" />
+                        <FaBookOpen className="text-blue-600" />
                       </div>
                     </li>
                   )
@@ -1254,7 +1254,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="judul_modul"
                     value={formData.judul_modul}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -1269,7 +1269,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Add Module
                   </button>
@@ -1301,7 +1301,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="judul_submodul"
                     value={formData.judul_submodul}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -1348,7 +1348,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           name="video_url"
                           value={formData.video_url}
                           onChange={handleInputChange}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="Video will be uploaded to server"
                           disabled={videoSourceType !== 'file'}
                         />
@@ -1363,7 +1363,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           <button
                             type="button"
                             onClick={() => videoFileRef.current?.click()}
-                            className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                            className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
                           >
                             <FaUpload />
                           </button>
@@ -1381,7 +1381,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="youtube_url"
                         value={formData.youtube_url || ''}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="https://www.youtube.com/watch?v=..."
                       />
                     </>
@@ -1399,7 +1399,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       name="pdf_url"
                       value={formData.pdf_url}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <div className="ml-2 flex items-center">
                       <input
@@ -1412,7 +1412,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <button
                         type="button"
                         onClick={() => pdfFileRef.current?.click()}
-                        className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                        className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
                       >
                         <FaUpload />
                       </button>
@@ -1430,7 +1430,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Add Submodule
                   </button>
@@ -1461,7 +1461,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="question_text"
                     value={formData.question_text}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-24"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-24"
                     required
                   />
                 </div>
@@ -1478,13 +1478,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="correct-option"
                         checked={option.is_correct}
                         onChange={() => handleOptionChange(index, 'is_correct', true)}
-                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                        className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
                       <input
                         type="text"
                         value={option.option_text}
                         onChange={(e) => handleOptionChange(index, 'option_text', e.target.value)}
-                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder={`Option ${index + 1}`}
                         required
                       />
@@ -1502,7 +1502,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Add Question
                   </button>
@@ -1545,7 +1545,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="question_text"
                     value={formData.question_text}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-24"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-24"
                     required
                   />
                 </div>
@@ -1562,13 +1562,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="correct-option-edit"
                         checked={option.is_correct}
                         onChange={() => handleOptionChange(index, 'is_correct', true)}
-                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                        className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
                       <input
                         type="text"
                         value={option.option_text}
                         onChange={(e) => handleOptionChange(index, 'option_text', e.target.value)}
-                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder={`Option ${index + 1}`}
                         required
                       />
@@ -1589,7 +1589,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Update Question
                   </button>
@@ -1607,7 +1607,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         setSelectedQuestion(null);
                         setIsEditing(false);
                       }}
-                      className="text-purple-600 hover:bg-purple-50 p-2 rounded-full mr-2"
+                      className="text-blue-600 hover:bg-blue-50 p-2 rounded-full mr-2"
                     >
                       <FaChevronLeft />
                     </button>
@@ -1622,7 +1622,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <div className="flex items-center">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center text-purple-600 hover:bg-purple-50 p-2 rounded-lg mr-2"
+                    className="flex items-center text-blue-600 hover:bg-blue-50 p-2 rounded-lg mr-2"
                   >
                     <FaEdit className="mr-1" /> Edit
                   </button>
@@ -1647,7 +1647,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       name="judul_submodul"
                       value={formData.judul_submodul}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
@@ -1694,7 +1694,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             name="video_url"
                             value={formData.video_url}
                             onChange={handleInputChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Video will be uploaded to server"
                             disabled={videoSourceType !== 'file'}
                           />
@@ -1709,7 +1709,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             <button
                               type="button"
                               onClick={() => videoFileRef.current?.click()}
-                              className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                              className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
                             >
                               <FaUpload />
                             </button>
@@ -1727,7 +1727,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           name="youtube_url"
                           value={formData.youtube_url || ''}
                           onChange={handleInputChange}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="https://www.youtube.com/watch?v=..."
                         />
                       </>
@@ -1745,7 +1745,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="pdf_url"
                         value={formData.pdf_url}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                       <div className="ml-2 flex items-center">
                         <input
@@ -1758,7 +1758,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         <button
                           type="button"
                           onClick={() => pdfFileRef.current?.click()}
-                          className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                          className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
                         >
                           <FaUpload />
                         </button>
@@ -1776,7 +1776,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     </button>
                     <button
                       type="submit"
-                      className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                      className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       Save Changes
                     </button>
@@ -1792,7 +1792,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           onClick={() => setActiveTab("details")}
                           className={`pb-3 transition-colors ${
                             activeTab === "details"
-                              ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                              ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
@@ -1805,7 +1805,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("quiz")}
                             className={`pb-3 transition-colors ${
                               activeTab === "quiz"
-                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1819,7 +1819,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("video")}
                             className={`pb-3 transition-colors ${
                               activeTab === "video"
-                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1833,7 +1833,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("pdf")}
                             className={`pb-3 transition-colors ${
                               activeTab === "pdf"
-                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1915,7 +1915,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                               ]
                             });
                           }}
-                          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
                         >
                           <FaPlus className="mr-2" />
                           Add Question
@@ -1924,7 +1924,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 
                       {!quizQuestions[selectedSubmodule.id_submodul] ? (
                         <div className="flex justify-center items-center h-32">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         </div>
                       ) : quizQuestions[selectedSubmodule.id_submodul].length === 0 ? (
                         <div className="bg-gray-50 p-8 rounded-lg text-center">
@@ -1978,7 +1978,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                               </ul>
                             </div>
                             <div className="ml-4">
-                              <FaEdit className="text-purple-500" />
+                              <FaEdit className="text-blue-500" />
                             </div>
                           </div>
                         </div>
@@ -2040,7 +2040,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <div className="flex items-center">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center text-purple-600 hover:bg-purple-50 p-2 rounded-lg mr-2"
+                    className="flex items-center text-blue-600 hover:bg-blue-50 p-2 rounded-lg mr-2"
                   >
                     <FaEdit className="mr-1" /> Edit
                   </button>
@@ -2065,7 +2065,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       name="judul_modul"
                       value={formData.judul_modul}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
@@ -2112,7 +2112,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             name="video_url"
                             value={formData.video_url}
                             onChange={handleInputChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Video will be uploaded to server"
                             disabled={videoSourceType !== 'file'}
                           />
@@ -2127,7 +2127,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             <button
                               type="button"
                               onClick={() => videoFileRef.current?.click()}
-                              className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                              className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
                             >
                               <FaUpload />
                             </button>
@@ -2145,7 +2145,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           name="youtube_url"
                           value={formData.youtube_url || ''}
                           onChange={handleInputChange}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="https://www.youtube.com/watch?v=..."
                         />
                       </>
@@ -2163,7 +2163,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="pdf_url"
                         value={formData.pdf_url}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                       <div className="ml-2 flex items-center">
                         <input
@@ -2176,7 +2176,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         <button
                           type="button"
                           onClick={() => pdfFileRef.current?.click()}
-                          className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                          className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
                         >
                           <FaUpload />
                         </button>
@@ -2194,7 +2194,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     </button>
                     <button
                       type="submit"
-                      className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                      className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       Save Changes
                     </button>
@@ -2210,7 +2210,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           onClick={() => setActiveTab("details")}
                           className={`pb-3 transition-colors ${
                             activeTab === "details"
-                              ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                              ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
@@ -2222,7 +2222,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           onClick={() => setActiveTab("submodules")}
                           className={`pb-3 transition-colors ${
                             activeTab === "submodules"
-                              ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                              ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
@@ -2235,7 +2235,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("video")}
                             className={`pb-3 transition-colors ${
                               activeTab === "video"
-                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -2249,7 +2249,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("pdf")}
                             className={`pb-3 transition-colors ${
                               activeTab === "pdf"
-                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
+                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -2329,7 +2329,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                               id_modul: selectedModule.id_modul
                             });
                           }}
-                          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
                         >
                           <FaPlus className="mr-2" />
                           Add Submodule
@@ -2338,7 +2338,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 
                       {!submodules[selectedModule.id_modul] ? (
                         <div className="flex justify-center items-center h-32">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         </div>
                       ) : submodules[selectedModule.id_modul].length === 0 ? (
                         <div className="bg-gray-50 p-8 rounded-lg text-center">
@@ -2431,7 +2431,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           ) : (
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="text-center py-12">
-                <FaGraduationCap className="mx-auto text-5xl text-purple-200 mb-4" />
+                <FaGraduationCap className="mx-auto text-5xl text-blue-200 mb-4" />
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   Welcome to Multimedia Praktikum Admin Panel
                 </h2>

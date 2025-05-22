@@ -23,7 +23,8 @@ import {
   FaQuestion,
   FaCheck,
   FaTimes,
-  FaEye
+  FaEye,
+  FaQuestionCircle
 } from "react-icons/fa";
 
 // Define interfaces for type safety
@@ -110,7 +111,7 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
     video_url: '',
     youtube_url: '',
     pdf_url: '',
-    id_praktikum: 6,
+    id_praktikum: 7, // Default praktikum ID for SDL
     question_text: '',
     options: [
       { option_text: '', is_correct: false },
@@ -155,7 +156,7 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:8080/admin/get/modul/6");
+      const response = await fetch("http://localhost:8080/admin/get/modul/7");
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
       }
@@ -179,7 +180,7 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
   // Fetch submodules for a specific module
   const fetchSubmodules = useCallback(async (moduleId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/praktikum/submodul/prak-mulmed/${moduleId}`);
+      const response = await fetch(`http://localhost:8080/api/praktikum/submodul/prak-pjk/${moduleId}`);
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
       }
@@ -204,7 +205,7 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
     }
   
   try {
-    const url = `http://localhost:8080/api/submodul/quiz-mulmed/${submoduleId}`;
+    const url = `http://localhost:8080/api/submodul/quiz-pjk/${submoduleId}`;
     console.log(`Fetching from URL: ${url}`);
     
     const response = await fetch(url);
@@ -286,9 +287,10 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
       id_praktikum: module.id_praktikum
     });
     
+    if (!openDropdowns.includes(module.id_modul)) {
       toggleDropdown(module.id_modul);
-    
-  }, [toggleDropdown]);
+    }
+  }, [toggleDropdown, openDropdowns]);
 
   const handleSubmoduleClick = useCallback((submodule: Submodule) => {
     // Cari modul parent-nya berdasarkan id_modul
@@ -448,7 +450,7 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
         },
         body: JSON.stringify({
           judul_modul: formData.judul_modul,
-          id_praktikum: 6
+          id_praktikum: 7
         }),
       });
 
@@ -458,7 +460,7 @@ const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file
 
       fetchModules();
       setIsAddingModule(false);
-      setFormData({ judul_modul: '', id_praktikum: 6 });
+      setFormData({ judul_modul: '', id_praktikum: 7 });
     } catch (err) {
       console.error("Error adding module:", err);
       alert(`Failed to add module: ${(err as Error).message}`);
@@ -527,7 +529,7 @@ const handleAddSubmodule = async (e: React.FormEvent) => {
       console.log(pair[0], pair[1]);
     }
     
-    const response = await fetch('http://localhost:8080/admin/post/submodul/mulmed', {
+    const response = await fetch('http://localhost:8080/admin/post/submodul/pjk', {
       method: 'POST',
       body: formDataToSend,
     });
@@ -654,7 +656,7 @@ const handleAddSubmodule = async (e: React.FormEvent) => {
     console.log('Data yang akan dikirim:', JSON.stringify(formattedData, null, 2));
     
     try {
-      const response = await fetch(`http://localhost:8080/admin/post/quiz/mulmed/${selectedSubmodule.id_submodul}`, {
+      const response = await fetch(`http://localhost:8080/admin/post/quiz/pjk/${selectedSubmodule.id_submodul}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -768,7 +770,7 @@ const handleAddSubmodule = async (e: React.FormEvent) => {
     }
   
     try {
-      const response = await fetch(`http://localhost:8080/admin/put/submodul/mulmed/${selectedSubmodule.id_submodul}`, {
+      const response = await fetch(`http://localhost:8080/admin/put/submodul/pjk/${selectedSubmodule.id_submodul}`, {
         method: "PUT",
         body: formDataToSend,
       });
@@ -828,7 +830,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   };
   
   try {
-    const response = await fetch(`http://localhost:8080/admin/update/quiz/mulmed/${quizId}`, {
+    const response = await fetch(`http://localhost:8080/admin/update/quiz/pjk/${quizId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -883,7 +885,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/admin/delete/submodul/mulmed/${selectedSubmodule.id_submodul}`, {
+      const response = await fetch(`http://localhost:8080/admin/delete/submodul/pjk/${selectedSubmodule.id_submodul}`, {
         method: "DELETE",
       });
 
@@ -908,7 +910,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/admin/delete/quiz/mulmed/${selectedQuestion.id_question}`, {
+      const response = await fetch(`http://localhost:8080/admin/delete/quiz/pjk/${selectedQuestion.id_question}`, {
         method: "DELETE",
       });
 
@@ -992,7 +994,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           </button>
           <div className="flex items-center">
             <FaGraduationCap className="text-2xl mr-2" />
-            <h1 className="text-2xl font-bold">Asprak Dashboard - Praktikum Multimedia</h1>
+            <h1 className="text-2xl font-bold">Asprak Dashboard - Praktikum Pengenalan Jaringan Komputer</h1>
           </div>
         </div>
         <div className="flex items-center space-x-4 bg-black bg-opacity-20 py-2 px-4 rounded-full backdrop-blur-sm">
@@ -1046,7 +1048,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   setIsEditing(false);
                   setSelectedModule(null);
                   setSelectedSubmodule(null);
-                  setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 6 });
+                  setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 7 });
                 }}
                 className="w-full flex items-center justify-center bg-[#0267FE] hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
               >
@@ -1079,14 +1081,22 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 {modules.map((module) => (
                   module.judul_modul !== "Informasi" && (
                     <li key={module.id_modul} className="mb-3">
-                      <div
-                        className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
-                          selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
-                        }`}
-                        onClick={() => handleModuleClick(module)}
-                      >
+                        <div
+                          className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
+                            selectedModule?.id_modul === module.id_modul
+                              ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600'
+                              : 'hover:bg-gray-50 border-l-4 border-transparent'
+                          }`}
+                          onClick={() => handleModuleClick(module)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              handleModuleClick(module);
+                            }
+                          }}
+                          aria-label={`Pilih modul ${module.judul_modul}`}
+                        >
                         <div className="flex items-center">
                           <div className="mr-3 text-purple-600 bg-purple-50 p-2 rounded-full">
                             <FaBookOpen className="text-sm" />
@@ -1136,13 +1146,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                   }`}
                                   onClick={() => handleSubmoduleClick(submodule)}
                                 >
-                                  <div className="mr-2 text-purple-500">
-                                    {isQuiz(submodule.id_submodul) ? (
-                                      <FaClipboardList className="text-xs" />
-                                    ) : (
-                                      <FaClipboardList className="text-xs" />
-                                    )}
-                                  </div>
+<div className="mr-2 text-purple-500">
+  {isQuiz(submodule.id_submodul) ? (
+    <FaQuestionCircle className="text-xs" />
+  ) : (
+    <FaClipboardList className="text-xs" />
+  )}
+</div>
                                   <div>
                                     <h4 className="text-sm">{submodule.judul_submodul}</h4>
                                     <div className="flex items-center space-x-1 mt-0.5">
@@ -1210,12 +1220,20 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     <li key={module.id_modul} className="mb-2">
                       <div
                         className={`p-2 rounded-lg cursor-pointer flex justify-center items-center transition-colors ${
-                          selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600' 
+                          selectedModule?.id_modul === module.id_modul
+                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600'
                             : 'hover:bg-gray-50 border-l-4 border-transparent'
                         }`}
                         onClick={() => handleModuleClick(module)}
                         title={module.judul_modul}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            handleModuleClick(module);
+                          }
+                        }}
+                        aria-label={`Pilih modul ${module.judul_modul}`}
                       >
                         <FaBookOpen className="text-purple-600" />
                       </div>
@@ -2433,7 +2451,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
               <div className="text-center py-12">
                 <FaGraduationCap className="mx-auto text-5xl text-purple-200 mb-4" />
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  Welcome to Multimedia Praktikum Admin Panel
+                  Welcome to Pengenalan Jaringan Komputer Praktikum Admin Panel
                 </h2>
                 <p className="text-gray-600 max-w-lg mx-auto mb-8">
                   Select a module from the sidebar to manage content or add a new module to get started.
@@ -2441,7 +2459,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <button
                   onClick={() => {
                     setIsAddingModule(true);
-                    setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 6 });
+                    setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 9 });
                   }}
                   className="bg-[#0267FE] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
                 >
@@ -2458,4 +2476,3 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 }
 
 export default AdminDashboardPage;
-
