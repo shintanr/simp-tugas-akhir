@@ -1,12 +1,12 @@
 import React, { memo } from "react";
-import dayjs from '@/lib/dayjs';
+import dayjs from "@/lib/dayjs";
 import { PresensiSummary } from "@/types/presensi";
 
 interface StatisticCardProps {
   data: PresensiSummary
 }
 function StatisticCard({ data }: StatisticCardProps) {
-  const tanggal = dayjs().format('dddd, D MMMM YYYY');
+  const tanggal = dayjs().format("dddd, D MMMM YYYY");
 
   return (
     <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row md:items-center justify-between">

@@ -103,17 +103,17 @@ function AdminDashboardPage() {
   const [uploadType, setUploadType] = useState<string>("");
   
   const [formData, setFormData] = useState<any>({
-    judul_modul: '',
-    judul_submodul: '',
-    video_url: '',
-    pdf_url: '',
+    judul_modul: "",
+    judul_submodul: "",
+    video_url: "",
+    pdf_url: "",
     id_praktikum: 12, // Default praktikum ID for SDL
-    question_text: '',
+    question_text: "",
     options: [
-      { option_text: '', is_correct: false },
-      { option_text: '', is_correct: false },
-      { option_text: '', is_correct: false },
-      { option_text: '', is_correct: false }
+      { option_text: "", is_correct: false },
+      { option_text: "", is_correct: false },
+      { option_text: "", is_correct: false },
+      { option_text: "", is_correct: false }
     ]
   });
 
@@ -168,7 +168,7 @@ function AdminDashboardPage() {
     console.log(`Is submodule ${submoduleId} a quiz? ${isQuizSubmodule}`);
     
     if (!isQuizSubmodule) {
-      console.log('Not a quiz submodule, returning');
+      console.log("Not a quiz submodule, returning");
       return;
     }
   
@@ -177,7 +177,7 @@ function AdminDashboardPage() {
     console.log(`Fetching from URL: ${url}`);
     
     const response = await fetch(url);
-    console.log('Response status:', response.status);
+    console.log("Response status:", response.status);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -186,7 +186,7 @@ function AdminDashboardPage() {
     }
     
     const data = await response.json();
-    console.log('Received quiz data:', data);
+    console.log("Received quiz data:", data);
     
     // Transform data to expected format
     let transformedData = [];
@@ -197,10 +197,10 @@ function AdminDashboardPage() {
           id_question: item.id_quiz,
           question_text: item.pertanyaan,
           options: [
-            { option_text: item.pilihan_a, is_correct: item.jawaban_benar === 'A' },
-            { option_text: item.pilihan_b, is_correct: item.jawaban_benar === 'B' },
-            { option_text: item.pilihan_c, is_correct: item.jawaban_benar === 'C' },
-            { option_text: item.pilihan_d, is_correct: item.jawaban_benar === 'D' }
+            { option_text: item.pilihan_a, is_correct: item.jawaban_benar === "A" },
+            { option_text: item.pilihan_b, is_correct: item.jawaban_benar === "B" },
+            { option_text: item.pilihan_c, is_correct: item.jawaban_benar === "C" },
+            { option_text: item.pilihan_d, is_correct: item.jawaban_benar === "D" }
           ]
         };
       });
@@ -235,8 +235,8 @@ function AdminDashboardPage() {
     
     setFormData({
       judul_modul: module.judul_modul,
-      video_url: module.video_url || '',
-      pdf_url: module.pdf_url || '',
+      video_url: module.video_url || "",
+      pdf_url: module.pdf_url || "",
       id_praktikum: module.id_praktikum
     });
     
@@ -256,8 +256,8 @@ function AdminDashboardPage() {
     
     setFormData({
       judul_submodul: submodule.judul_submodul,
-      video_url: submodule.video_url || '',
-      pdf_url: submodule.pdf_url || '',
+      video_url: submodule.video_url || "",
+      pdf_url: submodule.pdf_url || "",
       id_modul: submodule.id_modul
     });
 
@@ -294,7 +294,7 @@ function AdminDashboardPage() {
       newOptions[index] = { ...newOptions[index], [field]: value };
       
       // If setting this option as correct, set others to false
-      if (field === 'is_correct' && value === true) {
+      if (field === "is_correct" && value === true) {
         newOptions.forEach((opt, i) => {
           if (i !== index) {
             newOptions[i] = { ...newOptions[i], is_correct: false };
@@ -324,13 +324,13 @@ function AdminDashboardPage() {
           clearInterval(interval);
           setIsUploading(false);
           
-          const fileName = file.name.replace(/\s/g, '_');
+          const fileName = file.name.replace(/\s/g, "_");
   
           // 👉 Cocokkan dengan URL endpoint backend
-          let url = '';
-          if (type === 'video') {
+          let url = "";
+          if (type === "video") {
             url = `http://localhost:8080/server/video_file/${fileName}`;
-          } else if (type === 'pdf') {
+          } else if (type === "pdf") {
             url = `http://localhost:8080/server/pdf_file/${fileName}`;
           } else {
             url = `http://localhost:8080/uploads/${type}/${fileName}`;
@@ -344,8 +344,8 @@ function AdminDashboardPage() {
   
 
   // Handle file uploads
-  const handleFileUpload = async (type: 'pdf' | 'video') => {
-    const fileRef = type === 'pdf' ? pdfFileRef : videoFileRef;
+  const handleFileUpload = async (type: "pdf" | "video") => {
+    const fileRef = type === "pdf" ? pdfFileRef : videoFileRef;
     if (fileRef.current && fileRef.current.files && fileRef.current.files.length > 0) {
       const file = fileRef.current.files[0];
       
@@ -353,7 +353,7 @@ function AdminDashboardPage() {
         const url = await simulateUpload(file, type);
         
         // Update form data with the new URL
-        if (type === 'pdf') {
+        if (type === "pdf") {
           setFormData((prev: any) => ({ ...prev, pdf_url: url }));
         } else {
           setFormData((prev: any) => ({ ...prev, video_url: url }));
@@ -388,7 +388,7 @@ function AdminDashboardPage() {
 
       fetchModules();
       setIsAddingModule(false);
-      setFormData({ judul_modul: '', id_praktikum: 12 });
+      setFormData({ judul_modul: "", id_praktikum: 12 });
     } catch (err) {
       console.error("Error adding module:", err);
       alert(`Failed to add module: ${(err as Error).message}`);
@@ -400,12 +400,12 @@ function AdminDashboardPage() {
     e.preventDefault();
     
     if (!selectedModule) {
-      alert('Please select a module first');
+      alert("Please select a module first");
       return;
     }
     
     if (!formData.judul_submodul.trim()) {
-      alert('Submodule title is required');
+      alert("Submodule title is required");
       return;
     }
     
@@ -413,42 +413,42 @@ function AdminDashboardPage() {
     const formDataToSend = new FormData();
     
     // Add text fields
-    formDataToSend.append('judul_submodul', formData.judul_submodul);
-    formDataToSend.append('id_modul', selectedModule.id_modul.toString());
+    formDataToSend.append("judul_submodul", formData.judul_submodul);
+    formDataToSend.append("id_modul", selectedModule.id_modul.toString());
     
     // Add file fields if they exist
     if (pdfFileRef.current?.files?.[0]) {
-      formDataToSend.append('file', pdfFileRef.current.files[0]); // PDF
-      console.log('Attaching PDF:', pdfFileRef.current.files[0].name);
+      formDataToSend.append("file", pdfFileRef.current.files[0]); // PDF
+      console.log("Attaching PDF:", pdfFileRef.current.files[0].name);
     }
     
     if (videoFileRef.current?.files?.[0]) {
-      formDataToSend.append('video', videoFileRef.current.files[0]); // Video
-      console.log('Attaching video:', videoFileRef.current.files[0].name);
+      formDataToSend.append("video", videoFileRef.current.files[0]); // Video
+      console.log("Attaching video:", videoFileRef.current.files[0].name);
     }
     
     // Log what we're sending for debugging
-    console.log('Sending title:', formData.judul_submodul);
-    console.log('Sending module ID:', selectedModule.id_modul.toString());
+    console.log("Sending title:", formData.judul_submodul);
+    console.log("Sending module ID:", selectedModule.id_modul.toString());
     
     try {
       // Show loading state if desired
       // setIsLoading(true);
       
       // Send the request
-      const response = await fetch('http://localhost:8080/admin/post/submodul/sdl', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/admin/post/submodul/sdl", {
+        method: "POST",
         body: formDataToSend,
         // Don't set Content-Type header when using FormData
       });
       
       // Get the response data
       const responseData = await response.json();
-      console.log('Response from server:', responseData);
+      console.log("Response from server:", responseData);
       
       // Check if the request was successful
       if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to add submodule');
+        throw new Error(responseData.message || "Failed to add submodule");
       }
       
       // Refresh submodules list
@@ -458,16 +458,16 @@ function AdminDashboardPage() {
       
       // Reset form state
       setIsAddingSubmodule(false);
-      setFormData({ judul_submodul: '', video_url: '', pdf_url: '' });
+      setFormData({ judul_submodul: "", video_url: "", pdf_url: "" });
       
       // Clear file inputs
-      if (pdfFileRef.current) pdfFileRef.current.value = '';
-      if (videoFileRef.current) videoFileRef.current.value = '';
+      if (pdfFileRef.current) pdfFileRef.current.value = "";
+      if (videoFileRef.current) videoFileRef.current.value = "";
       
       // Show success message
-      alert('Submodule added successfully!');
+      alert("Submodule added successfully!");
     } catch (err) {
-      console.error('Error adding submodule:', err);
+      console.error("Error adding submodule:", err);
       alert(`Failed to add submodule: ${(err as Error).message}`);
     } finally {
       // Hide loading state if desired
@@ -479,34 +479,34 @@ function AdminDashboardPage() {
   const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSubmodule) {
-      alert('Pilih submodul terlebih dahulu');
+      alert("Pilih submodul terlebih dahulu");
       return;
     }
     
     // Validasi input - pastikan pertanyaan memiliki format yang benar
-    if (!formData.question_text || formData.question_text.trim() === '') {
-      alert('Pertanyaan tidak boleh kosong');
+    if (!formData.question_text || formData.question_text.trim() === "") {
+      alert("Pertanyaan tidak boleh kosong");
       return;
     }
     
     // Minimal panjang pertanyaan (penting untuk validasi)
     if (formData.question_text.trim().length < 5) {
-      alert('Pertanyaan harus minimal 5 karakter');
+      alert("Pertanyaan harus minimal 5 karakter");
       return;
     }
     
     // Validasi opsi jawaban
-    const validOptions = formData.options.filter((opt: { option_text: string; }) => opt.option_text.trim() !== '');
+    const validOptions = formData.options.filter((opt: { option_text: string; }) => opt.option_text.trim() !== "");
     
     if (validOptions.length < 2) {
-      alert('Minimal harus ada 2 pilihan jawaban');
+      alert("Minimal harus ada 2 pilihan jawaban");
       return;
     }
     
     // Pastikan semua opsi memiliki minimal panjang karakter
     for (const option of validOptions) {
       if (option.option_text.trim().length < 2) {
-        alert('Setiap pilihan jawaban harus minimal 2 karakter');
+        alert("Setiap pilihan jawaban harus minimal 2 karakter");
         return;
       }
     }
@@ -514,23 +514,23 @@ function AdminDashboardPage() {
     // Pastikan ada satu jawaban benar
     const correctOptions = validOptions.filter((opt: { is_correct: unknown; }) => opt.is_correct);
     if (correctOptions.length === 0) {
-      alert('Pilih satu jawaban benar');
+      alert("Pilih satu jawaban benar");
       return;
     }
     
     if (correctOptions.length > 1) {
-      alert('Hanya boleh ada satu jawaban benar');
+      alert("Hanya boleh ada satu jawaban benar");
       return;
     }
     
     // Memetakan setiap opsi ke opsi yang benar
-    let jawaban_benar = '';
+    let jawaban_benar = "";
     
     // Determinasi jawaban benar berdasarkan indeks opsi yang benar
     for (let i = 0; i < formData.options.length; i++) {
       if (formData.options[i].is_correct) {
         // Tentukan huruf jawaban berdasarkan indeks (0=A, 1=B, dst)
-        const jawaban_letters = ['A', 'B', 'C', 'D'];
+        const jawaban_letters = ["A", "B", "C", "D"];
         jawaban_benar = jawaban_letters[i];
         break;
       }
@@ -545,15 +545,15 @@ function AdminDashboardPage() {
     const formattedData = {
       id_submodul: selectedSubmodule.id_submodul,
       pertanyaan: formData.question_text.trim(),
-      pilihan_a: validOptions[0]?.option_text.trim() || '',
-      pilihan_b: validOptions[1]?.option_text.trim() || '',
-      pilihan_c: validOptions.length > 2 ? validOptions[2]?.option_text.trim() : '',
-      pilihan_d: validOptions.length > 3 ? validOptions[3]?.option_text.trim() : '',
+      pilihan_a: validOptions[0]?.option_text.trim() || "",
+      pilihan_b: validOptions[1]?.option_text.trim() || "",
+      pilihan_c: validOptions.length > 2 ? validOptions[2]?.option_text.trim() : "",
+      pilihan_d: validOptions.length > 3 ? validOptions[3]?.option_text.trim() : "",
       jawaban_benar: jawaban_benar
     };
     
     // Log data sebelum dikirim untuk debugging
-    console.log('Data yang akan dikirim:', JSON.stringify(formattedData, null, 2));
+    console.log("Data yang akan dikirim:", JSON.stringify(formattedData, null, 2));
     
     try {
       const response = await fetch(`http://localhost:8080/admin/post/quiz/sdl/${selectedSubmodule.id_submodul}`, {
@@ -597,16 +597,16 @@ function AdminDashboardPage() {
       fetchQuizQuestions(selectedSubmodule.id_submodul);
       setIsAddingQuestion(false);
       setFormData({
-        question_text: '',
+        question_text: "",
         options: [
-          { option_text: '', is_correct: false },
-          { option_text: '', is_correct: false },
-          { option_text: '', is_correct: false },
-          { option_text: '', is_correct: false }
+          { option_text: "", is_correct: false },
+          { option_text: "", is_correct: false },
+          { option_text: "", is_correct: false },
+          { option_text: "", is_correct: false }
         ]
       });
       // Tambahkan notifikasi sukses
-      alert('Pertanyaan berhasil ditambahkan');
+      alert("Pertanyaan berhasil ditambahkan");
     } catch (err) {
       console.error("Error adding question:", err);
       alert(`Gagal menambahkan pertanyaan: ${(err as Error).message}`);
@@ -649,16 +649,16 @@ function AdminDashboardPage() {
     if (!selectedSubmodule) return;
   
     const formDataToSend = new FormData();
-    formDataToSend.append('judul_submodul', formData.judul_submodul);
+    formDataToSend.append("judul_submodul", formData.judul_submodul);
   
     // Append the PDF file if present
     if (pdfFileRef.current?.files?.[0]) {
-      formDataToSend.append('file', pdfFileRef.current.files[0]);
+      formDataToSend.append("file", pdfFileRef.current.files[0]);
     }
   
     // Append the video file if present
     if (videoFileRef.current?.files?.[0]) {
-      formDataToSend.append('video', videoFileRef.current.files[0]);
+      formDataToSend.append("video", videoFileRef.current.files[0]);
     }
   
     try {
@@ -687,9 +687,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   console.log("Selected Question:", selectedQuestion);
   
   // Check if selectedQuestion is valid
-  if (!selectedQuestion || typeof selectedQuestion !== 'object') {
+  if (!selectedQuestion || typeof selectedQuestion !== "object") {
     console.error("selectedQuestion is invalid:", selectedQuestion);
-    alert('Invalid question selected. Please select a valid question.');
+    alert("Invalid question selected. Please select a valid question.");
     return;
   }
   
@@ -697,7 +697,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   const quizId = selectedQuestion?.id_question;
   if (!quizId) {
     console.error("No valid quiz ID found in selectedQuestion.");
-    alert('Cannot find quiz ID. Please select a valid question.');
+    alert("Cannot find quiz ID. Please select a valid question.");
     return;
   }
   
@@ -708,9 +708,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   
   // Map the correct option to A, B, or C
   const jawaban_benar = 
-    correctOptionIndex === 0 ? 'A' : 
-    correctOptionIndex === 1 ? 'B' : 
-    correctOptionIndex === 2 ? 'C' : '';
+    correctOptionIndex === 0 ? "A" : 
+    correctOptionIndex === 1 ? "B" : 
+    correctOptionIndex === 2 ? "C" : "";
   
   // Siapkan data untuk dikirim ke backend
   const formattedData = {
@@ -798,7 +798,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 
   // Delete quiz question
   const handleDeleteQuestion = async () => {
-    if (!selectedQuestion || !window.confirm(`Are you sure you want to delete this question?`)) {
+    if (!selectedQuestion || !window.confirm("Are you sure you want to delete this question?")) {
       return;
     }
 
@@ -908,7 +908,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
         {/* Sidebar */}
         <div 
           className={`${
-            isSidebarExpanded ? 'w-72 translate-x-0' : 'w-20 -translate-x-0'
+            isSidebarExpanded ? "w-72 translate-x-0" : "w-20 -translate-x-0"
           } bg-white shadow-lg overflow-hidden transition-all duration-300 flex flex-col border-r border-gray-200 relative`}
         >
           <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
@@ -941,7 +941,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   setIsEditing(false);
                   setSelectedModule(null);
                   setSelectedSubmodule(null);
-                  setFormData({ judul_modul: '', video_url: '', pdf_url: '', id_praktikum: 12 });
+                  setFormData({ judul_modul: "", video_url: "", pdf_url: "", id_praktikum: 12 });
                 }}
                 className="w-full flex items-center justify-center bg-[#0267FE] hover:bg-[hsl(222,99%,50%)] text-white p-2 rounded-lg transition-colors"
               >
@@ -977,8 +977,8 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <div
                         className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-blue-50 text-[hsl(222,99%,50%)] border-l-4 border-[#0267FE]' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
+                            ? "bg-blue-50 text-[hsl(222,99%,50%)] border-l-4 border-[#0267FE]" 
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                         onClick={() => handleModuleClick(module)}
                       >
@@ -1026,8 +1026,8 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                   key={submodule.id_submodul}
                                   className={`p-2 rounded-md cursor-pointer transition-colors flex items-center ${
                                     selectedSubmodule?.id_submodul === submodule.id_submodul
-                                      ? 'bg-blue-50 text-[hsl(222,99%,50%)]'
-                                      : 'hover:bg-gray-50'
+                                      ? "bg-blue-50 text-[hsl(222,99%,50%)]"
+                                      : "hover:bg-gray-50"
                                   }`}
                                   onClick={() => handleSubmoduleClick(submodule)}
                                 >
@@ -1078,9 +1078,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                   setIsEditing(false);
                                   setIsEditingQuestion(false);
                                   setFormData({
-                                    judul_submodul: '',
-                                    video_url: '',
-                                    pdf_url: '',
+                                    judul_submodul: "",
+                                    video_url: "",
+                                    pdf_url: "",
                                     id_modul: module.id_modul
                                   });
                                 }}
@@ -1105,8 +1105,8 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <div
                         className={`p-2 rounded-lg cursor-pointer flex justify-center items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-blue-50 text-[hsl(222,99%,50%)] border-l-4 border-[#0267FE]' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
+                            ? "bg-blue-50 text-[hsl(222,99%,50%)] border-l-4 border-[#0267FE]" 
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                         onClick={() => handleModuleClick(module)}
                         title={module.judul_modul}
@@ -1219,7 +1219,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         ref={videoFileRef}
                         className="hidden"
                         accept="video/*"
-                        onChange={() => handleFileUpload('video')}
+                        onChange={() => handleFileUpload("video")}
                       />
                       <button
                         type="button"
@@ -1251,7 +1251,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         ref={pdfFileRef}
                         className="hidden"
                         accept=".pdf"
-                        onChange={() => handleFileUpload('pdf')}
+                        onChange={() => handleFileUpload("pdf")}
                       />
                       <button
                         type="button"
@@ -1321,13 +1321,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         id={`correct-${index}`}
                         name="correct-option"
                         checked={option.is_correct}
-                        onChange={() => handleOptionChange(index, 'is_correct', true)}
+                        onChange={() => handleOptionChange(index, "is_correct", true)}
                         className="h-4 w-4 text-[#0267FE] border-gray-300 focus:ring-blue-500"
                       />
                       <input
                         type="text"
                         value={option.option_text}
-                        onChange={(e) => handleOptionChange(index, 'option_text', e.target.value)}
+                        onChange={(e) => handleOptionChange(index, "option_text", e.target.value)}
                         className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder={`Option ${index + 1}`}
                         required
@@ -1405,13 +1405,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         id={`correct-edit-${index}`}
                         name="correct-option-edit"
                         checked={option.is_correct}
-                        onChange={() => handleOptionChange(index, 'is_correct', true)}
+                        onChange={() => handleOptionChange(index, "is_correct", true)}
                         className="h-4 w-4 text-[#0267FE] border-gray-300 focus:ring-blue-500"
                       />
                       <input
                         type="text"
                         value={option.option_text}
-                        onChange={(e) => handleOptionChange(index, 'option_text', e.target.value)}
+                        onChange={(e) => handleOptionChange(index, "option_text", e.target.value)}
                         className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder={`Option ${index + 1}`}
                         required
@@ -1514,7 +1514,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           ref={videoFileRef}
                           className="hidden"
                           accept="video/*"
-                          onChange={() => handleFileUpload('video')}
+                          onChange={() => handleFileUpload("video")}
                         />
                         <button
                           type="button"
@@ -1546,7 +1546,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           ref={pdfFileRef}
                           className="hidden"
                           accept=".pdf"
-                          onChange={() => handleFileUpload('pdf')}
+                          onChange={() => handleFileUpload("pdf")}
                         />
                         <button
                           type="button"
@@ -1699,12 +1699,12 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             setIsEditingQuestion(false);
                             setSelectedQuestion(null);
                             setFormData({
-                              question_text: '',
+                              question_text: "",
                               options: [
-                                { option_text: '', is_correct: false },
-                                { option_text: '', is_correct: false },
-                                { option_text: '', is_correct: false },
-                                { option_text: '', is_correct: false }
+                                { option_text: "", is_correct: false },
+                                { option_text: "", is_correct: false },
+                                { option_text: "", is_correct: false },
+                                { option_text: "", is_correct: false }
                               ]
                             });
                           }}
@@ -1730,7 +1730,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     {quizQuestions[selectedSubmodule.id_submodul]?.map((question, qIndex) => {
                       // Pastikan question dan options ada
                       if (!question || !Array.isArray(question.options)) {
-                        console.warn('Invalid question data:', question);
+                        console.warn("Invalid question data:", question);
                         return null;
                       }
 
@@ -1751,7 +1751,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                     <li
                                       key={`option-${question.id_question}-${option.id_option || oIndex}`}
                                       className={`flex items-center py-1 ${
-                                        option.is_correct ? 'text-green-600 font-medium' : 'text-gray-600'
+                                        option.is_correct ? "text-green-600 font-medium" : "text-gray-600"
                                       }`}
                                     >
                                       <span className="mr-2 w-5">
@@ -1880,7 +1880,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           ref={videoFileRef}
                           className="hidden"
                           accept="video/*"
-                          onChange={() => handleFileUpload('video')}
+                          onChange={() => handleFileUpload("video")}
                         />
                         <button
                           type="button"
@@ -1912,7 +1912,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           ref={pdfFileRef}
                           className="hidden"
                           accept=".pdf"
-                          onChange={() => handleFileUpload('pdf')}
+                          onChange={() => handleFileUpload("pdf")}
                         />
                         <button
                           type="button"
@@ -2063,9 +2063,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             setIsAddingSubmodule(true);
                             setIsEditing(false);
                             setFormData({
-                              judul_submodul: '',
-                              video_url: '',
-                              pdf_url: '',
+                              judul_submodul: "",
+                              video_url: "",
+                              pdf_url: "",
                               id_modul: selectedModule.id_modul
                             });
                           }}
@@ -2178,7 +2178,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <button
                   onClick={() => {
                     setIsAddingModule(true);
-                    setFormData({ judul_modul: '', video_url: '', pdf_url: '', id_praktikum: 12 });
+                    setFormData({ judul_modul: "", video_url: "", pdf_url: "", id_praktikum: 12 });
                   }}
                   className="bg-[#0267FE] hover:bg-[hsl(222,99%,50%)] text-white px-6 py-3 rounded-lg  transition-colors inline-flex items-center"
                 >

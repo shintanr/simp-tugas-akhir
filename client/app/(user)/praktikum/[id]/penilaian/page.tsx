@@ -82,7 +82,7 @@ function PenilaianPage() {
   return (
     <>
       <section className="px-8 py-4 text-white text-3xl font-bold">
-        TABEL PENILAIAN
+        HISTORI PENILAIAN
       </section>
 
       <section className=" px-8">

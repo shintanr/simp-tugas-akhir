@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Sidebar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedLab, setSelectedLab] = useState('Sistem Tertanam & Robotika');
+  const [selectedLab, setSelectedLab] = useState("Sistem Tertanam & Robotika");
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target as HTMLElement).closest('#dropdownContainer')) {
+      if (!(event.target as HTMLElement).closest("#dropdownContainer")) {
         setDropdownOpen(false);
       }
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
@@ -39,7 +39,7 @@ export default function Sidebar() {
 
           {dropdownOpen && (
             <ul className="absolute mt-2 w-full bg-white shadow-md rounded-lg overflow-hidden">
-              {['Sistem Tertanam & Robotika', 'Rekayasa Perangkat Lunak', 'Jaringan Komputer', 'Multimedia'].map((lab) => (
+              {["Sistem Tertanam & Robotika", "Rekayasa Perangkat Lunak", "Jaringan Komputer", "Multimedia"].map((lab) => (
                 <li
                   key={lab}
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
@@ -58,11 +58,11 @@ export default function Sidebar() {
         {/* Navigation Menu */}
         <nav className="space-y-2">
           {[
-            { href: '#', img: '/Praktikum.svg', label: 'Praktikum' },
-            { href: '#', img: '/calendar.svg', label: 'Jadwal Praktikum' },
-            { href: '#', img: '/presensi.svg', label: 'Presensi' },
-            { href: '#', img: '/submission.svg', label: 'Submission' },
-            { href: '#', img: '/penilaian.svg', label: 'Penilaian' },
+            { href: "#", img: "/Praktikum.svg", label: "Praktikum" },
+            { href: "#", img: "/calendar.svg", label: "Jadwal Praktikum" },
+            { href: "#", img: "/presensi.svg", label: "Presensi" },
+            { href: "#", img: "/submission.svg", label: "Submission" },
+            { href: "#", img: "/penilaian.svg", label: "Penilaian" },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg">
               <Image src={item.img} alt={item.label} width={20} height={20} className="mr-2" />

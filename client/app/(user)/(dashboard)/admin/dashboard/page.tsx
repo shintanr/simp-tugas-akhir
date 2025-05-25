@@ -1,8 +1,8 @@
-'use client'
+"use client"
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { LogOut, Users, FileText, Settings } from 'lucide-react'
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { LogOut, Users, FileText } from "lucide-react"
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -11,13 +11,13 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:8080/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
+      await fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
       })
-      router.push('/login')
+      router.push("/login")
     } catch (err) {
-      console.error('Logout failed:', err)
+      console.error("Logout failed:", err)
     }
   }
 

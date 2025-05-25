@@ -1,15 +1,15 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 type ModulMap = {
   [key: number]: string;
 };
 
 const modulMap: ModulMap = {
-  5: 'prak-sbd',
-  6: 'prak-mulmed',
-  7: 'prak-pjk',
-  9: 'prak-eldas',
-  12: 'prak-sdl',
+  5: "prak-sbd",
+  6: "prak-mulmed",
+  7: "prak-pjk",
+  9: "prak-eldas",
+  12: "prak-sdl",
 
 };
 

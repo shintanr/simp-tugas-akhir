@@ -37,7 +37,7 @@ function Page() {
   const { data: praktikum, isLoading } = useDetailPraktikumQuery(params.id);
   const { data: userPraktikum, isLoading: isLoadingUser, error } =
     useDetailuserPraktikumQuery(params.id);
-  // console.log("🚀 ~ Page ~ praktikum:", praktikum);
+
   const { data: presensi, isLoading: isLoadingPresensi } =
     useGetPresensiPraktikumQuery({
       id_user:
@@ -63,7 +63,7 @@ function Page() {
       id_shift:
         userPraktikum?.data?.is_asisten == 1 ? selectedShift : undefined,
     });
-  // console.log("🚀 ~ Page ~ presensi:", presensi);
+
 
   useEffect(() => {
     if (praktikum) {

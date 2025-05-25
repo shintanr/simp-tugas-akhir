@@ -87,7 +87,7 @@ export default function Quiz_5({ submodulId, userId }: QuizProps) {
         {questions.map((question) => (
           <div key={question.id_quiz} className="mb-6">
             <p className="text-lg font-semibold leading-relaxed">{question.pertanyaan}</p>
-            {['a', 'b', 'c', 'd'].map((option) => {
+            {["a", "b", "c", "d"].map((option) => {
               const optionKey = `pilihan_${option}` as keyof QuizQuestion;
               return (
                 <label key={option} className="block text-lg leading-relaxed">

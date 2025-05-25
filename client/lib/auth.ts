@@ -95,7 +95,7 @@ export const authOptions: NextAuthOptions = {
           return null;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
-          // console.log("🚀 ~ authorize ~ e:", e);
+          
           throw new Error(e.message);
         }
       },

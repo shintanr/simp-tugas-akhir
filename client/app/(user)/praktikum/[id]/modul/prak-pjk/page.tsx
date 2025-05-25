@@ -250,32 +250,32 @@ function PrakPJKPage() {
   // Add this helper function to detect YouTube links
 const isYouTubeLink = (url: string): boolean => {
   if (!url) return false;
-  return url.includes('youtube.com') || url.includes('youtu.be');
+  return url.includes("youtube.com") || url.includes("youtu.be");
 };
 
 // Add this helper function to convert YouTube URLs to embed format
 const getYouTubeEmbedUrl = (url: string): string => {
-  if (!url) return '';
+  if (!url) return "";
   
   try {
     // Handle youtube.com/watch?v= format
-    if (url.includes('youtube.com/watch?v=')) {
-      const videoId = new URL(url).searchParams.get('v');
+    if (url.includes("youtube.com/watch?v=")) {
+      const videoId = new URL(url).searchParams.get("v");
       if (videoId) return `https://www.youtube.com/embed/${videoId}`;
     }
     
     // Handle youtu.be/ format
-    if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1].split('?')[0];
+    if (url.includes("youtu.be/")) {
+      const videoId = url.split("youtu.be/")[1].split("?")[0];
       if (videoId) return `https://www.youtube.com/embed/${videoId}`;
     }
     
     // If it's already an embed URL, return as is
-    if (url.includes('youtube.com/embed/')) {
+    if (url.includes("youtube.com/embed/")) {
       return url;
     }
   } catch (error) {
-    console.error('Error parsing YouTube URL:', error);
+    console.error("Error parsing YouTube URL:", error);
   }
   
   // If we couldn't parse it, return the original URL
@@ -289,8 +289,8 @@ const getSubmoduleIcon = useCallback((submodule) => {
       submodule.judul_submodul.toLowerCase().includes("quiz")) {
     return {
       icon: <FaClipboardList className="text-xs" />,
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-500'
+      bgColor: "bg-green-50",
+      textColor: "text-green-500"
     };
   }
   
@@ -312,40 +312,40 @@ const getSubmoduleIcon = useCallback((submodule) => {
           <rect x="8" y="17" width="5" height="1.5" rx="0.75" fill="white" />
         </svg>
       ),
-      bgColor: 'bg-amber-50',
-      textColor: 'text-amber-500'
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-500"
     };
   }
   
   // Check if it contains video
   if ((submodule.video_url && 
-       (submodule.video_url.includes('youtube.com') || 
-        submodule.video_url.includes('youtu.be') || 
-        submodule.video_url.endsWith('.mp4'))) || 
+       (submodule.video_url.includes("youtube.com") || 
+        submodule.video_url.includes("youtu.be") || 
+        submodule.video_url.endsWith(".mp4"))) || 
       submodule.judul_submodul.toLowerCase().includes("video")) {
     return {
       icon: <FaPlayCircle className="text-xs" />,
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-500'
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-500"
     };
   }
   
   // Check if it's a PDF or document
   if (submodule.pdf_url || 
-      (submodule.video_url && submodule.video_url.endsWith('.pdf')) ||
+      (submodule.video_url && submodule.video_url.endsWith(".pdf")) ||
       submodule.judul_submodul.toLowerCase().includes("bahan praktikum")) {
     return {
       icon: <FaBookOpen className="text-xs" />,
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-500'
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-500"
     };
   }
   
   // Default case: use book icon
   return {
     icon: <FaBookOpen className="text-xs" />,
-    bgColor: 'bg-purple-50',
-    textColor: 'text-purple-500'
+    bgColor: "bg-purple-50",
+    textColor: "text-purple-500"
   };
 }, [isQuiz]);
 
@@ -424,7 +424,7 @@ const getSubmoduleIcon = useCallback((submodule) => {
         {/* Sidebar - Updated for better positioning */}
         <div 
           className={`
-            ${isSidebarExpanded ? 'w-72 translate-x-0' : 'w-20 translate-x-0'} 
+            ${isSidebarExpanded ? "w-72 translate-x-0" : "w-20 translate-x-0"} 
             bg-white shadow-lg overflow-hidden transition-all duration-300 
             flex flex-col border-r border-gray-200
             h-screen md:h-auto z-10
@@ -477,8 +477,8 @@ const getSubmoduleIcon = useCallback((submodule) => {
                       <div
                         className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
+                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600" 
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                         onClick={() => handleModuleClick(module)}
                       >
@@ -522,8 +522,8 @@ const getSubmoduleIcon = useCallback((submodule) => {
                                   key={submodule.id_submodul}
                                   className={`p-2 rounded-md cursor-pointer flex items-center transition-colors ${
                                     selectedSubmodule?.id_submodul === submodule.id_submodul
-                                      ? 'bg-blue-50 text-blue-700 font-medium'
-                                      : 'text-gray-600 hover:bg-gray-50'
+                                      ? "bg-blue-50 text-blue-700 font-medium"
+                                      : "text-gray-600 hover:bg-gray-50"
                                   }`}
                                   onClick={() => handleSubmoduleClick(submodule)}
                                 >
@@ -561,8 +561,8 @@ const getSubmoduleIcon = useCallback((submodule) => {
                       <div
                         className={`p-3 cursor-pointer flex flex-col items-center justify-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
+                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600" 
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                         onClick={() => handleModuleClick(module)}
                         title={module.judul_modul}
@@ -588,7 +588,7 @@ const getSubmoduleIcon = useCallback((submodule) => {
         {/* Main Content - Adjusted position to prevent too much right shift */}
         <div className={`
           flex-grow transition-all duration-300
-          ${isSidebarExpanded ? 'ml-0 md:ml-0' : 'ml-0 md:ml-0'}
+          ${isSidebarExpanded ? "ml-0 md:ml-0" : "ml-0 md:ml-0"}
           relative z-0
         `}>
           <div className="bg-white rounded-xl shadow-md overflow-hidden m-3 md:m-6">
@@ -616,10 +616,10 @@ const getSubmoduleIcon = useCallback((submodule) => {
                       <div className="flex items-center mb-1">
                         <span className={`text-sm font-semibold py-1 px-3 rounded-full ${
                           isQuiz(selectedSubmodule.id_submodul) 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-blue-100 text-blue-700'
+                            ? "bg-green-100 text-green-700" 
+                            : "bg-blue-100 text-blue-700"
                         }`}>
-                          {isQuiz(selectedSubmodule.id_submodul) ? 'Quiz' : 'Lesson'}
+                          {isQuiz(selectedSubmodule.id_submodul) ? "Quiz" : "Lesson"}
                         </span>
                       </div>
                       <h2 className="text-2xl font-bold text-gray-800">{selectedSubmodule.judul_submodul}</h2>

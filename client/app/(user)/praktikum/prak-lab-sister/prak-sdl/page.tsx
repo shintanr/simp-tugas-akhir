@@ -247,7 +247,7 @@ function PrakEldasPage() {
         {/* Sidebar */}
         <div 
           className={`${
-            isSidebarExpanded ? 'w-72 translate-x-0' : 'w-20 -translate-x-0'
+            isSidebarExpanded ? "w-72 translate-x-0" : "w-20 -translate-x-0"
           } bg-white shadow-lg overflow-hidden transition-all duration-300 flex flex-col border-r border-gray-200 relative`}
         >
           <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
@@ -296,8 +296,8 @@ function PrakEldasPage() {
                       <div
                         className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
+                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600" 
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                         onClick={() => handleModuleClick(module)}
                       >
@@ -339,17 +339,17 @@ function PrakEldasPage() {
                                 key={submodule.id_submodul}
                                 className={`p-2 rounded-md cursor-pointer flex items-center transition-colors ${
                                   selectedSubmodule?.id_submodul === submodule.id_submodul
-                                    ? 'bg-blue-50 text-blue-700 font-medium'
-                                    : 'text-gray-600 hover:bg-gray-50'
+                                    ? "bg-blue-50 text-blue-700 font-medium"
+                                    : "text-gray-600 hover:bg-gray-50"
                                 }`}
                                 onClick={() => handleSubmoduleClick(submodule)}
                               >
                                 <div className={`p-1 rounded-md mr-2 ${
                                   isQuiz(submodule.id_submodul)
-                                    ? 'bg-green-50 text-green-500'
+                                    ? "bg-green-50 text-green-500"
                                     : submodule.judul_submodul.toLowerCase().includes("ringkasan")
-                                      ? 'bg-amber-50 text-amber-500'
-                                      : 'bg-blue-50 text-blue-500'
+                                      ? "bg-amber-50 text-amber-500"
+                                      : "bg-blue-50 text-blue-500"
                                 }`}>
                                   {isQuiz(submodule.id_submodul) ? (
                                     <FaClipboardList className="text-xs" />
@@ -402,8 +402,8 @@ function PrakEldasPage() {
                       <div
                         className={`p-3 cursor-pointer flex flex-col items-center justify-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' 
-                            : 'hover:bg-gray-50 border-l-4 border-transparent'
+                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600" 
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                         onClick={() => handleModuleClick(module)}
                         title={module.judul_modul}
@@ -453,10 +453,10 @@ function PrakEldasPage() {
                       <div className="flex items-center mb-1">
                         <span className={`text-sm font-semibold py-1 px-3 rounded-full ${
                           isQuiz(selectedSubmodule.id_submodul) 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-blue-100 text-blue-700'
+                            ? "bg-green-100 text-green-700" 
+                            : "bg-blue-100 text-blue-700"
                         }`}>
-                          {isQuiz(selectedSubmodule.id_submodul) ? 'Quiz' : 'Lesson'}
+                          {isQuiz(selectedSubmodule.id_submodul) ? "Quiz" : "Lesson"}
                         </span>
                       </div>
                       <h2 className="text-2xl font-bold text-gray-800">{selectedSubmodule.judul_submodul}</h2>

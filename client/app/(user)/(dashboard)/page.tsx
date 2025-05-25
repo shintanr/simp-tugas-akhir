@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import PraktikumList from "@/components/dashboard/PraktikumList";
 import { useGetUserPraktikumQuery } from "@/redux/services/userPraktikum";

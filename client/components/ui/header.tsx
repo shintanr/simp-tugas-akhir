@@ -1,5 +1,5 @@
-import React from 'react';
-import { BookOpen, ClipboardList, FileCheck, NotebookPen, Award } from 'lucide-react';
+import React from "react";
+import { BookOpen, ClipboardList, FileCheck, NotebookPen, Award } from "lucide-react";
 
 // Simple Avatar component implementation
 const Avatar = ({ children, className }) => (
@@ -21,29 +21,29 @@ const AvatarFallback = ({ children, className }) => (
 const Header = () => {
   const menuItems = [
     {
-      title: 'Praktikum',
+      title: "Praktikum",
       icon: <BookOpen className="w-5 h-5" />,
-      url: 'http://localhost:3000/'
+      url: "http://localhost:3000/"
     },
     {
-      title: 'TP',
+      title: "TP",
       icon: <NotebookPen className="w-5 h-5" />,
-      url: 'http://localhost:3000/tugas-pendahuluan'
+      url: "http://localhost:3000/tugas-pendahuluan"
     },
     {
-      title: 'Presensi',
+      title: "Presensi",
       icon: <ClipboardList className="w-5 h-5" />,
-      url: 'http://localhost:3000/presensi'
+      url: "http://localhost:3000/presensi"
     },
     {
-      title: 'Submission',
+      title: "Submission",
       icon: <FileCheck className="w-5 h-5" />,
-      url: 'http://localhost:3000/submission_praktikan'
+      url: "http://localhost:3000/submission_praktikan"
     },
     {
-      title: 'Penilaian',
+      title: "Penilaian",
       icon: <Award className="w-5 h-5" />,
-      url: 'http://localhost:3000/penilaian'
+      url: "http://localhost:3000/penilaian"
     }
   ];
 
@@ -67,7 +67,7 @@ const Header = () => {
           <div className="w-1/4 flex justify-end items-center space-x-3">
             <span className="text-white font-medium">John Doe</span>
             <Avatar className="h-10 w-10">
-              <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
+              
               <AvatarFallback className="bg-gray-200 text-gray-600">JD</AvatarFallback>
             </Avatar>
           </div>

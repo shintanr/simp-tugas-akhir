@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface FileViewerProps {
   fileUrl: string;
@@ -20,21 +20,21 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
   }
 
   // PDF Preview
-  if (fileType === 'pdf') {
+  if (fileType === "pdf") {
     return (
       <div className="h-screen w-full">
         <iframe
           src={`${fileUrl}#view=FitH`}
           className="w-full h-full"
           title="PDF Viewer"
-          onError={() => setError('Failed to load PDF')}
+          onError={() => setError("Failed to load PDF")}
         />
       </div>
     );
   }
 
   // Word Document Preview menggunakan Office Viewer
-  if (fileType === 'doc' || fileType === 'docx') {
+  if (fileType === "doc" || fileType === "docx") {
     // Gunakan absolute URL untuk Office Viewer
     const fullUrl = window.location.origin + fileUrl;
     const encodedUrl = encodeURIComponent(fullUrl);
@@ -45,7 +45,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
           src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`}
           className="w-full h-full"
           title="Document Viewer"
-          onError={() => setError('Failed to load document')}
+          onError={() => setError("Failed to load document")}
         />
       </div>
     );

@@ -39,7 +39,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import SelectLabDropdown from "./selectLabDropdown";
 

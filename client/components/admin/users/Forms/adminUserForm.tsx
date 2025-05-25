@@ -210,7 +210,7 @@ const AdminUserForm = ({ user }: UserFormProps) => {
           />
         </div>
         <div className="flex justify-center">
-          <Button type="submit" className={`mt-4`} disabled={isLoading}>
+          <Button type="submit" className={"mt-4"} disabled={isLoading}>
             {isLoading || isLoadingUpdate ? (
               <div className="mr-2 animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             ) : (

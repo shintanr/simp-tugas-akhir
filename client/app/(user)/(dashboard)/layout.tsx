@@ -19,6 +19,4 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* footer */}
     </>
   );
-};
-
-export default Layout;
+}; export default Layout;
