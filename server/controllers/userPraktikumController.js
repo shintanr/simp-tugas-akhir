@@ -97,6 +97,7 @@ export const createUserPraktikum = async (req, res) => {
     let kelompok;
     if (kelompokKosong.length > 0) {
       kelompok =
+      // Safe to use Math.random here because this is for load balancing only, not security-critical
         kelompokKosong[Math.floor(Math.random() * kelompokKosong.length)];
     } else {
       // Semua sudah penuh 4, cari kelompok dengan isi paling sedikit
@@ -104,6 +105,7 @@ export const createUserPraktikum = async (req, res) => {
       const kelompokMin = Object.entries(kelompokMap)
         .filter(([_, total]) => total === min)
         .map(([id]) => Number(id));
+        // Safe to use Math.random here because this is for load balancing only, not security-critical
       kelompok = kelompokMin[Math.floor(Math.random() * kelompokMin.length)];
     }
 

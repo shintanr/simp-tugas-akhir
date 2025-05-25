@@ -7,7 +7,6 @@ import userPraktikumRoutes from "./routes/userPraktikumRoutes.js";
 import protectedRoutes from "./routes/protectedRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
-import { verifyToken } from "./middlewares/authMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import presensiRoutes from "./routes/presensiRoutes.js";
 import penilaianRoutes from "./routes/penilaianRoutes.js";
@@ -106,33 +105,48 @@ app.use(cookieParser());
 
 
 // kode farhan
-
+// Direktori penyimpanan
 const uploadDir = path.join(process.cwd(), "server/video_file");
+
+// Buat folder jika belum ada
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
-app.use("/server/video_file", express.static(uploadDir));
 
-
+// Konfigurasi penyimpanan
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    let title = req.body.title || "file"; // Ambil judul atau default ke "video"
+  filename: (req, file, cb) => {
+    // Gunakan title dari body atau fallback ke "file"
+    let title = req.body?.title || "file";
 
-    // Bersihkan karakter yang tidak boleh ada di nama file
-    title = title.replace(/[^a-zA-Z0-9-_]/g, "_"); 
+    // Bersihkan karakter ilegal
+    title = title.toString().replace(/[^a-zA-Z0-9-_]/g, "_");
 
-    cb(null, `${title}_${Date.now()}${path.extname(file.originalname)}`);
+    // Hindari nama file terlalu panjang
+    const maxTitleLength = 50;
+    if (title.length > maxTitleLength) {
+      title = title.substring(0, maxTitleLength);
+    }
+
+    // Nama file akhir
+    const filename = `${title}_${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, filename);
   },
 });
 
+// Instance multer
 const upload = multer({
   storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB max
+  },
   fileFilter: (req, file, cb) => {
-    cb(null, true); // Mengizinkan semua jenis file
-  }
+    // Optional: validasi mimetype jika mau
+    cb(null, true); // Masih izinkan semua file agar kompatibel
+  },
 });
 
 // batas kode farhan

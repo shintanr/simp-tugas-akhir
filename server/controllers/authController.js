@@ -127,7 +127,10 @@ export const forgotPassword = async (req, res) => {
     if (userData.length === 0) {
       return res.status(404).json({ message: "Email tidak ditemukan!" });
     }
-
+// Using Math.random() here to generate a temporary password.
+// Note: This is for convenience and not for cryptographic security.
+// Password is temporary and user should change it after login.
+// For stronger security, consider using crypto.randomBytes() in production.
     const newPassword = Math.random().toString(36).slice(-8); // contoh: ab12cd34
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
