@@ -27,10 +27,10 @@ const shiftOptions = [
 ];
 
 function PenilaianPage() {
-  const params = useParams();
-  const [selectedModul, setSelectedModul] = useState("1");
+  const params = useParams(); // untuk mendapatkan parameter dari URL
+  const [selectedModul, setSelectedModul] = useState("1"); // 
   const [selectedShift, setSelectedShift] = useState("1");
-  const { data: praktikum, isLoading } = useDetailPraktikumQuery(params.id);
+  const { data: praktikum, isLoading } = useDetailPraktikumQuery(params.id); // untuk mendapatkan detail praktikum berdasarkan ID dari URL
   const { data: userPraktikum, isLoading: isLoadingUser } =
     useDetailuserPraktikumQuery(params.id);
   const { data: penilaian, isLoading: isLoadingPenilaian } =

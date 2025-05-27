@@ -87,28 +87,18 @@ const items: MenuItem[] = [
     activeUrl: ["/"],
   },
   {
-    title: "Modul",
-    url: "/",
-    icon: BookOpenCheck,
-    activeUrl: ["/modul"],
-  },
-  {
-    title: "Presensi",
-    url: "/",
-    icon: ClipboardCheck,
-    activeUrl: ["/presensi"],
-  },
-  {
     title: "Submission",
     url: "/submission",
     icon: FileUp,
-    activeUrl: ["/submission"],
+    activeUrl: [
+    "/submission",
+  ],
   },
   {
-    title: "Penilaian",
-    url: "/",
+    title: "Tugas Pendahuluan",
+    url: "/tugas-pendahuluan",
     icon: BarChart3,
-    activeUrl: ["/penilaian"],
+    activeUrl: ["/tugas_pendahuluan"],
   },
 ];
 
@@ -153,6 +143,7 @@ const UserSidebar = () => {
           item.title !== "Dashboard" &&
           item.title !== "Manajemen Modul" // ← Pastikan disaring untuk non-admin
       );
+
 
 
   if (!session) {

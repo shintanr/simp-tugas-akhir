@@ -41,7 +41,7 @@ export default function Navbar() {
           📝 Presensi
         </Link>
         <Link
-            href={`/praktikum/${praktikumId}/submission`}
+            href={`/submission`}
             className={cn(
               "flex items-center gap-1",
               pathname === `/praktikum/${praktikumId}/submission` &&
