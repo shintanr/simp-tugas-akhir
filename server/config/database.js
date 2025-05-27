@@ -1199,7 +1199,330 @@ export async function getFilteredSubmissionsPraktikanForAsprak(idPraktikum, idPe
   }
 }
 
+// ===========================================
+// Kode baru airin
+// ===========================================
 
+//Function get TP untuk Asprak di halaman utama tp-pendahuluan_asprak
+export async function getTugasPendahuluanForAsprak(praktikumId, pertemuanId = null) {
+  try {
+    let query = `
+      SELECT 
+        ta.id_attempts,
+        ta.id_praktikum,
+        ta.id_pertemuan,
+        ta.id_user,
+        ta.total_score,
+        ta.completed_at,
+        u.full_name AS nama_praktikan,
+        u.nim,
+        u.email
+      FROM tp_attempts ta
+      JOIN users u ON ta.id_user = u.id_user
+      WHERE ta.id_praktikum = ?
+    `;
+    
+    const params = [praktikumId];
+
+    if (pertemuanId && pertemuanId !== 'all') {
+      query += ` AND ta.id_pertemuan = ?`;
+      params.push(pertemuanId);
+    }
+
+    const [rows] = await pool.query(query, params);
+    return { success: true, data: rows };
+  } catch (error) {
+    console.error('Error saat mengambil data tugas pendahuluan details untuk asprak:', error);
+    return { success: false, message: 'Database error' };
+  }
+}
+
+//Function get TP Details untuk Asprak di halaman detail tp-pendahuluan_asprak/detail/[id_attempts]
+export async function getTPAttemptDetails(id_attempts) {
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        tad.id_attempts_details,
+        tad.id_soal,
+        ts.pertanyaan,
+        tad.tp_answer,
+        tad.score_awarded
+      FROM tp_attempt_details tad
+      JOIN tp_soal ts ON ts.id_soal = tad.id_soal
+      WHERE tad.id_attempts = ?
+    `, [id_attempts]);
+
+    return { success: true, data: rows };
+  } catch (error) {
+    console.error('Error saat mengambil detail TP attempts:', error);
+    return { success: false, message: 'Database error' };
+  }
+}
+
+//function untuk mendapatkan jawaban tp berdasarkan kolom id_attempts_detail dari tabel tp_attempt_detail
+// Add these functions to your database file (same file with getTotalScoreAwarded)
+
+export async function getTPAnswerByIdDetails(id_attempts_details) {
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM tp_attempt_details WHERE id_attempts_details = ?',
+      [id_attempts_details]
+    );
+    return rows[0] || null;
+  } catch (error) {
+    console.error('Error getting TP answer:', error);
+    throw error;
+  }
+}
+
+//function yg kirim nilai prediksi ML ke KOLOM PREDIKSI ML hehehe
+export async function updatePredictedScore(id_attempts_details, score) {
+  try {
+    const [result] = await pool.query(
+      'UPDATE tp_attempt_details SET re_awarded = ? WHERE id_attempts_details = ?',
+      [score, id_attempts_details]
+    );
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Error updating predicted score:', error);
+    throw error;
+  }
+}
+//function untuk update/konfirmasi nilai secara manual setelah nilai keluar dari prediksi ML 
+export async function updateConfirmedScore(id_attempts_details, score_awarded) { 
+  try {
+    const [result] = await pool.query(`
+      UPDATE tp_attempt_details
+      SET score_awarded = ?
+      WHERE id_attempts_details = ?
+    `, [score_awarded, id_attempts_details]);
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error saat mengupdate skor konfirmasi:', error);
+    return { success: false, message: 'Database error' };
+  }
+}
+
+//untuk get fullname praktikan di halaman detail tp
+export async function getFullNameByIdAttempts(id_attempts) {
+  try {
+    const [rows] = await pool.query(`
+      SELECT u.full_name 
+      FROM users u
+      INNER JOIN tp_attempts ta ON u.id_user = ta.id_user
+      WHERE ta.id_attempts = ?
+    `, [id_attempts]);
+
+    return rows[0]; // return objek dengan property full_name
+  } catch (error) {
+    console.error('Error saat ambil full_name by id_attempts:', error);
+    return null;
+  }
+}
+
+// Pastikan function ini ada dan tidak ada error
+export async function getPraktikumPertemuanByAttempts(id_attempts) {
+  let connection;
+  
+  try {
+    console.log('=== START DATABASE FUNCTION ===');
+    console.log('Getting connection...');
+    
+    connection = await pool.getConnection();
+    console.log('Connection established');
+    
+    const query = `
+      SELECT 
+        p.name AS praktikum_name,
+        pt.pertemuan_ke
+      FROM tp_attempts a
+      JOIN pertemuan pt ON a.id_pertemuan = pt.id_pertemuan
+      JOIN praktikum p ON pt.id_praktikum = p.id_praktikum
+      WHERE a.id_attempts = ?
+    `;
+    
+    console.log('Executing query:', query);
+    console.log('With parameter:', id_attempts);
+    
+    const [rows] = await connection.execute(query, [id_attempts]);
+    
+    console.log('Query executed successfully');
+    console.log('Rows returned:', rows.length);
+    console.log('First row:', rows[0]);
+    
+    if (rows.length === 0) {
+      console.log('No data found for id_attempts:', id_attempts);
+      return {
+        success: true,
+        data: null,
+        message: 'No data found'
+      };
+    }
+    
+    const result = {
+      success: true,
+      data: rows[0],
+      message: 'Data found successfully'
+    };
+    
+    console.log('Returning result:', result);
+    console.log('=== END DATABASE FUNCTION ===');
+    
+    return result;
+
+  } catch (error) {
+    console.error('=== DATABASE FUNCTION ERROR ===');
+    console.error('Database error in getPraktikumPertemuanByAttempts:', error);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error stack:', error.stack);
+    console.error('=== END DATABASE FUNCTION ERROR ===');
+    
+    return {
+      success: false,
+      data: null,
+      message: 'Database query failed',
+      error: error.message
+    };
+  } finally {
+    if (connection) {
+      console.log('Releasing database connection...');
+      connection.release();
+    }
+  }
+}
+
+//function untuk SUM semua skor per soal per 1 id_attempts_details
+export async function getTotalScoreAwarded(id_attempts) {
+  const [rows] = await pool.query(
+    'SELECT SUM(score_awarded) AS total_score_awarded FROM tp_attempt_details WHERE id_attempts = ?',
+    [id_attempts]
+  );
+  return rows[0].total_score_awarded || 0;
+}
+
+// Fungsi untuk update total_score di tabel tp_attempts (tapi belom kepake)
+export async function updateTotalScore(id_attempts, total_score) {
+  const [result] = await pool.query(
+    'UPDATE tp_attempts SET total_score = ? WHERE id_attempts = ?',
+    [total_score, id_attempts]
+  );
+  return result.affectedRows;
+}
+
+export async function getPredictedScore(id_attempts_details) {
+  try {
+    const [rows] = await pool.query(
+      `SELECT re_awarded FROM tp_attempt_details WHERE id_attempts_details = ?`,
+      [id_attempts_details]
+    );
+    return rows[0]; // { re_awarded: ... }
+  } catch (error) {
+    console.error('Error fetching predicted score:', error);
+    return null;
+  }
+}
+
+
+export async function calculateAndUpdateTotalScore(id_attempts) {
+  const connection = await pool.getConnection();
+  
+  try {
+    // Validasi input parameter
+    console.log('Input id_attempts:', id_attempts, 'Type:', typeof id_attempts);
+    
+    if (!id_attempts || isNaN(parseInt(id_attempts))) {
+      throw new Error('Parameter id_attempts tidak valid atau kosong');
+    }
+    
+    const validIdAttempts = parseInt(id_attempts);
+    console.log('Validated id_attempts:', validIdAttempts);
+    
+    await connection.beginTransaction();
+    
+    // 1. Cek apakah id_attempts exists di tabel tp_attempts
+    const [attemptsCheck] = await connection.query(`
+      SELECT id_attempts FROM tp_attempts WHERE id_attempts = ?
+    `, [validIdAttempts]);
+    
+    if (attemptsCheck.length === 0) {
+      throw new Error(`ID attempts ${validIdAttempts} tidak ditemukan di tabel tp_attempts`);
+    }
+    
+    // 2. Ambil semua score_awarded berdasarkan id_attempts
+    const [scoreRows] = await connection.query(`
+      SELECT score_awarded 
+      FROM tp_attempt_details 
+      WHERE id_attempts = ? AND score_awarded IS NOT NULL
+    `, [validIdAttempts]);
+    
+    console.log('Score rows found:', scoreRows.length);
+    console.log('Score data:', scoreRows);
+    
+    if (scoreRows.length === 0) {
+      throw new Error('Tidak ada nilai yang tersedia untuk id_attempts ini. Pastikan semua soal sudah dinilai.');
+    }
+    
+    // 3. Hitung total score dan jumlah soal
+    const totalScore = scoreRows.reduce((sum, row) => {
+      const score = parseFloat(row.score_awarded) || 0;
+      return sum + score;
+    }, 0);
+    const jumlahSoal = scoreRows.length;
+    
+    console.log('Total individual scores:', totalScore);
+    console.log('Jumlah soal:', jumlahSoal);
+    
+    // 4. Hitung final score dengan rumus: (sum nilai / jumlah nilai) * 20
+    const finalScore = (totalScore / jumlahSoal) * 20;
+    const roundedFinalScore = Math.round(finalScore * 100) / 100;
+    
+    console.log('Final score before rounding:', finalScore);
+    console.log('Final score after rounding:', roundedFinalScore);
+    
+    // 5. Update total_score di tabel tp_attempts
+    const [updateResult] = await connection.query(`
+      UPDATE tp_attempts 
+      SET total_score = ? 
+      WHERE id_attempts = ?
+    `, [roundedFinalScore, validIdAttempts]);
+    
+    console.log('Update result:', updateResult);
+    
+    if (updateResult.affectedRows === 0) {
+      throw new Error('Gagal mengupdate total score, id_attempts tidak ditemukan');
+    }
+    
+    await connection.commit();
+    
+    return {
+      success: true,
+      data: {
+        id_attempts: validIdAttempts,
+        total_individual_scores: totalScore,
+        jumlah_soal: jumlahSoal,
+        final_score: roundedFinalScore,
+        calculation: `(${totalScore} / ${jumlahSoal}) * 20 = ${roundedFinalScore}`
+      },
+      message: 'Total score berhasil dihitung dan diupdate'
+    };
+    
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error dalam calculateAndUpdateTotalScore:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    return {
+      success: false,
+      message: error.message || 'Database error saat menghitung total score'
+    };
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+}
 
 // Panggil testDatabaseQueries hanya jika file ini dijalankan langsung, bukan diimpor
 if (import.meta.url === `file://${process.argv[1]}`) {

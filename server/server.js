@@ -15,6 +15,7 @@ import cookieParser from "cookie-parser";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import axios from "axios";
 
  // import dari kode farhan
 import { 
@@ -74,17 +75,29 @@ import {
 
 
 // import dari kode airin
-import { getPraktikumById, 
-  getAllTpByPraktikum,
+import { 
+  calculateAndUpdateTotalScore,
+  deleteSubmission,
+  getAllTpByPraktikum, 
   getFilteredSubmissionsPraktikanForAsprak,
-  getSubmissionPraktikanDetailById,
-  saveAsistensi,
-  getSubmissionsPraktikanForAsprak,
-  getTpSoalByPraktikumAndPertemuan,
-  getSubmissionFilePath,
-  deleteSubmission, 
+  getFullNameByIdAttempts,
   getPertemuan, 
-  getPraktikum } from "./config/database.js";
+  getPraktikum,
+  getPraktikumById,
+  getPraktikumPertemuanByAttempts,
+  getPredictedScore,
+  getSubmissionFilePath,
+  getSubmissionPraktikanDetailById,
+  getSubmissionsPraktikanForAsprak,
+  getTotalScoreAwarded,
+  getTPAnswerByIdDetails, getTPAttemptDetails,
+  getTpSoalByPraktikumAndPertemuan,
+  getTugasPendahuluanForAsprak,
+  saveAsistensi,
+  submitTugasPendahuluan,
+  updateConfirmedScore,
+  updatePredictedScore
+} from "./config/database.js";
 
 
 
@@ -2183,6 +2196,404 @@ app.get("/api/submission/download/:submissionId", async (req, res) => {
   } catch (error) {
     console.error("Error saat download file:", error);
     res.status(500).send("Error saat download file");
+  }
+});
+
+app.get('/api/asprak/tugas-pendahuluan/details', async (req, res) => {
+  try {
+    const { idPraktikum, idPertemuan } = req.query;
+
+    if (!idPraktikum) {
+      return res.status(400).json({ success: false, message: "idPraktikum wajib diisi" });
+    }
+
+    const result = await getTugasPendahuluanForAsprak(idPraktikum, idPertemuan);
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error saat mengambil data tugas pendahuluan details untuk asprak:', error);
+    res.status(500).json({ success: false, message: 'Gagal mengambil data' });
+  }
+});
+
+
+app.get('/api/tp-attempts/:id_attempts', async (req, res) => { 
+  try { 
+    const { id_attempts } = req.params; 
+    const result = await getTPAttemptDetails(id_attempts); 
+    
+    // Periksa apakah query berhasil
+    if (result.success) {
+      res.json(result.data); // Kirim data langsung
+    } else {
+      res.status(500).json({ 
+        success: false, 
+        message: result.message || "Error getting TP attempt details" 
+      });
+    }
+  } catch (err) { 
+    console.error('API Error:', err); 
+    res.status(500).json({ 
+      success: false, 
+      message: "Error getting TP attempt details" 
+    }); 
+  } 
+});
+
+//api untuk dummy ML nya dulu 
+app.post('/api/predict-score', async (req, res) => {
+  const { id_attempts_details } = req.body;
+
+  try {
+    const result = await getTPAnswerByIdDetails(id_attempts_details);
+    
+    if (!result) {
+      return res.status(404).json({ success: false, message: 'Jawaban tidak ditemukan' });
+    }
+
+    const { tp_answer } = result;
+
+    // Dummy scoring logic based on fetched answer
+    const predicted_score = Math.floor(Math.random() * 5) + 1;
+
+    res.json({
+      success: true,
+      data: {
+        id_attempts_details,
+        tp_answer,
+        predicted_score
+      }
+    });
+  } catch (error) {
+    console.error('Error dalam prediksi skor:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+//api untuk confirm skor di kolom konfirmasi skor
+app.put('/api/tp-attempts/confirm-score', async (req, res) => {
+  const { id_attempts_details, score_awarded } = req.body;
+
+  if (!id_attempts_details || score_awarded == null) {
+    return res.status(400).json({ success: false, message: "Missing fields" });
+  }
+
+  const result = await updateConfirmedScore(id_attempts_details, score_awarded);
+  
+  if (result.success) {
+    res.json({ success: true, message: "Score updated" });
+  } else {
+    res.status(500).json(result);
+  }
+});
+
+//api untuk get nama lengkap praktikan di TP detail asprak
+app.get('/api/attempts/:id_attempts/user-name', async (req, res) => {
+  try {
+    const { id_attempts } = req.params;
+    
+    const result = await getFullNameByIdAttempts(id_attempts);
+    
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: 'Data tidak ditemukan'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        full_name: result.full_name
+      }
+    });
+  } catch (error) {
+    console.error('Error di endpoint get user name:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan server'
+    });
+  }
+});
+
+app.get('/api/attempts/:id_attempts/praktikum-pertemuan', async (req, res) => {
+  try {
+    const { id_attempts } = req.params;
+    
+    console.log('Fetching praktikum pertemuan for id_attempts:', id_attempts);
+    
+    if (!id_attempts) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID attempts is required'
+      });
+    }
+
+    const result = await getPraktikumPertemuanByAttempts(id_attempts);
+    
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: 'Praktikum pertemuan data not found for this attempt'
+      });
+    }
+
+    if (!result.data) {
+  return res.status(404).json({
+    success: false,
+    message: 'Praktikum pertemuan data not found for this attempt'
+  });
+}
+
+  res.json({
+    success: true,
+    data: {
+      praktikum_name: result.data.praktikum_name,
+      pertemuan_ke: result.data.pertemuan_ke
+    }
+  });
+
+    
+  } catch (error) {
+    console.error('Error in praktikum-pertemuan endpoint:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// Endpoint untuk mengambil total score_awarded dan menghitung skor final
+app.get('/api/attempts/:id_attempts/total-score', async (req, res) => {
+  try {
+    const id_attempts = req.params.id_attempts;
+    const totalScoreAwarded = await getTotalScoreAwarded(id_attempts);
+    res.json({ totalScoreAwarded });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// app.post('/api/predict-score', async (req, res) => {
+//   const { id_attempts_details } = req.body;
+
+//   try {
+//     const result = await getTPAnswerByIdDetails(id_attempts_details);
+
+//     if (!result) {
+//       return res.status(404).json({ success: false, message: 'Jawaban tidak ditemukan' });
+//     }
+
+//     const { tp_answer } = result;
+
+//     // Kirim ke API Hugging Face Spaces
+//     const response = await axios.post('https://florenciairenae-asag-skripsi.hf.space/predict', {
+//       student_answer: tp_answer
+//     });
+
+//     const predicted_score = parseFloat(response.data.score.toFixed(1));
+
+//     // ⬇️ Console log untuk debugging / tracking
+//     console.log('Prediksi nilai berhasil:');
+//     console.log(`id_attempts_details: ${id_attempts_details}`);
+//     console.log(`tp_answer: ${tp_answer}`);
+//     console.log(`predicted_score: ${predicted_score}`);
+
+//     res.json({
+//       success: true,
+//       data: {
+//         id_attempts_details,
+//         tp_answer,
+//         predicted_score
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error dalam prediksi skor:', error.response?.data || error.message);
+//     res.status(500).json({ success: false, message: 'Server error saat memanggil API prediksi' });
+//   }
+// });
+
+// untuk cek fucntion getTPAnswerByIdDetails aja
+app.get('/api/tp-answer/:id', async (req, res) => {
+  const id_attempts_details = req.params.id;
+
+  const result = await getTPAnswerByIdDetails(id_attempts_details);
+
+  if (!result) {
+    return res.status(404).json({ message: 'tp_answer tidak ditemukan' });
+  }
+
+  res.json(result);
+});
+
+app.post('/predict-score', async (req, res) => {
+  const { id_attempts_details } = req.body;
+  
+  // Add input validation
+  if (!id_attempts_details) {
+    return res.status(400).json({ error: 'id_attempts_details is required' });
+  }
+
+  try {
+    console.log('Getting answer data for id:', id_attempts_details);
+    
+    // Check if the function name is correct
+    const answerData = await getTPAnswerByIdDetails(id_attempts_details);
+    
+    if (!answerData) {
+      console.log('Answer not found for id:', id_attempts_details);
+      return res.status(404).json({ error: 'Answer not found' });
+    }
+
+    console.log('Answer data retrieved:', answerData);
+
+    const studentAnswer = answerData.tp_answer;
+    
+    // Validate student answer exists
+    if (!studentAnswer || studentAnswer.trim() === '') {
+      return res.status(400).json({ error: 'Student answer is empty' });
+    }
+
+    console.log('Student answer:', studentAnswer);
+    console.log('Sending request to Hugging Face API...');
+
+    // Add timeout and better error handling for API call
+    const response = await axios.post('https://florenciairenae-asag-skripsi.hf.space/predict', {
+      student_answer: studentAnswer,
+    }, {
+      timeout: 30000, // 30 second timeout
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('HF API response:', response.data);
+
+    const score = response.data.score;
+    
+    // Validate score exists
+    if (score === undefined || score === null) {
+      return res.status(500).json({ error: 'Invalid score received from prediction API' });
+    }
+
+    console.log('Updating predicted score...');
+    
+    // Check if this function exists and works
+    const updateResult = await updatePredictedScore(id_attempts_details, score);
+    console.log('Update result:', updateResult);
+
+    res.json({ score });
+    
+  } catch (error) {
+    // More detailed error logging
+    console.error("Prediction error details:");
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    
+    if (error.response) {
+      // API error
+      console.error("API Response status:", error.response.status);
+      console.error("API Response data:", error.response.data);
+      res.status(500).json({ 
+        error: "API prediction failed", 
+        details: error.response.data 
+      });
+    } else if (error.code === 'ECONNABORTED') {
+      // Timeout error
+      res.status(500).json({ error: "Prediction request timed out" });
+    } else {
+      // Database or other error
+      res.status(500).json({ 
+        error: "Failed to get prediction score",
+        details: error.message 
+      });
+    }
+  }
+});
+
+
+//api untuk get nilai ML sementara ke kolom ML PREDIKSI:
+// routes.js atau file endpoint-mu
+app.get('/api/predicted-ml/:id_attempts_details', async (req, res) => {
+  const { id_attempts_details } = req.params;
+
+  try {
+    const result = await getPredictedScore(id_attempts_details);
+    if (!result) {
+      return res.status(404).json({ error: 'Score not found' });
+    }
+
+    res.json({ predicted_score: result.re_awarded });
+  } catch (error) {
+    console.error("Error getting predicted score:", error.message);
+    res.status(500).json({ error: "Failed to fetch predicted score" });
+  }
+});
+
+//button submit
+app.post('/api/attempts/:id_attempts/submit-score', async (req, res) => {
+  try {
+    const { id_attempts } = req.params;
+    
+    console.log('=== SUBMIT SCORE REQUEST ===');
+    console.log('Raw id_attempts from params:', id_attempts);
+    console.log('Type of id_attempts:', typeof id_attempts);
+    
+    // Validasi id_attempts dengan logging detail
+    if (!id_attempts) {
+      console.log('Error: id_attempts is empty or undefined');
+      return res.status(400).json({
+        success: false,
+        message: 'Parameter id_attempts tidak boleh kosong'
+      });
+    }
+    
+    const parsedId = parseInt(id_attempts);
+    console.log('Parsed id_attempts:', parsedId);
+    console.log('isNaN check:', isNaN(parsedId));
+    
+    if (isNaN(parsedId) || parsedId <= 0) {
+      console.log('Error: id_attempts is not a valid positive integer');
+      return res.status(400).json({
+        success: false,
+        message: 'ID attempts harus berupa angka positif yang valid'
+      });
+    }
+    
+    console.log('Calling calculateAndUpdateTotalScore with:', parsedId);
+    
+    // Panggil fungsi untuk menghitung dan update total score
+    const result = await calculateAndUpdateTotalScore(parsedId);
+    
+    console.log('Function result:', result);
+    
+    if (result.success) {
+      console.log('✅ Total score calculation successful');
+      return res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data
+      });
+    } else {
+      console.log('❌ Total score calculation failed:', result.message);
+      return res.status(400).json({
+        success: false,
+        message: result.message
+      });
+    }
+    
+  } catch (error) {
+    console.error('=== ENDPOINT ERROR ===');
+    console.error('Error in submit-score endpoint:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
   }
 });
 
