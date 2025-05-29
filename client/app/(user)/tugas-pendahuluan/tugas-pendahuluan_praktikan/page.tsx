@@ -83,8 +83,7 @@ export default function TugasPendahuluanPage() {
 
   return (
     <>
-    <Header />
-    <div className="flex flex-col items-center min-h-screen bg-gray-50 pt-16">
+    <div className="flex flex-col items-center min-h-screen bg-gray-50">
       {/* Banner */}
       <div className="w-full bg-gradient-to-r from-[#0267FE] to-blue-700 h-60 flex items-center justify-center relative overflow-hidden shadow-md">
         <div className="absolute inset-0 opacity-20">

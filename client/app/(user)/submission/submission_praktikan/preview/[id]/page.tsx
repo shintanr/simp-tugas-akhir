@@ -88,7 +88,6 @@ const PreviewFilePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
           <div className="w-64 bg-gray-200 rounded-full h-2.5 mb-4">
             <div 

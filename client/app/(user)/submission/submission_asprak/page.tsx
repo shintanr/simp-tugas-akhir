@@ -212,7 +212,7 @@ export default function SubmissionAsprak() {
 
   // Render helpers
   const renderEmptyState = () => (
-    <div className="bg-white rounded-xl shadow-sm p-8 min-h-[300px] flex flex-col items-center justify-center text-gray-400 border border-gray-100">
+    <div className="bg-white rounded-xl shadow-sm min-h-[300px] flex flex-col items-center justify-center text-gray-400 border border-gray-100">
       <div className="bg-gray-100 p-4 rounded-full mb-4">
         <AlertCircle className="h-8 w-8 text-gray-400" />
       </div>
@@ -309,7 +309,7 @@ export default function SubmissionAsprak() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50">
       {/* Banner */}
-      <div className="w-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 h-60 flex items-center justify-center relative overflow-hidden">
+      <div className="w-full bg-gradient-to-br from-[#0267FE] to-blue-700 h-60 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-32 h-30 bg-white rounded-full -ml-16 -mt-16"></div>
           <div className="absolute bottom-0 right-0 w-48 h-48 bg-white rounded-full -mr-24 -mb-24"></div>

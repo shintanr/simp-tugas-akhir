@@ -3,7 +3,7 @@
 
 @layer base {
   button {
-      @apply cursor-pointer;
+    @apply cursor-pointer;
   }
 }
 
@@ -57,9 +57,9 @@
   --card-foreground: #171a33;
   --popover: #ffffff;
   --popover-foreground: #171a33;
-  --primary: #406AFE;
+  --primary: #406afe;
   --primary-foreground: #f7f7ff;
-  --secondary: #99AEFF;
+  --secondary: #99aeff;
   --secondary-foreground: #222647;
   --muted: #d2d4ff;
   --muted-foreground: #7d80a8;
@@ -74,7 +74,7 @@
   --chart-3: #7377a3;
   --chart-4: #bedc6a;
   --chart-5: #c6d85e;
-  --sidebar: #ffffff; 
+  --sidebar: #ffffff;
   /* --sidebar: #f7f7ff;  */
   --sidebar-foreground: #171a33;
   --sidebar-primary: #406afe;

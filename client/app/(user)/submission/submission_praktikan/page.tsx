@@ -10,6 +10,7 @@ import { useDropzone } from "react-dropzone";
 import { useRouter } from 'next/navigation';
 import Header from "@/components/ui/ui/header"
 import { useSession } from 'next-auth/react';
+import Navbar from '@/components/shared/navbar';
 
 
 export default function AddSubmissionButton() {
@@ -315,8 +316,7 @@ useEffect(() => {
 
   return (
     <>
-    <Header />
-    <div className="flex flex-col items-center min-h-screen bg-gray-50 pt-16">
+    <div className="flex flex-col items-center min-h-screen ">
       {/* Submission Banner - MODIFIED: height doubled, content area positioned for better UI */}
       <div className="w-full bg-gradient-to-r from-[#0267FE] to-blue-700 h-60 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
