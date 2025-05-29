@@ -21,7 +21,7 @@ export default function TugasPendahuluanDetailPage() {
   useEffect(() => {
     async function fetchPraktikumInfo() {
       try {
-        const response = await fetch(`http://localhost:8080/api/praktikum/${praktikumId}`);
+        const response = await fetch(`http://localhost:8080/api/praktikum/`);
         const data = await response.json();
         if (response.ok && data.data) {
           setPraktikumInfo(data.data);
@@ -146,6 +146,8 @@ export default function TugasPendahuluanDetailPage() {
     setSubmitting(false);
   }
 };
+
+
 
   // Get pertemuan_ke from the first soal (should all be the same)
   const pertemuanKe = soalList.length > 0 ? soalList[0].pertemuan_ke : "";

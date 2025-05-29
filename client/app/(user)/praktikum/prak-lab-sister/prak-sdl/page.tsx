@@ -63,7 +63,7 @@ interface ApiResponse<T> {
   message?: string;
 }
 
-function PrakEldasPage() {
+function PrakSDLPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [selectedSubmodule, setSelectedSubmodule] = useState<Submodule | null>(null);
@@ -552,4 +552,4 @@ function PrakEldasPage() {
   );
 }
 
-export default PrakEldasPage;
+export default PrakSDLPage;

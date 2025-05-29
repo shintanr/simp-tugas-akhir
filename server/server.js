@@ -125,6 +125,7 @@ const uploadDir = path.join(process.cwd(), "server/video_file");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+app.use("/server/video_file", express.static(uploadDir));
 
 // Konfigurasi penyimpanan
 const storage = multer.diskStorage({
@@ -1879,6 +1880,7 @@ app.get("/api/praktikum", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 app.get("/api/praktikum/:praktikumId", async (req, res) => {
   try {

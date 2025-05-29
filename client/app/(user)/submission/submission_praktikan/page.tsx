@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import Header from "@/components/ui/ui/header"
 import { useSession } from 'next-auth/react';
 import Navbar from '@/components/shared/navbar';
+import Link from 'next/link';
 
 
 export default function AddSubmissionButton() {
@@ -219,16 +220,34 @@ useEffect(() => {
     }
   };
 
-  const handleViewFile = (item) => {
-    // Pastikan item memiliki id_submission_praktikan
-    if (!item || !item.id_submission_praktikan) {
-      console.error('ID submission tidak ditemukan', item);
-      return;
-    }
-    
-    // Navigate ke halaman preview
-    router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
+const handleViewFile = (item) => {
+  console.log('handleViewFile called with:', item); // Debug log
+  
+  // Check if item exists
+  if (!item) {
+    console.error('Item is null or undefined');
+    alert('Data submission tidak ditemukan');
+    return;
   }
+  
+  // Check for id_submission_praktikan
+  if (!item.id_submission_praktikan) {
+    console.error('ID submission tidak ditemukan', item);
+    console.log('Available keys in item:', Object.keys(item)); // Show available properties
+    alert('ID submission tidak valid');
+    return;
+  }
+  
+  console.log('Navigating to:', `/submission_praktikan/preview/${item.id_submission_praktikan}`);
+  
+  // Try navigation with error handling
+  try {
+    router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
+  } catch (error) {
+    console.error('Navigation error:', error);
+    alert('Gagal membuka halaman preview');
+  }
+}
 
   const handleViewCatatan = (catatan) => {
     setCurrentCatatan(catatan || "Tidak ada catatan asistensi");
@@ -395,13 +414,13 @@ useEffect(() => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex space-x-2">
-                            <button 
-                              onClick={() => handleViewFile(item)}
-                              className="p-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                              title="Lihat"
-                            >
-                              <Eye size={16} />
-                            </button>
+                                <button
+                            onClick={() => handleViewFile(item)} // (1)
+                            className="p-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                            title="Lihat"
+                          >
+                            <Eye size={16} />
+                          </button>
                             <button 
                               onClick={() => handleDeleteSubmission(item.id_submission_praktikan)}
                               className="p-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
