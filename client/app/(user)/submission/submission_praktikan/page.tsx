@@ -227,7 +227,7 @@ useEffect(() => {
     }
     
     // Navigate ke halaman preview
-    router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
+    router.push(`/submission/submission_praktikan/preview/${item.id_submission_praktikan}`);
   }
 
   const handleViewCatatan = (catatan) => {

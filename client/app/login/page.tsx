@@ -30,7 +30,7 @@ export default function Login() {
                 href="/forgot-password"
                 className="text-sm text-[#0267FE] hover:underline"
               >
-                Lupa password?
+               
               </a>
             </div>
           </div>

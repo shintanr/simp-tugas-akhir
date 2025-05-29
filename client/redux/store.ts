@@ -8,6 +8,8 @@ import { presensiApi } from "./services/presensiApi";
 import { penilaianApi } from "./services/penilaian";
 import { complaintApi } from "./services/complaintApi";
 import { AuthApi } from "./services/authApi";
+import { tugasPendahuluanApi } from "./services/tugasPendahuluanApi";
+
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +21,7 @@ export const store = configureStore({
     [presensiApi.reducerPath]: presensiApi.reducer,
     [penilaianApi.reducerPath]: penilaianApi.reducer,
     [complaintApi.reducerPath]: complaintApi.reducer,
+    [tugasPendahuluanApi.reducerPath]: tugasPendahuluanApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -29,7 +32,8 @@ export const store = configureStore({
       userPraktikumApi.middleware,
       presensiApi.middleware,
       penilaianApi.middleware,
-      complaintApi.middleware
+      complaintApi.middleware,
+      tugasPendahuluanApi.middleware,
     ),
 });
 
