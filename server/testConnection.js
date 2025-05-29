@@ -1,11 +1,11 @@
 import mysql from "mysql2/promise";
 
 const pool = mysql.createPool({
-  host: "127.0.0.1",
+  host: "localhost",
   user: "root",
-  password: "",
-  database: "lab_management",
-  port: 3306,
+  password: "root",
+  database: "lab_management_final",
+  port: 8889,
 });
 
 async function test() {

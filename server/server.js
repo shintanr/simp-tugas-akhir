@@ -1864,6 +1864,7 @@ app.get("/api/praktikum", async (req, res) => {
   }
 });
 
+
 app.get("/api/praktikum/:praktikumId", async (req, res) => {
   try {
     const { praktikumId } = req.params;

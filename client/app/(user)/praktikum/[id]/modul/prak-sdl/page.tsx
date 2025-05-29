@@ -69,7 +69,7 @@ interface ApiResponse<T> {
   message?: string;
 }
 
-function PrakEldasPage() {
+function PrakSDLPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [selectedSubmodule, setSelectedSubmodule] = useState<Submodule | null>(null);
@@ -81,16 +81,17 @@ function PrakEldasPage() {
   const [progress, setProgress] = useState<ProgressMap>({});
   const router = useRouter();
   const session = useSession();
-
-  const params = useParams();
-  const { data: userPraktikum } = useDetailuserPraktikumQuery(params.id);
+      
+    const params = useParams();
+    const { data: userPraktikum } = useDetailuserPraktikumQuery(params.id);
+   
 
   // Fetch modules data
   const fetchModules = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:8080/api/praktikum/modul/12");
+      const response = await fetch("http://localhost:8080/api/praktikum/modul/9");
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
       }
@@ -104,7 +105,8 @@ function PrakEldasPage() {
       data.data.forEach(module => {
         initialProgress[module.id_modul] = {
           completed: false,
-          progress: 0
+          progress: 0,
+          visitedSubmodules: []
         };
       });
       setProgress(initialProgress);
@@ -119,6 +121,7 @@ function PrakEldasPage() {
   useEffect(() => {
     fetchModules();
   }, [fetchModules]);
+
 
   // Fetch submodules for a specific module
   const fetchSubmodules = useCallback(async (moduleId: number) => {
@@ -163,18 +166,55 @@ function PrakEldasPage() {
 
   const handleSubmoduleClick = useCallback((submodule: Submodule) => {
     setSelectedSubmodule(submodule);
-    
-    // Simulate completing a submodule when clicked
-    if (selectedModule) {
-      setProgress(prev => ({
-        ...prev,
-        [selectedModule.id_modul]: {
-          ...prev[selectedModule.id_modul],
-          progress: Math.min(100, (prev[selectedModule.id_modul]?.progress || 0) + 20)
-        }
-      }));
+  
+    const moduleId = submodule.id_modul;
+  
+    setProgress(prev => {
+      const currentModuleProgress = prev[moduleId] || { 
+        completed: false, 
+        progress: 0, 
+        visitedSubmodules: [] 
+      };
+  
+      if (!currentModuleProgress.visitedSubmodules.includes(submodule.id_submodul)) {
+        const updatedVisitedSubmodules = [
+          ...currentModuleProgress.visitedSubmodules,
+          submodule.id_submodul
+        ];
+  
+        const totalSubmodules = submodules[moduleId]?.length || 1;
+  
+        const newProgress = Math.min(
+          100, 
+          Math.round((updatedVisitedSubmodules.length / totalSubmodules) * 100)
+        );
+  
+        const allCompleted = updatedVisitedSubmodules.length === totalSubmodules;
+  
+        return {
+          ...prev,
+          [moduleId]: {
+            completed: allCompleted,
+            progress: newProgress,
+            visitedSubmodules: updatedVisitedSubmodules
+          }
+        };
+      }
+  
+      return prev;
+    });
+  
+    // Update selectedModule jika belum sesuai
+    const parentModule = modules.find(mod => mod.id_modul === moduleId);
+    if (parentModule && (!selectedModule || selectedModule.id_modul !== moduleId)) {
+      setSelectedModule(parentModule);
+  
+      if (!openDropdowns.includes(moduleId)) {
+        toggleDropdown(moduleId);
+      }
     }
-  }, [selectedModule]);
+  }, [modules, submodules, selectedModule, openDropdowns, toggleDropdown]);
+  
 
   const currentVideoUrl = selectedSubmodule?.video_url || selectedModule?.video_url || null;
 
@@ -197,16 +237,117 @@ function PrakEldasPage() {
     }
   }, [selectedSubmodule]);
 
-
   // Helper function to determine if content is a quiz
   const isQuiz = useCallback((id_submodul: number): boolean => {
-    return [3, 6, 9, 12, 15].includes(id_submodul);
+    return [3, 6, 9, 12, 15, 18, 21].includes(id_submodul);
   }, []);
 
   // Retry loading if there was an error
   const handleRetry = () => {
     fetchModules();
   };
+
+  // Add this helper function to detect YouTube links
+const isYouTubeLink = (url: string): boolean => {
+  if (!url) return false;
+  return url.includes("youtube.com") || url.includes("youtu.be");
+};
+
+// Add this helper function to convert YouTube URLs to embed format
+const getYouTubeEmbedUrl = (url: string): string => {
+  if (!url) return "";
+  
+  try {
+    // Handle youtube.com/watch?v= format
+    if (url.includes("youtube.com/watch?v=")) {
+      const videoId = new URL(url).searchParams.get("v");
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Handle youtu.be/ format
+    if (url.includes("youtu.be/")) {
+      const videoId = url.split("youtu.be/")[1].split("?")[0];
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // If it's already an embed URL, return as is
+    if (url.includes("youtube.com/embed/")) {
+      return url;
+    }
+  } catch (error) {
+    console.error("Error parsing YouTube URL:", error);
+  }
+  
+  // If we couldn't parse it, return the original URL
+  return url;
+};
+
+// Add this helper function to determine the correct icon based on content type
+const getSubmoduleIcon = useCallback((submodule) => {
+  // First, check if it's a quiz
+  if (isQuiz(submodule.id_submodul) || 
+      submodule.judul_submodul.toLowerCase().includes("quiz")) {
+    return {
+      icon: <FaClipboardList className="text-xs" />,
+      bgColor: "bg-green-50",
+      textColor: "text-green-500"
+    };
+  }
+  
+  // Check if it's a ringkasan/summary
+  if (submodule.judul_submodul.toLowerCase().includes("ringkasan")) {
+    return {
+      icon: (
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          className="text-xs"
+          width="1em"
+          height="1em"
+        >
+          <path d="M7 4C6.44772 4 6 4.44772 6 5V19C6 19.5523 6.44772 20 7 20H17C17.5523 20 18 19.5523 18 19V9L13 4H7Z" fill="currentColor" />
+          <path d="M13 4V9H18L13 4Z" fill="white" />
+          <rect x="8" y="11" width="8" height="1.5" rx="0.75" fill="white" />
+          <rect x="8" y="14" width="8" height="1.5" rx="0.75" fill="white" />
+          <rect x="8" y="17" width="5" height="1.5" rx="0.75" fill="white" />
+        </svg>
+      ),
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-500"
+    };
+  }
+  
+  // Check if it contains video
+  if ((submodule.video_url && 
+       (submodule.video_url.includes("youtube.com") || 
+        submodule.video_url.includes("youtu.be") || 
+        submodule.video_url.endsWith(".mp4"))) || 
+      submodule.judul_submodul.toLowerCase().includes("video")) {
+    return {
+      icon: <FaPlayCircle className="text-xs" />,
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-500"
+    };
+  }
+  
+  // Check if it's a PDF or document
+  if (submodule.pdf_url || 
+      (submodule.video_url && submodule.video_url.endsWith(".pdf")) ||
+      submodule.judul_submodul.toLowerCase().includes("bahan praktikum")) {
+    return {
+      icon: <FaBookOpen className="text-xs" />,
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-500"
+    };
+  }
+  
+  // Default case: use book icon
+  return {
+    icon: <FaBookOpen className="text-xs" />,
+    bgColor: "bg-purple-50",
+    textColor: "text-purple-500"
+  };
+}, [isQuiz]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
@@ -222,70 +363,73 @@ function PrakEldasPage() {
           </button>
           <div className="flex items-center">
             <FaGraduationCap className="text-2xl mr-2" />
-            <h1 className="text-2xl font-bold">Praktikum SDL</h1>
+            <h1 className="text-2xl font-bold">Praktikum Sistem Digital Lanjut</h1>
           </div>
         </div>
         <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
-          {/* <FaUserCircle className="text-2xl" />
-          <span className="text-lg font-medium">Admin 1234567</span> */}
-                    {/* Admin Dashboard Button */}
-                  <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
-                  {userPraktikum?.data?.is_asisten == 1 && (
-                      <Link
-                          href={`/praktikum/${params.id}/modul/prak-sdl/admin`}
-                          className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
-                      >
-                          <FaUserShield className="mr-2" />
-                          <span>Admin Dashboard</span>
-                      </Link>
-                      )}
-                  </div>
-            <div className="flex items-center gap-2 ml-6">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                  <Popover>
-                    <PopoverTrigger>{session.data?.user?.name}</PopoverTrigger>
-                    <PopoverContent className="w-56 mt-4">
-                      <div className="flex flex-col gap-2 p-1 bg-white">
-                        <Button
-                          className="w-full"
-                          onClick={() => {
-                            router.push("/profile");
-                          }}
-                        >
-                          Profile
-                        </Button>
-                        <Button
-                          className="w-full"
-                          variant={"outline"}
-                          onClick={() =>
-                            signOut({
-                              callbackUrl: "/login",
-                            })
-                          }
-                        >
-                          Keluar
-                        </Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                  {/* User Info */}
+                <div className="flex items-center space-x-4 bg-opacity-10 py-2 px-4 rounded-full backdrop-blur-sm">
+                {userPraktikum?.data?.is_asisten == 1 && (
+                   <Link
+                        href={`/praktikum/${params.id}/modul/prak-sdl/admin`}
+                        className="flex items-center bg-black bg-opacity-20 text-white py-2 px-3 rounded-lg transition-colors"
+                    >
+                        <FaUserShield className="mr-2" />
+                        <span>Admin Dashboard</span>
+                    </Link>
+                    )}
                 </div>
-            </div>
+        
+                <div className="flex items-center gap-2 ml-6">
+                          <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                          <Popover>
+                            <PopoverTrigger>{session.data?.user?.name}</PopoverTrigger>
+                            <PopoverContent className="w-56 mt-4">
+                              <div className="flex flex-col gap-2 p-1 bg-white">
+                                <Button
+                                  className="w-full"
+                                  onClick={() => {
+                                    router.push("/profile");
+                                  }}
+                                >
+                                  Profile
+                                </Button>
+                                <Button
+                                  className="w-full"
+                                  variant={"outline"}
+                                  onClick={() =>
+                                    signOut({
+                                      callbackUrl: "/login",
+                                    })
+                                  }
+                                >
+                                  Keluar
+                                </Button>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                    </div>
       </div>
 
-      <div className="flex flex-grow">
-        {/* Sidebar Toggle Button for Mobile (hidden on larger screens) */}
+      <div className="flex flex-grow relative">
+        {/* Sidebar Toggle Button (visible on all screen sizes) */}
         <button 
-          className="lg:hidden fixed bottom-6 right-6 z-10 bg-blue-600 text-white p-3 rounded-full shadow-lg"
+          className="fixed bottom-6 right-6 z-10 bg-blue-600 text-white p-3 rounded-full shadow-lg"
           onClick={() => setIsSidebarExpanded(prev => !prev)}
         >
           <FaBars />
         </button>
 
-        {/* Sidebar */}
+        {/* Sidebar - Updated for better positioning */}
         <div 
-          className={`${
-            isSidebarExpanded ? "w-72 translate-x-0" : "w-20 -translate-x-0"
-          } bg-white shadow-lg overflow-hidden transition-all duration-300 flex flex-col border-r border-gray-200 relative`}
+          className={`
+            ${isSidebarExpanded ? "w-72 translate-x-0" : "w-20 translate-x-0"} 
+            bg-white shadow-lg overflow-hidden transition-all duration-300 
+            flex flex-col border-r border-gray-200
+            h-screen md:h-auto z-10
+            absolute md:relative
+          `}
         >
           <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
             {isSidebarExpanded ? (
@@ -307,7 +451,7 @@ function PrakEldasPage() {
             </button>
           </div>
           
-          <div className="overflow-y-auto flex-grow">
+          <div className="overflow-y-auto flex-grow scrollbar-container">
             {loading ? (
               <div className="flex justify-center items-center h-32">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -371,51 +515,29 @@ function PrakEldasPage() {
                       {openDropdowns.includes(module.id_modul) && (
                         <ul className="ml-12 mt-1 space-y-1 border-l border-gray-200 pl-4">
                           {submodules[module.id_modul]?.length > 0 ? (
-                            submodules[module.id_modul].map((submodule) => (
-                              <li
-                                key={submodule.id_submodul}
-                                className={`p-2 rounded-md cursor-pointer flex items-center transition-colors ${
-                                  selectedSubmodule?.id_submodul === submodule.id_submodul
-                                    ? "bg-blue-50 text-blue-700 font-medium"
-                                    : "text-gray-600 hover:bg-gray-50"
-                                }`}
-                                onClick={() => handleSubmoduleClick(submodule)}
-                              >
-                                <div className={`p-1 rounded-md mr-2 ${
-                                  isQuiz(submodule.id_submodul)
-                                    ? "bg-green-50 text-green-500"
-                                    : submodule.judul_submodul.toLowerCase().includes("ringkasan")
-                                      ? "bg-amber-50 text-amber-500"
-                                      : "bg-blue-50 text-blue-500"
-                                }`}>
-                                  {isQuiz(submodule.id_submodul) ? (
-                                    <FaClipboardList className="text-xs" />
-                                  ) : submodule.judul_submodul.toLowerCase().includes("ringkasan") ? (
-                                    <svg 
-                                      xmlns="http://www.w3.org/2000/svg" 
-                                      viewBox="0 0 24 24" 
-                                      className="text-xs"
-                                      width="1em"
-                                      height="1em"
-                                    >
-                                      <circle cx="12" cy="12" r="11" fill="currentColor" fillOpacity="0.2" />
-                                      <path d="M7 4C6.44772 4 6 4.44772 6 5V19C6 19.5523 6.44772 20 7 20H17C17.5523 20 18 19.5523 18 19V9L13 4H7Z" fill="currentColor" />
-                                      <path d="M13 4V9H18L13 4Z" fill="white" />
-                                      <rect x="8" y="11" width="8" height="1.5" rx="0.75" fill="white" />
-                                      <rect x="8" y="14" width="8" height="1.5" rx="0.75" fill="white" />
-                                      <rect x="8" y="17" width="5" height="1.5" rx="0.75" fill="white" />
-                                    </svg>
-                                  ) : (
-                                    <FaPlayCircle className="text-xs" />
+                            submodules[module.id_modul].map((submodule) => {
+                              const iconData = getSubmoduleIcon(submodule);
+                              return (
+                                <li
+                                  key={submodule.id_submodul}
+                                  className={`p-2 rounded-md cursor-pointer flex items-center transition-colors ${
+                                    selectedSubmodule?.id_submodul === submodule.id_submodul
+                                      ? "bg-blue-50 text-blue-700 font-medium"
+                                      : "text-gray-600 hover:bg-gray-50"
+                                  }`}
+                                  onClick={() => handleSubmoduleClick(submodule)}
+                                >
+                                  <div className={`p-1 rounded-md mr-2 ${iconData.bgColor} ${iconData.textColor}`}>
+                                    {iconData.icon}
+                                  </div>
+                                  <span className="text-sm truncate">{submodule.judul_submodul}</span>
+                                  {/* Bookmark indicator */}
+                                  {submodule.id_submodul % 3 === 0 && (
+                                    <FaBookmark className="ml-auto text-xs text-amber-500" />
                                   )}
-                                </div>
-                                <span className="text-sm">{submodule.judul_submodul}</span>
-                                {/* Bookmark indicator */}
-                                {submodule.id_submodul % 3 === 0 && (
-                                  <FaBookmark className="ml-auto text-xs text-amber-500" />
-                                )}
-                              </li>
-                            ))
+                                </li>
+                              );
+                            })
                           ) : submodules[module.id_modul] === undefined ? (
                             <li className="p-2 text-gray-400 text-sm">
                               <div className="animate-pulse flex items-center">
@@ -463,9 +585,13 @@ function PrakEldasPage() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-grow p-6 transition-all duration-300">
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        {/* Main Content - Adjusted position to prevent too much right shift */}
+        <div className={`
+          flex-grow transition-all duration-300
+          ${isSidebarExpanded ? "ml-0 md:ml-0" : "ml-0 md:ml-0"}
+          relative z-0
+        `}>
+          <div className="bg-white rounded-xl shadow-md overflow-hidden m-3 md:m-6">
             {/* Content header */}
             {(selectedModule || selectedSubmodule) && (
               <div className="border-b border-gray-100 p-6 bg-gradient-to-r from-gray-50 to-white">
@@ -500,7 +626,7 @@ function PrakEldasPage() {
                       {selectedModule && (
                         <span className="text-gray-500 mt-1 flex items-center">
                           <FaBookOpen className="text-xs mr-1" />
-                          From: {selectedModule.judul_modul}
+                          {selectedModule.judul_modul}
                         </span>
                       )}
                     </>
@@ -511,42 +637,58 @@ function PrakEldasPage() {
             
             {/* Video player and content */}
             <div className="p-6">
-              {currentVideoUrl ? (
-                <div className="mb-6 rounded-xl overflow-hidden shadow-md border border-gray-200">
+            {currentVideoUrl ? (
+              <div className="mb-6 rounded-xl overflow-hidden shadow-md border border-gray-200">
+                {isYouTubeLink(currentVideoUrl) ? (
+                  // YouTube video embed
+                  <div className="aspect-w-16 aspect-h-9">
+                    <iframe
+                      src={getYouTubeEmbedUrl(currentVideoUrl)}
+                      className="w-full h-96"
+                      allowFullScreen
+                      title="YouTube video player"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    ></iframe>
+                  </div>
+                ) : (
+                  // Regular video player for local videos
                   <video 
                     key={currentVideoUrl} 
                     controls 
                     className="w-full"
-                    poster="/api/placeholder/1200/675" // Placeholder image for video
+                    poster="/api/placeholder/1200/675"
                   >
                     <source src={currentVideoUrl} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
-                  <div className="bg-gray-50 p-3 border-t border-gray-100 flex justify-between items-center">
-                    <span className="text-sm text-gray-500">Digital Systems Lab</span>
-                    <div className="flex items-center space-x-4">
-                      
-                      <button className="text-blue-600 hover:underline text-sm">Download</button>
-                      <button className="text-blue-600 hover:underline text-sm">Transcript</button>
-                    </div>
+                )}
+                <div className="bg-gray-50 p-3 border-t border-gray-100 flex justify-between items-center">
+                  <span className="text-sm text-gray-500">Digital Systems Lab</span>
+                  <div className="flex items-center space-x-4">
+                    <button className="text-blue-600 hover:underline text-sm">Download</button>
+                    <button className="text-blue-600 hover:underline text-sm">Transcript</button>
                   </div>
                 </div>
+              </div>
               ) : (!selectedModule && !selectedSubmodule) && (
                 <div className="text-center py-16 px-6">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full transform scale-150 opacity-30 blur-3xl"></div>
                     <div className="relative">
-                      <div className="inline-flex justify-center items-center w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mb-6 text-white">
-                        <FaGraduationCap className="text-3xl" />
-                      </div>
-                      <h3 className="text-2xl font-semibold text-gray-800 mb-3">Welcome to Praktikum Eldas</h3>
-                      <p className="text-gray-600 max-w-md mx-auto mb-6">
-                        Select a module from the sidebar to begin your digital systems laboratory journey. Track your progress and complete quizzes to test your knowledge.
-                      </p>
-                      <div className="flex justify-center space-x-3">
-                        <button className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                          View Introduction
-                        </button>
+                    <div className="inline-flex justify-center items-center w-20 h-20 bg-[#0267FE] rounded-full mb-6 text-white">
+                      <FaGraduationCap className="text-3xl" />
+                    </div>
+
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-3">Welcome to Praktikum Sistem Digital Lanjut</h3>
+
+                    <p className="text-gray-600 max-w-md mx-auto mb-6">
+                      Select a module from the sidebar to begin your digital systems laboratory journey. Track your progress and complete quizzes to test your knowledge.
+                    </p>
+
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <button className="bg-[#0267FE] text-white py-2 px-4 rounded-lg hover:bg-[#0255da] transition-colors">
+                        View Introduction
+                      </button>
                         <button className="border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors">
                           Browse Modules
                         </button>
@@ -575,7 +717,7 @@ function PrakEldasPage() {
                         <FaExclamationTriangle />
                       </div>
                       <p>
-                        Lets Learning!
+                        Let&apos;s start learning!
                       </p>
                     </div>
                   </div>
@@ -585,8 +727,16 @@ function PrakEldasPage() {
           </div>
         </div>
       </div>
+      
+      {/* Overlay for mobile view when sidebar is open */}
+      {isSidebarExpanded && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden"
+          onClick={() => setIsSidebarExpanded(false)}
+        ></div>
+      )}
     </div>
   );
 }
 
-export default PrakEldasPage;
+export default PrakSDLPage;

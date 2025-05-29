@@ -101,23 +101,54 @@ function AdminDashboardPage() {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadType, setUploadType] = useState<string>("");
+  // Add this to your state variables
+const [videoSourceType, setVideoSourceType] = useState<'file' | 'youtube'>('file');
   
   const [formData, setFormData] = useState<any>({
-    judul_modul: "",
-    judul_submodul: "",
-    video_url: "",
-    pdf_url: "",
+    judul_modul: '',
+    judul_submodul: '',
+    video_url: '',
+    youtube_url: '',
+    pdf_url: '',
     id_praktikum: 9, // Default praktikum ID for SDL
-    question_text: "",
+    question_text: '',
     options: [
-      { option_text: "", is_correct: false },
-      { option_text: "", is_correct: false },
-      { option_text: "", is_correct: false },
-      { option_text: "", is_correct: false }
+      { option_text: '', is_correct: false },
+      { option_text: '', is_correct: false },
+      { option_text: '', is_correct: false },
+      { option_text: '', is_correct: false }
     ]
   });
 
   const router = useRouter();
+
+  const getYouTubeEmbedUrl = (url: string): string => {
+    if (!url) return "";
+    
+    try {
+      // Handle youtube.com/watch?v= format
+      if (url.includes('youtube.com/watch?v=')) {
+        const videoId = new URL(url).searchParams.get('v');
+        if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+      }
+      
+      // Handle youtu.be/ format
+      if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1].split('?')[0];
+        if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+      }
+      
+      // If it's already an embed URL, return as is
+      if (url.includes('youtube.com/embed/')) {
+        return url;
+      }
+    } catch (error) {
+      console.error('Error parsing YouTube URL:', error);
+    }
+    
+    // If we couldn't parse it, return the original URL
+    return url;
+  };
 
   // Fetch modules data
   const fetchModules = useCallback(async () => {
@@ -168,7 +199,7 @@ function AdminDashboardPage() {
     console.log(`Is submodule ${submoduleId} a quiz? ${isQuizSubmodule}`);
     
     if (!isQuizSubmodule) {
-      console.log("Not a quiz submodule, returning");
+      console.log('Not a quiz submodule, returning');
       return;
     }
   
@@ -177,7 +208,7 @@ function AdminDashboardPage() {
     console.log(`Fetching from URL: ${url}`);
     
     const response = await fetch(url);
-    console.log("Response status:", response.status);
+    console.log('Response status:', response.status);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -186,7 +217,7 @@ function AdminDashboardPage() {
     }
     
     const data = await response.json();
-    console.log("Received quiz data:", data);
+    console.log('Received quiz data:', data);
     
     // Transform data to expected format
     let transformedData = [];
@@ -197,10 +228,10 @@ function AdminDashboardPage() {
           id_question: item.id_quiz,
           question_text: item.pertanyaan,
           options: [
-            { option_text: item.pilihan_a, is_correct: item.jawaban_benar === "A" },
-            { option_text: item.pilihan_b, is_correct: item.jawaban_benar === "B" },
-            { option_text: item.pilihan_c, is_correct: item.jawaban_benar === "C" },
-            { option_text: item.pilihan_d, is_correct: item.jawaban_benar === "D" }
+            { option_text: item.pilihan_a, is_correct: item.jawaban_benar === 'A' },
+            { option_text: item.pilihan_b, is_correct: item.jawaban_benar === 'B' },
+            { option_text: item.pilihan_c, is_correct: item.jawaban_benar === 'C' },
+            { option_text: item.pilihan_d, is_correct: item.jawaban_benar === 'D' }
           ]
         };
       });
@@ -223,6 +254,12 @@ function AdminDashboardPage() {
     }
   }, [submodules, fetchSubmodules]);
 
+  const isYouTubeLink = (url: string): boolean => {
+    if (!url) return false;
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  };
+
+
   const handleModuleClick = useCallback((module: Module) => {
     setSelectedModule(module);
     setSelectedSubmodule(null);
@@ -233,10 +270,19 @@ function AdminDashboardPage() {
     setIsEditingQuestion(false);
     setActiveTab("details");
     
+    // Determine video source type
+    let videoType: 'file' | 'youtube' = 'file';
+    if (module.video_url && isYouTubeLink(module.video_url)) {
+      videoType = 'youtube';
+    }
+    
+    setVideoSourceType(videoType);
+    
     setFormData({
       judul_modul: module.judul_modul,
-      video_url: module.video_url || "",
-      pdf_url: module.pdf_url || "",
+      video_url: videoType === 'file' ? module.video_url || '' : '',
+      youtube_url: videoType === 'youtube' ? module.video_url || '' : '',
+      pdf_url: module.pdf_url || '',
       id_praktikum: module.id_praktikum
     });
     
@@ -246,6 +292,21 @@ function AdminDashboardPage() {
   }, [toggleDropdown, openDropdowns]);
 
   const handleSubmoduleClick = useCallback((submodule: Submodule) => {
+    // Cari modul parent-nya berdasarkan id_modul
+    const parentModule = modules.find((mod) => mod.id_modul === submodule.id_modul);
+    if (parentModule) {
+      // Set modul parent jika belum diset atau beda dengan modul yang sedang dipilih
+      if (!selectedModule || selectedModule.id_modul !== parentModule.id_modul) {
+        setSelectedModule(parentModule);
+  
+        // Optionally: open dropdown jika belum terbuka
+        if (!openDropdowns.includes(parentModule.id_modul)) {
+          toggleDropdown(parentModule.id_modul);
+        }
+      }
+    }
+  
+    // Lanjut set submodule seperti biasa
     setSelectedSubmodule(submodule);
     setSelectedQuestion(null);
     setIsEditing(false);
@@ -253,18 +314,28 @@ function AdminDashboardPage() {
     setIsEditingQuestion(false);
     setIsAddingModule(false);
     setActiveTab("details");
-    
+  
+    // Tentukan tipe video
+    let videoType: 'file' | 'youtube' = 'file';
+    if (submodule.video_url && isYouTubeLink(submodule.video_url)) {
+      videoType = 'youtube';
+    }
+  
+    setVideoSourceType(videoType);
+  
     setFormData({
       judul_submodul: submodule.judul_submodul,
-      video_url: submodule.video_url || "",
-      pdf_url: submodule.pdf_url || "",
+      video_url: videoType === 'file' ? submodule.video_url || '' : '',
+      youtube_url: videoType === 'youtube' ? submodule.video_url || '' : '',
+      pdf_url: submodule.pdf_url || '',
       id_modul: submodule.id_modul
     });
-
+  
     if (isQuiz(submodule.id_submodul) && !quizQuestions[submodule.id_submodul]) {
       fetchQuizQuestions(submodule.id_submodul);
     }
-  }, [fetchQuizQuestions]);
+  }, [modules, selectedModule, openDropdowns, toggleDropdown, fetchQuizQuestions]);
+  
 
   const handleQuestionClick = (question) => {
     setSelectedQuestion(question);
@@ -294,7 +365,7 @@ function AdminDashboardPage() {
       newOptions[index] = { ...newOptions[index], [field]: value };
       
       // If setting this option as correct, set others to false
-      if (field === "is_correct" && value === true) {
+      if (field === 'is_correct' && value === true) {
         newOptions.forEach((opt, i) => {
           if (i !== index) {
             newOptions[i] = { ...newOptions[i], is_correct: false };
@@ -324,13 +395,13 @@ function AdminDashboardPage() {
           clearInterval(interval);
           setIsUploading(false);
           
-          const fileName = file.name.replace(/\s/g, "_");
+          const fileName = file.name.replace(/\s/g, '_');
   
           // 👉 Cocokkan dengan URL endpoint backend
-          let url = "";
-          if (type === "video") {
+          let url = '';
+          if (type === 'video') {
             url = `http://localhost:8080/server/video_file/${fileName}`;
-          } else if (type === "pdf") {
+          } else if (type === 'pdf') {
             url = `http://localhost:8080/server/pdf_file/${fileName}`;
           } else {
             url = `http://localhost:8080/uploads/${type}/${fileName}`;
@@ -344,8 +415,8 @@ function AdminDashboardPage() {
   
 
   // Handle file uploads
-  const handleFileUpload = async (type: "pdf" | "video") => {
-    const fileRef = type === "pdf" ? pdfFileRef : videoFileRef;
+  const handleFileUpload = async (type: 'pdf' | 'video') => {
+    const fileRef = type === 'pdf' ? pdfFileRef : videoFileRef;
     if (fileRef.current && fileRef.current.files && fileRef.current.files.length > 0) {
       const file = fileRef.current.files[0];
       
@@ -353,7 +424,7 @@ function AdminDashboardPage() {
         const url = await simulateUpload(file, type);
         
         // Update form data with the new URL
-        if (type === "pdf") {
+        if (type === 'pdf') {
           setFormData((prev: any) => ({ ...prev, pdf_url: url }));
         } else {
           setFormData((prev: any) => ({ ...prev, video_url: url }));
@@ -388,7 +459,7 @@ function AdminDashboardPage() {
 
       fetchModules();
       setIsAddingModule(false);
-      setFormData({ judul_modul: "", id_praktikum: 9 });
+      setFormData({ judul_modul: '', id_praktikum: 9 });
     } catch (err) {
       console.error("Error adding module:", err);
       alert(`Failed to add module: ${(err as Error).message}`);
@@ -396,117 +467,145 @@ function AdminDashboardPage() {
   };
 
   // Add new submodule
-  const handleAddSubmodule = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!selectedModule) {
-      alert("Please select a module first");
-      return;
-    }
-    
-    if (!formData.judul_submodul.trim()) {
-      alert("Submodule title is required");
-      return;
-    }
-    
-    // Create FormData object
-    const formDataToSend = new FormData();
-    
-    // Add text fields
-    formDataToSend.append("judul_submodul", formData.judul_submodul);
-    formDataToSend.append("id_modul", selectedModule.id_modul.toString());
-    
-    // Add file fields if they exist
-    if (pdfFileRef.current?.files?.[0]) {
-      formDataToSend.append("file", pdfFileRef.current.files[0]); // PDF
-      console.log("Attaching PDF:", pdfFileRef.current.files[0].name);
-    }
-    
-    if (videoFileRef.current?.files?.[0]) {
-      formDataToSend.append("video", videoFileRef.current.files[0]); // Video
-      console.log("Attaching video:", videoFileRef.current.files[0].name);
-    }
-    
-    // Log what we're sending for debugging
-    console.log("Sending title:", formData.judul_submodul);
-    console.log("Sending module ID:", selectedModule.id_modul.toString());
-    
-    try {
-      // Show loading state if desired
-      // setIsLoading(true);
-      
-      // Send the request
-      const response = await fetch("http://localhost:8080/admin/post/submodul/eldas", {
-        method: "POST",
-        body: formDataToSend,
-        // Don't set Content-Type header when using FormData
-      });
-      
-      // Get the response data
-      const responseData = await response.json();
-      console.log("Response from server:", responseData);
-      
-      // Check if the request was successful
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to add submodule");
-      }
-      
-      // Refresh submodules list
-      if (selectedModule) {
-        fetchSubmodules(selectedModule.id_modul);
-      }
-      
-      // Reset form state
-      setIsAddingSubmodule(false);
-      setFormData({ judul_submodul: "", video_url: "", pdf_url: "" });
-      
-      // Clear file inputs
-      if (pdfFileRef.current) pdfFileRef.current.value = "";
-      if (videoFileRef.current) videoFileRef.current.value = "";
-      
-      // Show success message
-      alert("Submodule added successfully!");
-    } catch (err) {
-      console.error("Error adding submodule:", err);
-      alert(`Failed to add submodule: ${(err as Error).message}`);
-    } finally {
-      // Hide loading state if desired
-      // setIsLoading(false);
-    }
-  };
+// Complete handleAddSubmodule function with fixes for YouTube links
+const handleAddSubmodule = async (e: React.FormEvent) => {
+  e.preventDefault();
   
+  if (!selectedModule) {
+    alert('Please select a module first');
+    return;
+  }
+  
+  if (!formData.judul_submodul.trim()) {
+    alert('Submodule title is required');
+    return;
+  }
+  
+  // Create FormData object
+  const formDataToSend = new FormData();
+  
+  // Add text fields
+  formDataToSend.append('judul_submodul', formData.judul_submodul);
+  formDataToSend.append('id_modul', selectedModule.id_modul.toString());
+  
+  // Handle video source based on type
+  if (videoSourceType === 'youtube') {
+    // Ensure we have a YouTube URL
+    if (!formData.youtube_url || formData.youtube_url.trim() === '') {
+      alert('Please enter a valid YouTube URL');
+      return;
+    }
+    
+    console.log('Adding with YouTube type:', videoSourceType);
+    console.log('YouTube URL:', formData.youtube_url);
+    
+    // Use the same field name that your backend expects for YouTube URLs
+    formDataToSend.append('video_url', formData.youtube_url);
+    formDataToSend.append('is_youtube', 'true');
+    
+    // Add a console log to confirm what's being sent
+    console.log('Form data for YouTube:', {
+      video_url: formData.youtube_url,
+      is_youtube: true
+    });
+  } else {
+    // Handle file uploads
+    if (videoFileRef.current?.files?.[0]) {
+      formDataToSend.append('video', videoFileRef.current.files[0]);
+      console.log('Attaching video:', videoFileRef.current.files[0].name);
+    }
+  }
+  
+  // Handle PDF upload consistently for both types
+  if (pdfFileRef.current?.files?.[0]) {
+    formDataToSend.append('file', pdfFileRef.current.files[0]);
+    console.log('Attaching PDF:', pdfFileRef.current.files[0].name);
+  }
+  
+  try {
+    // Log the entire FormData for debugging
+    for (const pair of formDataToSend.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+    
+    const response = await fetch('http://localhost:8080/admin/post/submodul/eldas', {
+      method: 'POST',
+      body: formDataToSend,
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.message || 'Failed to add submodule');
+      } catch (parseError) {
+        throw new Error(`Failed to add submodule: ${response.status} ${response.statusText}`);
+      }
+    }
+    
+    const responseData = await response.json();
+    console.log('Response from server:', responseData);
+    
+    // Refresh submodules list
+    if (selectedModule) {
+      fetchSubmodules(selectedModule.id_modul);
+    }
+    
+    // Reset form state
+    setIsAddingSubmodule(false);
+    setFormData({
+      judul_submodul: '',
+      video_url: '',
+      youtube_url: '',
+      pdf_url: ''
+    });
+    setVideoSourceType('file');
+    
+    // Clear file inputs
+    if (pdfFileRef.current) pdfFileRef.current.value = '';
+    if (videoFileRef.current) videoFileRef.current.value = '';
+    
+    alert('Submodule added successfully!');
+  } catch (err) {
+    console.error('Error adding submodule:', err);
+    alert(`Failed to add submodule: ${(err as Error).message}`);
+  }
+};
+
   // Add new quiz question
   const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSubmodule) {
-      alert("Pilih submodul terlebih dahulu");
+      alert('Pilih submodul terlebih dahulu');
       return;
     }
     
     // Validasi input - pastikan pertanyaan memiliki format yang benar
-    if (!formData.question_text || formData.question_text.trim() === "") {
-      alert("Pertanyaan tidak boleh kosong");
+    if (!formData.question_text || formData.question_text.trim() === '') {
+      alert('Pertanyaan tidak boleh kosong');
       return;
     }
     
     // Minimal panjang pertanyaan (penting untuk validasi)
     if (formData.question_text.trim().length < 5) {
-      alert("Pertanyaan harus minimal 5 karakter");
+      alert('Pertanyaan harus minimal 5 karakter');
       return;
     }
     
     // Validasi opsi jawaban
-    const validOptions = formData.options.filter((opt: { option_text: string; }) => opt.option_text.trim() !== "");
+    const validOptions = formData.options.filter((opt: { option_text: string; }) => opt.option_text.trim() !== '');
     
     if (validOptions.length < 2) {
-      alert("Minimal harus ada 2 pilihan jawaban");
+      alert('Minimal harus ada 2 pilihan jawaban');
       return;
     }
     
     // Pastikan semua opsi memiliki minimal panjang karakter
     for (const option of validOptions) {
       if (option.option_text.trim().length < 2) {
-        alert("Setiap pilihan jawaban harus minimal 2 karakter");
+        alert('Setiap pilihan jawaban harus minimal 2 karakter');
         return;
       }
     }
@@ -514,23 +613,23 @@ function AdminDashboardPage() {
     // Pastikan ada satu jawaban benar
     const correctOptions = validOptions.filter((opt: { is_correct: unknown; }) => opt.is_correct);
     if (correctOptions.length === 0) {
-      alert("Pilih satu jawaban benar");
+      alert('Pilih satu jawaban benar');
       return;
     }
     
     if (correctOptions.length > 1) {
-      alert("Hanya boleh ada satu jawaban benar");
+      alert('Hanya boleh ada satu jawaban benar');
       return;
     }
     
     // Memetakan setiap opsi ke opsi yang benar
-    let jawaban_benar = "";
+    let jawaban_benar = '';
     
     // Determinasi jawaban benar berdasarkan indeks opsi yang benar
     for (let i = 0; i < formData.options.length; i++) {
       if (formData.options[i].is_correct) {
         // Tentukan huruf jawaban berdasarkan indeks (0=A, 1=B, dst)
-        const jawaban_letters = ["A", "B", "C", "D"];
+        const jawaban_letters = ['A', 'B', 'C', 'D'];
         jawaban_benar = jawaban_letters[i];
         break;
       }
@@ -545,15 +644,15 @@ function AdminDashboardPage() {
     const formattedData = {
       id_submodul: selectedSubmodule.id_submodul,
       pertanyaan: formData.question_text.trim(),
-      pilihan_a: validOptions[0]?.option_text.trim() || "",
-      pilihan_b: validOptions[1]?.option_text.trim() || "",
-      pilihan_c: validOptions.length > 2 ? validOptions[2]?.option_text.trim() : "",
-      pilihan_d: validOptions.length > 3 ? validOptions[3]?.option_text.trim() : "",
+      pilihan_a: validOptions[0]?.option_text.trim() || '',
+      pilihan_b: validOptions[1]?.option_text.trim() || '',
+      pilihan_c: validOptions.length > 2 ? validOptions[2]?.option_text.trim() : '',
+      pilihan_d: validOptions.length > 3 ? validOptions[3]?.option_text.trim() : '',
       jawaban_benar: jawaban_benar
     };
     
     // Log data sebelum dikirim untuk debugging
-    console.log("Data yang akan dikirim:", JSON.stringify(formattedData, null, 2));
+    console.log('Data yang akan dikirim:', JSON.stringify(formattedData, null, 2));
     
     try {
       const response = await fetch(`http://localhost:8080/admin/post/quiz/eldas/${selectedSubmodule.id_submodul}`, {
@@ -597,16 +696,16 @@ function AdminDashboardPage() {
       fetchQuizQuestions(selectedSubmodule.id_submodul);
       setIsAddingQuestion(false);
       setFormData({
-        question_text: "",
+        question_text: '',
         options: [
-          { option_text: "", is_correct: false },
-          { option_text: "", is_correct: false },
-          { option_text: "", is_correct: false },
-          { option_text: "", is_correct: false }
+          { option_text: '', is_correct: false },
+          { option_text: '', is_correct: false },
+          { option_text: '', is_correct: false },
+          { option_text: '', is_correct: false }
         ]
       });
       // Tambahkan notifikasi sukses
-      alert("Pertanyaan berhasil ditambahkan");
+      alert('Pertanyaan berhasil ditambahkan');
     } catch (err) {
       console.error("Error adding question:", err);
       alert(`Gagal menambahkan pertanyaan: ${(err as Error).message}`);
@@ -649,16 +748,24 @@ function AdminDashboardPage() {
     if (!selectedSubmodule) return;
   
     const formDataToSend = new FormData();
-    formDataToSend.append("judul_submodul", formData.judul_submodul);
+    formDataToSend.append('judul_submodul', formData.judul_submodul);
   
-    // Append the PDF file if present
-    if (pdfFileRef.current?.files?.[0]) {
-      formDataToSend.append("file", pdfFileRef.current.files[0]);
-    }
+    // Handle video source based on type
+    if (videoSourceType === 'youtube' && formData.youtube_url) {
+      // Send YouTube URL directly
+      formDataToSend.append('video_url', formData.youtube_url);
+      formDataToSend.append('is_youtube', 'true');
+    } else {
+      // Handle normal file uploads
+      // Append the PDF file if present
+      if (pdfFileRef.current?.files?.[0]) {
+        formDataToSend.append('file', pdfFileRef.current.files[0]);
+      }
   
-    // Append the video file if present
-    if (videoFileRef.current?.files?.[0]) {
-      formDataToSend.append("video", videoFileRef.current.files[0]);
+      // Append the video file if present
+      if (videoFileRef.current?.files?.[0]) {
+        formDataToSend.append('video', videoFileRef.current.files[0]);
+      }
     }
   
     try {
@@ -678,7 +785,6 @@ function AdminDashboardPage() {
   };
   
   
-
   // Update quiz question
 const handleUpdateQuestion = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -687,9 +793,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   console.log("Selected Question:", selectedQuestion);
   
   // Check if selectedQuestion is valid
-  if (!selectedQuestion || typeof selectedQuestion !== "object") {
+  if (!selectedQuestion || typeof selectedQuestion !== 'object') {
     console.error("selectedQuestion is invalid:", selectedQuestion);
-    alert("Invalid question selected. Please select a valid question.");
+    alert('Invalid question selected. Please select a valid question.');
     return;
   }
   
@@ -697,7 +803,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   const quizId = selectedQuestion?.id_question;
   if (!quizId) {
     console.error("No valid quiz ID found in selectedQuestion.");
-    alert("Cannot find quiz ID. Please select a valid question.");
+    alert('Cannot find quiz ID. Please select a valid question.');
     return;
   }
   
@@ -708,9 +814,10 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   
   // Map the correct option to A, B, or C
   const jawaban_benar = 
-    correctOptionIndex === 0 ? "A" : 
-    correctOptionIndex === 1 ? "B" : 
-    correctOptionIndex === 2 ? "C" : "";
+    correctOptionIndex === 0 ? 'A' : 
+    correctOptionIndex === 1 ? 'B' : 
+    correctOptionIndex === 2 ? 'C' :
+    correctOptionIndex === 3 ? 'D' : '';
   
   // Siapkan data untuk dikirim ke backend
   const formattedData = {
@@ -798,7 +905,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 
   // Delete quiz question
   const handleDeleteQuestion = async () => {
-    if (!selectedQuestion || !window.confirm("Are you sure you want to delete this question?")) {
+    if (!selectedQuestion || !window.confirm(`Are you sure you want to delete this question?`)) {
       return;
     }
 
@@ -824,7 +931,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 
   // Helper function to determine if content is a quiz
   const isQuiz = useCallback((id_submodul: number): boolean => {
-    return [3, 6, 9, 12, 15].includes(id_submodul);
+    return [3, 6, 9, 12, 15, 18, 21, 24, 27].includes(id_submodul);
   }, []);
 
   const handleRetry = () => {
@@ -866,7 +973,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
             <h3 className="text-lg font-semibold mb-3">Uploading {uploadType.toUpperCase()}</h3>
             <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
               <div 
-                className="bg-blue-600 h-2.5 rounded-full" 
+                className="bg-purple-600 h-2.5 rounded-full" 
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
@@ -887,7 +994,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           </button>
           <div className="flex items-center">
             <FaGraduationCap className="text-2xl mr-2" />
-            <h1 className="text-2xl font-bold">Admin Dashboard - Praktikum Eldas</h1>
+            <h1 className="text-2xl font-bold">Asprak Dashboard - Praktikum Elektronika Dasar</h1>
           </div>
         </div>
         <div className="flex items-center space-x-4 bg-black bg-opacity-20 py-2 px-4 rounded-full backdrop-blur-sm">
@@ -899,7 +1006,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
       <div className="flex flex-grow">
         {/* Sidebar Toggle Button for Mobile */}
         <button 
-          className="lg:hidden fixed bottom-6 right-6 z-10 bg-blue-600 text-white p-3 rounded-full shadow-lg"
+          className="lg:hidden fixed bottom-6 right-6 z-10 bg-purple-600 text-white p-3 rounded-full shadow-lg"
           onClick={() => setIsSidebarExpanded(prev => !prev)}
         >
           <FaBars />
@@ -908,23 +1015,23 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
         {/* Sidebar */}
         <div 
           className={`${
-            isSidebarExpanded ? "w-72 translate-x-0" : "w-20 -translate-x-0"
+            isSidebarExpanded ? 'w-72 translate-x-0' : 'w-20 -translate-x-0'
           } bg-white shadow-lg overflow-hidden transition-all duration-300 flex flex-col border-r border-gray-200 relative`}
         >
           <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
             {isSidebarExpanded ? (
               <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                <FaBookOpen className="mr-2 text-blue-600" />
+                <FaBookOpen className="mr-2 text-purple-600" />
                 Modules
               </h2>
             ) : (
-              <span className="mx-auto text-blue-600">
+              <span className="mx-auto text-purple-600">
                 <FaBookOpen className="text-xl" />
               </span>
             )}
             <button
               onClick={() => setIsSidebarExpanded(prev => !prev)}
-              className="text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
+              className="text-purple-600 hover:bg-purple-50 p-2 rounded-full transition-colors"
               aria-label={isSidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
             >
               {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
@@ -941,7 +1048,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   setIsEditing(false);
                   setSelectedModule(null);
                   setSelectedSubmodule(null);
-                  setFormData({ judul_modul: "", video_url: "", pdf_url: "", id_praktikum: 9 });
+                  setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 9 });
                 }}
                 className="w-full flex items-center justify-center bg-[#0267FE] hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
               >
@@ -954,7 +1061,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           <div className="overflow-y-auto flex-grow">
             {loading ? (
               <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
               </div>
             ) : error ? (
               <div className="p-4 text-center">
@@ -964,7 +1071,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 </div>
                 <button 
                   onClick={handleRetry}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors"
                 >
                   Retry Loading
                 </button>
@@ -977,13 +1084,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <div
                         className={`p-3 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600" 
-                            : "hover:bg-gray-50 border-l-4 border-transparent"
+                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600' 
+                            : 'hover:bg-gray-50 border-l-4 border-transparent'
                         }`}
                         onClick={() => handleModuleClick(module)}
                       >
                         <div className="flex items-center">
-                          <div className="mr-3 text-blue-600 bg-blue-50 p-2 rounded-full">
+                          <div className="mr-3 text-purple-600 bg-purple-50 p-2 rounded-full">
                             <FaBookOpen className="text-sm" />
                           </div>
                           <div>
@@ -1007,7 +1114,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             event.stopPropagation();
                             toggleDropdown(module.id_modul);
                           }}
-                          className="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100"
+                          className="text-gray-500 hover:text-purple-600 p-1 rounded-full hover:bg-gray-100"
                           aria-label={openDropdowns.includes(module.id_modul) ? "Collapse module" : "Expand module"}
                         >
                           {openDropdowns.includes(module.id_modul) ? (
@@ -1026,16 +1133,16 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                   key={submodule.id_submodul}
                                   className={`p-2 rounded-md cursor-pointer transition-colors flex items-center ${
                                     selectedSubmodule?.id_submodul === submodule.id_submodul
-                                      ? "bg-blue-50 text-blue-700"
-                                      : "hover:bg-gray-50"
+                                      ? 'bg-purple-50 text-purple-700'
+                                      : 'hover:bg-gray-50'
                                   }`}
                                   onClick={() => handleSubmoduleClick(submodule)}
                                 >
-                                  <div className="mr-2 text-blue-500">
+                                  <div className="mr-2 text-purple-500">
                                     {isQuiz(submodule.id_submodul) ? (
                                       <FaClipboardList className="text-xs" />
                                     ) : (
-                                      <FaPlayCircle className="text-xs" />
+                                      <FaClipboardList className="text-xs" />
                                     )}
                                   </div>
                                   <div>
@@ -1059,7 +1166,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                               <li className="text-gray-500 text-sm p-2">
                                 {submodules[module.id_modul] === undefined ? (
                                   <div className="flex items-center">
-                                    <div className="w-4 h-4 border-t-2 border-l-2 border-blue-500 rounded-full animate-spin mr-2"></div>
+                                    <div className="w-4 h-4 border-t-2 border-l-2 border-purple-500 rounded-full animate-spin mr-2"></div>
                                     Loading...
                                   </div>
                                 ) : (
@@ -1078,13 +1185,14 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                   setIsEditing(false);
                                   setIsEditingQuestion(false);
                                   setFormData({
-                                    judul_submodul: "",
-                                    video_url: "",
-                                    pdf_url: "",
+                                    judul_submodul: '',
+                                    video_url: '',
+                                    youtube_url: '',
+                                    pdf_url: '',
                                     id_modul: module.id_modul
                                   });
                                 }}
-                                className="text-sm flex items-center text-blue-600 hover:text-blue-700 p-1 rounded"
+                                className="text-sm flex items-center text-purple-600 hover:text-purple-700 p-1 rounded"
                               >
                                 <FaPlus className="mr-1 text-xs" />
                                 Add Submodule
@@ -1105,13 +1213,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       <div
                         className={`p-2 rounded-lg cursor-pointer flex justify-center items-center transition-colors ${
                           selectedModule?.id_modul === module.id_modul 
-                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600" 
-                            : "hover:bg-gray-50 border-l-4 border-transparent"
+                            ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600' 
+                            : 'hover:bg-gray-50 border-l-4 border-transparent'
                         }`}
                         onClick={() => handleModuleClick(module)}
                         title={module.judul_modul}
                       >
-                        <FaBookOpen className="text-blue-600" />
+                        <FaBookOpen className="text-purple-600" />
                       </div>
                     </li>
                   )
@@ -1148,7 +1256,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="judul_modul"
                     value={formData.judul_modul}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     required
                   />
                 </div>
@@ -1163,7 +1271,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                   >
                     Add Module
                   </button>
@@ -1195,41 +1303,91 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="judul_submodul"
                     value={formData.judul_submodul}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     required
                   />
                 </div>
 
+                {/* Replace the existing video_url input section in both Add and Edit forms with this code */}
                 <div className="mb-4">
-                  <label htmlFor="video_url" className="block text-gray-700 font-medium mb-2">
-                    Video URL (Optional)
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Video Source
                   </label>
-                  <div className="flex">
-                    <input
-                      type="text"
-                      id="video_url"
-                      name="video_url"
-                      value={formData.video_url}
-                      onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <div className="ml-2 flex items-center">
+                  <div className="flex items-center space-x-4 mb-2">
+                    <div className="flex items-center">
                       <input
-                        type="file"
-                        ref={videoFileRef}
-                        className="hidden"
-                        accept="video/*"
-                        onChange={() => handleFileUpload("video")}
+                        type="radio"
+                        id="video-source-file"
+                        name="video-source"
+                        checked={videoSourceType === 'file'}
+                        onChange={() => setVideoSourceType('file')}
+                        className="mr-2"
                       />
-                      <button
-                        type="button"
-                        onClick={() => videoFileRef.current?.click()}
-                        className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
-                      >
-                        <FaUpload />
-                      </button>
+                      <label htmlFor="video-source-file">Upload Video File</label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        id="video-source-youtube"
+                        name="video-source"
+                        checked={videoSourceType === 'youtube'}
+                        onChange={() => setVideoSourceType('youtube')}
+                        className="mr-2"
+                      />
+                      <label htmlFor="video-source-youtube">YouTube Link</label>
                     </div>
                   </div>
+
+                  {videoSourceType === 'file' ? (
+                    <>
+                      <label htmlFor="video_url" className="block text-gray-700 font-medium mb-2">
+                        Video File (Optional)
+                      </label>
+                      <div className="flex">
+                        <input
+                          type="text"
+                          id="video_url"
+                          name="video_url"
+                          value={formData.video_url}
+                          onChange={handleInputChange}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          placeholder="Video will be uploaded to server"
+                          disabled={videoSourceType !== 'file'}
+                        />
+                        <div className="ml-2 flex items-center">
+                          <input
+                            type="file"
+                            ref={videoFileRef}
+                            className="hidden"
+                            accept="video/*"
+                            onChange={() => handleFileUpload('video')}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => videoFileRef.current?.click()}
+                            className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                          >
+                            <FaUpload />
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label htmlFor="youtube_url" className="block text-gray-700 font-medium mb-2">
+                        YouTube Video Link
+                      </label>
+                      <input
+                        type="text"
+                        id="youtube_url"
+                        name="youtube_url"
+                        value={formData.youtube_url || ''}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="mb-6">
@@ -1243,7 +1401,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       name="pdf_url"
                       value={formData.pdf_url}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     />
                     <div className="ml-2 flex items-center">
                       <input
@@ -1251,12 +1409,12 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         ref={pdfFileRef}
                         className="hidden"
                         accept=".pdf"
-                        onChange={() => handleFileUpload("pdf")}
+                        onChange={() => handleFileUpload('pdf')}
                       />
                       <button
                         type="button"
                         onClick={() => pdfFileRef.current?.click()}
-                        className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
+                        className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
                       >
                         <FaUpload />
                       </button>
@@ -1274,7 +1432,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                   >
                     Add Submodule
                   </button>
@@ -1305,7 +1463,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="question_text"
                     value={formData.question_text}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-24"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-24"
                     required
                   />
                 </div>
@@ -1321,14 +1479,14 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         id={`correct-${index}`}
                         name="correct-option"
                         checked={option.is_correct}
-                        onChange={() => handleOptionChange(index, "is_correct", true)}
-                        className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        onChange={() => handleOptionChange(index, 'is_correct', true)}
+                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
                       <input
                         type="text"
                         value={option.option_text}
-                        onChange={(e) => handleOptionChange(index, "option_text", e.target.value)}
-                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        onChange={(e) => handleOptionChange(index, 'option_text', e.target.value)}
+                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         placeholder={`Option ${index + 1}`}
                         required
                       />
@@ -1346,7 +1504,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                   >
                     Add Question
                   </button>
@@ -1389,7 +1547,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     name="question_text"
                     value={formData.question_text}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-24"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-24"
                     required
                   />
                 </div>
@@ -1405,14 +1563,14 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         id={`correct-edit-${index}`}
                         name="correct-option-edit"
                         checked={option.is_correct}
-                        onChange={() => handleOptionChange(index, "is_correct", true)}
-                        className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        onChange={() => handleOptionChange(index, 'is_correct', true)}
+                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
                       <input
                         type="text"
                         value={option.option_text}
-                        onChange={(e) => handleOptionChange(index, "option_text", e.target.value)}
-                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        onChange={(e) => handleOptionChange(index, 'option_text', e.target.value)}
+                        className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         placeholder={`Option ${index + 1}`}
                         required
                       />
@@ -1433,7 +1591,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                   >
                     Update Question
                   </button>
@@ -1449,8 +1607,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       onClick={() => {
                         setSelectedSubmodule(null);
                         setSelectedQuestion(null);
+                        setIsEditing(false);
                       }}
-                      className="text-blue-600 hover:bg-blue-50 p-2 rounded-full mr-2"
+                      className="text-purple-600 hover:bg-purple-50 p-2 rounded-full mr-2"
                     >
                       <FaChevronLeft />
                     </button>
@@ -1465,7 +1624,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <div className="flex items-center">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center text-blue-600 hover:bg-blue-50 p-2 rounded-lg mr-2"
+                    className="flex items-center text-purple-600 hover:bg-purple-50 p-2 rounded-lg mr-2"
                   >
                     <FaEdit className="mr-1" /> Edit
                   </button>
@@ -1490,41 +1649,91 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       name="judul_submodul"
                       value={formData.judul_submodul}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                       required
                     />
                   </div>
 
+                  {/* Replace the existing video_url input section in both Add and Edit forms with this code */}
                   <div className="mb-4">
-                    <label htmlFor="video_url" className="block text-gray-700 font-medium mb-2">
-                      Video URL (Optional)
+                    <label className="block text-gray-700 font-medium mb-2">
+                      Video Source
                     </label>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        id="video_url"
-                        name="video_url"
-                        value={formData.video_url}
-                        onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <div className="ml-2 flex items-center">
+                    <div className="flex items-center space-x-4 mb-2">
+                      <div className="flex items-center">
                         <input
-                          type="file"
-                          ref={videoFileRef}
-                          className="hidden"
-                          accept="video/*"
-                          onChange={() => handleFileUpload("video")}
+                          type="radio"
+                          id="video-source-file"
+                          name="video-source"
+                          checked={videoSourceType === 'file'}
+                          onChange={() => setVideoSourceType('file')}
+                          className="mr-2"
                         />
-                        <button
-                          type="button"
-                          onClick={() => videoFileRef.current?.click()}
-                          className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
-                        >
-                          <FaUpload />
-                        </button>
+                        <label htmlFor="video-source-file">Upload Video File</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="video-source-youtube"
+                          name="video-source"
+                          checked={videoSourceType === 'youtube'}
+                          onChange={() => setVideoSourceType('youtube')}
+                          className="mr-2"
+                        />
+                        <label htmlFor="video-source-youtube">YouTube Link</label>
                       </div>
                     </div>
+
+                    {videoSourceType === 'file' ? (
+                      <>
+                        <label htmlFor="video_url" className="block text-gray-700 font-medium mb-2">
+                          Video File (Optional)
+                        </label>
+                        <div className="flex">
+                          <input
+                            type="text"
+                            id="video_url"
+                            name="video_url"
+                            value={formData.video_url}
+                            onChange={handleInputChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="Video will be uploaded to server"
+                            disabled={videoSourceType !== 'file'}
+                          />
+                          <div className="ml-2 flex items-center">
+                            <input
+                              type="file"
+                              ref={videoFileRef}
+                              className="hidden"
+                              accept="video/*"
+                              onChange={() => handleFileUpload('video')}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => videoFileRef.current?.click()}
+                              className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                            >
+                              <FaUpload />
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <label htmlFor="youtube_url" className="block text-gray-700 font-medium mb-2">
+                          YouTube Video Link
+                        </label>
+                        <input
+                          type="text"
+                          id="youtube_url"
+                          name="youtube_url"
+                          value={formData.youtube_url || ''}
+                          onChange={handleInputChange}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          placeholder="https://www.youtube.com/watch?v=..."
+                        />
+                      </>
+                    )}
                   </div>
 
                   <div className="mb-6">
@@ -1538,7 +1747,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="pdf_url"
                         value={formData.pdf_url}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                       />
                       <div className="ml-2 flex items-center">
                         <input
@@ -1546,12 +1755,12 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           ref={pdfFileRef}
                           className="hidden"
                           accept=".pdf"
-                          onChange={() => handleFileUpload("pdf")}
+                          onChange={() => handleFileUpload('pdf')}
                         />
                         <button
                           type="button"
                           onClick={() => pdfFileRef.current?.click()}
-                          className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
+                          className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
                         >
                           <FaUpload />
                         </button>
@@ -1569,7 +1778,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     </button>
                     <button
                       type="submit"
-                      className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                     >
                       Save Changes
                     </button>
@@ -1585,7 +1794,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           onClick={() => setActiveTab("details")}
                           className={`pb-3 transition-colors ${
                             activeTab === "details"
-                              ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                              ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
@@ -1598,7 +1807,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("quiz")}
                             className={`pb-3 transition-colors ${
                               activeTab === "quiz"
-                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1612,7 +1821,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("video")}
                             className={`pb-3 transition-colors ${
                               activeTab === "video"
-                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1626,7 +1835,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("pdf")}
                             className={`pb-3 transition-colors ${
                               activeTab === "pdf"
-                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1699,26 +1908,25 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             setIsEditingQuestion(false);
                             setSelectedQuestion(null);
                             setFormData({
-                              question_text: "",
+                              question_text: '',
                               options: [
-                                { option_text: "", is_correct: false },
-                                { option_text: "", is_correct: false },
-                                { option_text: "", is_correct: false },
-                                { option_text: "", is_correct: false }
+                                { option_text: '', is_correct: false },
+                                { option_text: '', is_correct: false },
+                                { option_text: '', is_correct: false },
+                                { option_text: '', is_correct: false }
                               ]
                             });
                           }}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
                         >
                           <FaPlus className="mr-2" />
                           Add Question
                         </button>
                       </div>
 
-
                       {!quizQuestions[selectedSubmodule.id_submodul] ? (
                         <div className="flex justify-center items-center h-32">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
                         </div>
                       ) : quizQuestions[selectedSubmodule.id_submodul].length === 0 ? (
                         <div className="bg-gray-50 p-8 rounded-lg text-center">
@@ -1730,7 +1938,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     {quizQuestions[selectedSubmodule.id_submodul]?.map((question, qIndex) => {
                       // Pastikan question dan options ada
                       if (!question || !Array.isArray(question.options)) {
-                        console.warn("Invalid question data:", question);
+                        console.warn('Invalid question data:', question);
                         return null;
                       }
 
@@ -1751,7 +1959,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                     <li
                                       key={`option-${question.id_question}-${option.id_option || oIndex}`}
                                       className={`flex items-center py-1 ${
-                                        option.is_correct ? "text-green-600 font-medium" : "text-gray-600"
+                                        option.is_correct ? 'text-green-600 font-medium' : 'text-gray-600'
                                       }`}
                                     >
                                       <span className="mr-2 w-5">
@@ -1772,7 +1980,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                               </ul>
                             </div>
                             <div className="ml-4">
-                              <FaEdit className="text-blue-500" />
+                              <FaEdit className="text-purple-500" />
                             </div>
                           </div>
                         </div>
@@ -1783,7 +1991,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     </div>
                   )}
 
-                  {activeTab === "video" && selectedSubmodule.video_url && (
+                  {activeTab === "video" && selectedSubmodule?.video_url && (
                     <div>
                       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                         <div className="bg-gray-800 text-white p-3 flex justify-between items-center">
@@ -1801,10 +2009,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         </div>
                         <div className="aspect-w-16 aspect-h-9">
                           <iframe 
-                            src={selectedSubmodule.video_url} 
+                            src={isYouTubeLink(selectedSubmodule.video_url) 
+                              ? getYouTubeEmbedUrl(selectedSubmodule.video_url)
+                              : selectedSubmodule.video_url} 
                             className="w-full h-96 border-0" 
                             allowFullScreen
                             title="Video Player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           ></iframe>
                         </div>
                       </div>
@@ -1831,7 +2042,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <div className="flex items-center">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center text-blue-600 hover:bg-blue-50 p-2 rounded-lg mr-2"
+                    className="flex items-center text-purple-600 hover:bg-purple-50 p-2 rounded-lg mr-2"
                   >
                     <FaEdit className="mr-1" /> Edit
                   </button>
@@ -1856,41 +2067,91 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                       name="judul_modul"
                       value={formData.judul_modul}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                       required
                     />
                   </div>
 
+                  {/* Replace the existing video_url input section in both Add and Edit forms with this code */}
                   <div className="mb-4">
-                    <label htmlFor="video_url" className="block text-gray-700 font-medium mb-2">
-                      Video URL (Optional)
+                    <label className="block text-gray-700 font-medium mb-2">
+                      Video Source
                     </label>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        id="video_url"
-                        name="video_url"
-                        value={formData.video_url}
-                        onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <div className="ml-2 flex items-center">
+                    <div className="flex items-center space-x-4 mb-2">
+                      <div className="flex items-center">
                         <input
-                          type="file"
-                          ref={videoFileRef}
-                          className="hidden"
-                          accept="video/*"
-                          onChange={() => handleFileUpload("video")}
+                          type="radio"
+                          id="video-source-file"
+                          name="video-source"
+                          checked={videoSourceType === 'file'}
+                          onChange={() => setVideoSourceType('file')}
+                          className="mr-2"
                         />
-                        <button
-                          type="button"
-                          onClick={() => videoFileRef.current?.click()}
-                          className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
-                        >
-                          <FaUpload />
-                        </button>
+                        <label htmlFor="video-source-file">Upload Video File</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="video-source-youtube"
+                          name="video-source"
+                          checked={videoSourceType === 'youtube'}
+                          onChange={() => setVideoSourceType('youtube')}
+                          className="mr-2"
+                        />
+                        <label htmlFor="video-source-youtube">YouTube Link</label>
                       </div>
                     </div>
+
+                    {videoSourceType === 'file' ? (
+                      <>
+                        <label htmlFor="video_url" className="block text-gray-700 font-medium mb-2">
+                          Video File (Optional)
+                        </label>
+                        <div className="flex">
+                          <input
+                            type="text"
+                            id="video_url"
+                            name="video_url"
+                            value={formData.video_url}
+                            onChange={handleInputChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="Video will be uploaded to server"
+                            disabled={videoSourceType !== 'file'}
+                          />
+                          <div className="ml-2 flex items-center">
+                            <input
+                              type="file"
+                              ref={videoFileRef}
+                              className="hidden"
+                              accept="video/*"
+                              onChange={() => handleFileUpload('video')}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => videoFileRef.current?.click()}
+                              className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
+                            >
+                              <FaUpload />
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <label htmlFor="youtube_url" className="block text-gray-700 font-medium mb-2">
+                          YouTube Video Link
+                        </label>
+                        <input
+                          type="text"
+                          id="youtube_url"
+                          name="youtube_url"
+                          value={formData.youtube_url || ''}
+                          onChange={handleInputChange}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          placeholder="https://www.youtube.com/watch?v=..."
+                        />
+                      </>
+                    )}
                   </div>
 
                   <div className="mb-6">
@@ -1904,7 +2165,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         name="pdf_url"
                         value={formData.pdf_url}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                       />
                       <div className="ml-2 flex items-center">
                         <input
@@ -1912,12 +2173,12 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           ref={pdfFileRef}
                           className="hidden"
                           accept=".pdf"
-                          onChange={() => handleFileUpload("pdf")}
+                          onChange={() => handleFileUpload('pdf')}
                         />
                         <button
                           type="button"
                           onClick={() => pdfFileRef.current?.click()}
-                          className="bg-blue-100 text-blue-600 p-3 rounded-lg hover:bg-blue-200"
+                          className="bg-purple-100 text-purple-600 p-3 rounded-lg hover:bg-purple-200"
                         >
                           <FaUpload />
                         </button>
@@ -1935,7 +2196,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     </button>
                     <button
                       type="submit"
-                      className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                     >
                       Save Changes
                     </button>
@@ -1951,7 +2212,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           onClick={() => setActiveTab("details")}
                           className={`pb-3 transition-colors ${
                             activeTab === "details"
-                              ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                              ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
@@ -1963,7 +2224,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                           onClick={() => setActiveTab("submodules")}
                           className={`pb-3 transition-colors ${
                             activeTab === "submodules"
-                              ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                              ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
@@ -1976,7 +2237,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("video")}
                             className={`pb-3 transition-colors ${
                               activeTab === "video"
-                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -1990,7 +2251,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             onClick={() => setActiveTab("pdf")}
                             className={`pb-3 transition-colors ${
                               activeTab === "pdf"
-                                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
+                                ? "text-purple-600 border-b-2 border-purple-600 font-medium"
                                 : "text-gray-500 hover:text-gray-700"
                             }`}
                           >
@@ -2063,13 +2324,14 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             setIsAddingSubmodule(true);
                             setIsEditing(false);
                             setFormData({
-                              judul_submodul: "",
-                              video_url: "",
-                              pdf_url: "",
+                              judul_submodul: '',
+                              video_url: '',
+                              youtube_url: '',
+                              pdf_url: '',
                               id_modul: selectedModule.id_modul
                             });
                           }}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
                         >
                           <FaPlus className="mr-2" />
                           Add Submodule
@@ -2078,7 +2340,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 
                       {!submodules[selectedModule.id_modul] ? (
                         <div className="flex justify-center items-center h-32">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
                         </div>
                       ) : submodules[selectedModule.id_modul].length === 0 ? (
                         <div className="bg-gray-50 p-8 rounded-lg text-center">
@@ -2129,7 +2391,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     </div>
                   )}
 
-                  {activeTab === "video" && selectedModule.video_url && (
+                  {activeTab === "video" && selectedModule?.video_url && (
                     <div>
                       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                         <div className="bg-gray-800 text-white p-3 flex justify-between items-center">
@@ -2147,10 +2409,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                         </div>
                         <div className="aspect-w-16 aspect-h-9">
                           <iframe 
-                            src={selectedModule.video_url} 
+                            src={isYouTubeLink(selectedModule.video_url) 
+                              ? getYouTubeEmbedUrl(selectedModule.video_url)
+                              : selectedModule.video_url} 
                             className="w-full h-96 border-0" 
                             allowFullScreen
                             title="Video Player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           ></iframe>
                         </div>
                       </div>
@@ -2168,9 +2433,9 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
           ) : (
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="text-center py-12">
-                <FaGraduationCap className="mx-auto text-5xl text-blue-200 mb-4" />
+                <FaGraduationCap className="mx-auto text-5xl text-purple-200 mb-4" />
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  Welcome to SDL Praktikum Admin Panel
+                  Welcome to Elektronika Dasar Praktikum Admin Panel
                 </h2>
                 <p className="text-gray-600 max-w-lg mx-auto mb-8">
                   Select a module from the sidebar to manage content or add a new module to get started.
@@ -2178,7 +2443,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                 <button
                   onClick={() => {
                     setIsAddingModule(true);
-                    setFormData({ judul_modul: "", video_url: "", pdf_url: "", id_praktikum: 9 });
+                    setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 9 });
                   }}
                   className="bg-[#0267FE] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
                 >
@@ -2195,3 +2460,4 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
 }
 
 export default AdminDashboardPage;
+

@@ -15,6 +15,7 @@ const PreviewFilePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     
@@ -41,7 +42,7 @@ const PreviewFilePage = () => {
         }, 100);
 
         // Gunakan endpoint existing yang sudah ada
-        const viewUrl = `/api/submission/view/${id}`;
+        const viewUrl = `http://localhost:8080/api/submission/view/${id}`;
         console.log('Fetching URL:', viewUrl); // Debugging
         
         // Test endpoint first
