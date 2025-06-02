@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useSession } from "next-auth/react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -159,25 +160,29 @@ function Sidebar({
   children,
   ...props
 }: React.ComponentProps<"div"> & {
-  side?: "left" | "right"
-  variant?: "sidebar" | "floating" | "inset"
-  collapsible?: "offcanvas" | "icon" | "none"
+  side?: "left" | "right";
+  variant?: "sidebar" | "floating" | "inset";
+  collapsible?: "offcanvas" | "icon" | "none";
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const { data: session } = useSession();
+  const role = session?.user?.role;
+
+  const bgClass =
+    role === "asisten"
+      ? "bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800"
+      : "bg-gradient-to-br from-[#0267FE] to-blue-700";
 
   if (collapsible === "none") {
     return (
       <div
         data-slot="sidebar"
-        className={cn(
-        "bg-[#0267FE] text-black flex h-full w-(--sidebar-width) flex-col",
-        className
-      )}
+        className={cn(`${bgClass} text-black flex h-full w-(--sidebar-width) flex-col`, className)}
         {...props}
       >
         {children}
       </div>
-    )
+    );
   }
 
   if (isMobile) {
@@ -187,7 +192,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-[#0267FE] text-white w-(--sidebar-width) p-0 [&>button]:hidden"
+          className={cn(`${bgClass} text-white w-(--sidebar-width) p-0 [&>button]:hidden`)}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -202,7 +207,7 @@ function Sidebar({
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>
-    )
+    );
   }
 
   return (
@@ -214,7 +219,6 @@ function Sidebar({
       data-side={side}
       data-slot="sidebar"
     >
-      {/* This is what handles the sidebar gap on desktop */}
       <div
         data-slot="sidebar-gap"
         className={cn(
@@ -233,7 +237,6 @@ function Sidebar({
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-          // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -244,14 +247,18 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-[#0267FE] group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className={cn(
+            `${bgClass} group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm`
+          )}
         >
           {children}
         </div>
       </div>
     </div>
-  )
+  );
 }
+
+
 
 function SidebarTrigger({
   className,
@@ -473,19 +480,19 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
   )
 }
 
+
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-base outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-[#74ABFF] hover:text-white focus-visible:ring-2 active:bg-[#74ABFF] active:text-white disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-[#74ABFF] data-[active=true]:font-medium data-[active=true]:text-white data-[state=open]:hover:bg-[#74ABFF] data-[state=open]:hover:text-white group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-base outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "hover:bg-[#74ABFF] hover:text-white",
-        outline:
-          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-[#74ABFF] hover:text-white hover:shadow-[0_0_0_1px_#74ABFF]",
+        default: "",
+        outline: "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))]",
       },
       size: {
         default: "h-8 text-base",
-        sm: "h-7 text-xs",
-        lg: "h-12 text-base group-data-[collapsible=icon]:p-0!",
+        sm: "h-7 text-xs", 
+        lg: "h-12 text-base group-data-[collapsible=icon]:p-0",
       },
     },
     defaultVariants: {
@@ -495,6 +502,11 @@ const sidebarMenuButtonVariants = cva(
   }
 )
 
+interface SidebarMenuButtonProps extends React.ComponentProps<"button"> {
+  asChild?: boolean
+  isActive?: boolean
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>
+}
 
 function SidebarMenuButton({
   asChild = false,
@@ -504,13 +516,34 @@ function SidebarMenuButton({
   tooltip,
   className,
   ...props
-}: React.ComponentProps<"button"> & {
-  asChild?: boolean
-  isActive?: boolean
-  tooltip?: string | React.ComponentProps<typeof TooltipContent>
-} & VariantProps<typeof sidebarMenuButtonVariants>) {
+}: SidebarMenuButtonProps & VariantProps<typeof sidebarMenuButtonVariants>) {
   const Comp = asChild ? Slot : "button"
   const { isMobile, state } = useSidebar()
+  const { data: session } = useSession()
+  
+  const role = session?.user?.role
+  const isAsisten = role === "asisten"
+
+  // Dynamic classes based on role
+  const getDynamicClasses = () => {
+    const baseColor = isAsisten ? "bg-accent" : "bg-[#74ABFF]"
+    const hoverColor = isAsisten ? "hover:bg-accent" : "hover:bg-[#74ABFF]"
+    const activeColor = isAsisten ? "active:bg-accent" : "active:bg-[#74ABFF]"
+    const dataActiveColor = isAsisten ? "data-[active=true]:bg-accent" : "data-[active=true]:bg-[#74ABFF]"
+    const dataOpenColor = isAsisten ? "data-[state=open]:hover:bg-accent" : "data-[state=open]:hover:bg-[#74ABFF]"
+    
+    let dynamicClasses = `${hoverColor} hover:text-white ${activeColor} active:text-white ${dataActiveColor} data-[active=true]:font-medium data-[active=true]:text-white ${dataOpenColor} data-[state=open]:hover:text-white`
+    
+    // Add outline variant specific classes
+    if (variant === "outline") {
+      const shadowColor = isAsisten 
+        ? "hover:shadow-[0_0_0_1px_hsl(var(--accent))]" 
+        : "hover:shadow-[0_0_0_1px_#74ABFF]"
+      dynamicClasses += ` ${hoverColor} hover:text-white ${shadowColor}`
+    }
+    
+    return dynamicClasses
+  }
 
   const button = (
     <Comp
@@ -518,7 +551,11 @@ function SidebarMenuButton({
       data-sidebar="menu-button"
       data-size={size}
       data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      className={cn(
+        sidebarMenuButtonVariants({ variant, size }),
+        getDynamicClasses(),
+        className
+      )}
       {...props}
     />
   )
@@ -527,11 +564,9 @@ function SidebarMenuButton({
     return button
   }
 
-  if (typeof tooltip === "string") {
-    tooltip = {
-      children: tooltip,
-    }
-  }
+  const tooltipProps = typeof tooltip === "string" 
+    ? { children: tooltip }
+    : tooltip
 
   return (
     <Tooltip>
@@ -540,11 +575,12 @@ function SidebarMenuButton({
         side="right"
         align="center"
         hidden={state !== "collapsed" || isMobile}
-        {...tooltip}
+        {...tooltipProps}
       />
     </Tooltip>
   )
 }
+
 
 function SidebarMenuAction({
   className,

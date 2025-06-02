@@ -115,7 +115,10 @@ function PenilaianPage() {
   return (
     <>
       <section className="px-8 py-4 text-white text-3xl font-bold">
-        HISTORI PENILAIAN
+        TABEL PENILAIAN
+         <p className="text-lg text-yellow-300 font-semibold">
+          {praktikum?.name}
+        </p>
       </section>
 
       <section className=" px-8">

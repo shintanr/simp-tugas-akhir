@@ -14,11 +14,21 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: {
     template: "SI Praktikum | %s",
-    default: "Dashboard", // a default is required when creating a template
+    default: "Dashboard",
+  },
+  description: "Sistem Informasi Praktikum",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SIMP",
   },
   icons: {
     icon: "/favicon.ico",
+    apple: "/icon-192x192.png",
   },
+  themeColor: "#000000",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
 };
 
 export default function RootLayout({
@@ -28,6 +38,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="SIMP" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+      </head>
       <body className={`${nunito.className} antialiased`}>
         <NextAuthProvider>
           <ReduxProvider>

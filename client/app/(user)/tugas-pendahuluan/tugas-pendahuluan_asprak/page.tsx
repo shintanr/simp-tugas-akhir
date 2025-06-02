@@ -95,7 +95,7 @@ export default function TugasPendahuluanAsisten() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50">
-      <div className="w-full bg-gradient-to-br from-[#0267FE] to-blue-700 h-60 flex items-center justify-center relative overflow-hidden">
+      <div className="w-full bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 h-60 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-32 h-30 bg-white rounded-full -ml-16 -mt-16"></div>
           <div className="absolute bottom-0 right-0 w-48 h-48 bg-white rounded-full -mr-24 -mb-24"></div>
