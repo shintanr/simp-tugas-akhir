@@ -7,14 +7,44 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertCircle, PenLine, Loader2, User } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
+// Type definitions
+interface Praktikum {
+  id?: string;
+  id_praktikum?: string;
+  name: string;
+}
+
+interface Pertemuan {
+  id_pertemuan: string;
+  pertemuan_ke: number;
+}
+
+interface Submission {
+  id_praktikum: string;
+  id_pertemuan: string;
+  nim: string;
+  nama_praktikan: string;
+  total_score: number | null;
+  id_attempts: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+interface PertemuanMapping {
+  [key: string]: number;
+}
+
 export default function TugasPendahuluanAsisten() {
-  const [praktikumList, setPraktikumList] = useState([]);
-  const [pertemuanList, setPertemuanList] = useState([]);
-  const [submissions, setSubmissions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedPraktikum, setSelectedPraktikum] = useState(null);
-  const [selectedPertemuan, setSelectedPertemuan] = useState(null);
-  const [pertemuanMapping, setPertemuanMapping] = useState({});
+  const [praktikumList, setPraktikumList] = useState<Praktikum[]>([]);
+  const [pertemuanList, setPertemuanList] = useState<Pertemuan[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedPraktikum, setSelectedPraktikum] = useState<string | null>(null);
+  const [selectedPertemuan, setSelectedPertemuan] = useState<string | null>(null);
+  const [pertemuanMapping, setPertemuanMapping] = useState<PertemuanMapping>({});
   const router = useRouter();
 
   useEffect(() => { 
@@ -37,38 +67,51 @@ export default function TugasPendahuluanAsisten() {
     }
   }, [selectedPraktikum, selectedPertemuan]);
 
-  const fetchPraktikum = async () => {
-    const res = await fetch("http://localhost:8080/api/praktikum");
-    const data = await res.json();
-    if (res.ok) setPraktikumList(data.data);
+  const fetchPraktikum = async (): Promise<void> => {
+    try {
+      const res = await fetch("http://localhost:8080/api/praktikum");
+      const data: ApiResponse<Praktikum[]> = await res.json();
+      if (res.ok) setPraktikumList(data.data);
+    } catch (error) {
+      console.error('Error fetching praktikum:', error);
+    }
   };
 
-  const fetchPertemuan = async (praktikumId) => {
-    const res = await fetch(`http://localhost:8080/api/pertemuan/${praktikumId}`);
-    const data = await res.json();
-    if (res.ok) {
-      setPertemuanList(data.data);
-      const mapping = {};
-      data.data.forEach(p => mapping[p.id_pertemuan] = p.pertemuan_ke);
-      setPertemuanMapping(mapping);
+  const fetchPertemuan = async (praktikumId: string): Promise<void> => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/pertemuan/${praktikumId}`);
+      const data: ApiResponse<Pertemuan[]> = await res.json();
+      if (res.ok) {
+        setPertemuanList(data.data);
+        const mapping: PertemuanMapping = {};
+        data.data.forEach(p => mapping[p.id_pertemuan] = p.pertemuan_ke);
+        setPertemuanMapping(mapping);
+      }
+    } catch (error) {
+      console.error('Error fetching pertemuan:', error);
     }
   };
   
-  const getPertemuanKe = (id) => pertemuanMapping[id] || id;
+  const getPertemuanKe = (id: string): number | string => pertemuanMapping[id] || id;
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = async (): Promise<void> => {
     setLoading(true);
-    let url = "http://localhost:8080/api/asprak/tugas-pendahuluan/details";
-    if (selectedPraktikum && selectedPertemuan && selectedPertemuan !== "all") {
-      url += `?idPraktikum=${selectedPraktikum}&idPertemuan=${selectedPertemuan}`;
-    } else if (selectedPraktikum) {
-      url += `?idPraktikum=${selectedPraktikum}`;
-    }
+    try {
+      let url = "http://localhost:8080/api/asprak/tugas-pendahuluan/details";
+      if (selectedPraktikum && selectedPertemuan && selectedPertemuan !== "all") {
+        url += `?idPraktikum=${selectedPraktikum}&idPertemuan=${selectedPertemuan}`;
+      } else if (selectedPraktikum) {
+        url += `?idPraktikum=${selectedPraktikum}`;
+      }
 
-    const res = await fetch(url);
-    const data = await res.json();
-    if (res.ok && data.success) setSubmissions(data.data);
-    setLoading(false);
+      const res = await fetch(url);
+      const data: ApiResponse<Submission[]> = await res.json();
+      if (res.ok && data.success) setSubmissions(data.data);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleViewDetail = (id_attempts: string) => {
@@ -82,7 +125,7 @@ export default function TugasPendahuluanAsisten() {
   };
 
   // Function to format total score display
-  const formatTotalScore = (score) => {
+  const formatTotalScore = (score: number | null) => {
     if (score === null || score === undefined) {
       return <span className="text-gray-400">-</span>;
     }
@@ -91,6 +134,18 @@ export default function TugasPendahuluanAsisten() {
         {score}
       </span>
     );
+  };
+
+  const handlePraktikumChange = (value: string) => {
+    setSelectedPraktikum(value);
+  };
+
+  const handlePertemuanChange = (value: string) => {
+    setSelectedPertemuan(value);
+  };
+
+  const getPraktikumId = (praktikum: Praktikum, index: number): string => {
+    return praktikum.id || praktikum.id_praktikum || index.toString();
   };
 
   return (
@@ -110,15 +165,15 @@ export default function TugasPendahuluanAsisten() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <Label className="text-gray-700 mb-2 block font-medium">Praktikum</Label>
-              <Select value={selectedPraktikum} onValueChange={setSelectedPraktikum}>
+              <Select value={selectedPraktikum || ""} onValueChange={handlePraktikumChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih Praktikum" />
                 </SelectTrigger>
                 <SelectContent>
                   {praktikumList.map((praktikum, index) => (
                     <SelectItem 
-                    key={`praktikum-${index}`} 
-                    value={praktikum.id || praktikum.id_praktikum || index} 
+                      key={`praktikum-${index}`} 
+                      value={getPraktikumId(praktikum, index)}
                     >
                       {praktikum.name}
                     </SelectItem>
@@ -128,7 +183,11 @@ export default function TugasPendahuluanAsisten() {
             </div>
             <div>
               <Label className="text-gray-700 mb-2 block font-medium">Pertemuan</Label>
-              <Select value={selectedPertemuan} onValueChange={setSelectedPertemuan} disabled={!selectedPraktikum}>
+              <Select 
+                value={selectedPertemuan || ""} 
+                onValueChange={handlePertemuanChange} 
+                disabled={!selectedPraktikum}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih Pertemuan" />
                 </SelectTrigger>
