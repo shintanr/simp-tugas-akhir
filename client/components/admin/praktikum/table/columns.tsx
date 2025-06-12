@@ -25,5 +25,6 @@ export const columns: ColumnDef<Praktikum>[] = [
     accessorKey: "id", // Gunakan ID atau kunci unik lain untuk masing-masing baris
     // cell: ({ row }) => <ActionButtons data={row.original} />,
     cell: ({ row }) => <ActionButtons data={row.original} />
+    
   }
 ];

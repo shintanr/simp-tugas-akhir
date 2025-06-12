@@ -57,7 +57,7 @@ export default function AdminDashboard() {
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
          <Card
             title="Manajemen User"
-            description="Tambah, edit, dan hapus akun pengguna."
+            description="Tambah dan edit akun pengguna."
             icon={<Users className="w-6 h-6 text-blue-500" />}
             bgColor="bg-blue-100"
           />

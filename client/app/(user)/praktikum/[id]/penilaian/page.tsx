@@ -16,8 +16,9 @@ import {
 import { useGetPenilaianPraktikumQuery } from "@/redux/services/penilaian";
 import { useDetailPraktikumQuery } from "@/redux/services/praktikumApi";
 import { useDetailuserPraktikumQuery } from "@/redux/services/userPraktikum";
+import { useGetTugasPendahuluanDetailsQuery } from "@/redux/services/tugasPendahuluanApi";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 const shiftOptions = [
   { label: "Shift 1 (07.00 - 09.00)", value: "1" },
@@ -27,10 +28,11 @@ const shiftOptions = [
 ];
 
 function PenilaianPage() {
-  const params = useParams(); // untuk mendapatkan parameter dari URL
-  const [selectedModul, setSelectedModul] = useState("1"); // 
+  const params = useParams();
+  const [selectedModul, setSelectedModul] = useState("1");
   const [selectedShift, setSelectedShift] = useState("1");
-  const { data: praktikum, isLoading } = useDetailPraktikumQuery(params.id); // untuk mendapatkan detail praktikum berdasarkan ID dari URL
+  
+  const { data: praktikum, isLoading } = useDetailPraktikumQuery(params.id);
   const { data: userPraktikum, isLoading: isLoadingUser } =
     useDetailuserPraktikumQuery(params.id);
   const { data: penilaian, isLoading: isLoadingPenilaian } =
@@ -46,6 +48,18 @@ function PenilaianPage() {
         userPraktikum?.data?.is_asisten == 1 ? selectedShift : undefined,
     });
 
+  // Ambil data tugas pendahuluan
+  const { data: tugasPendahuluan, isLoading: isLoadingTP } =
+    useGetTugasPendahuluanDetailsQuery(
+      {
+        idPraktikum: params.id as string,
+        idPertemuan: userPraktikum?.data?.is_asisten == 1 ? selectedModul : undefined,
+      },
+      {
+        skip: !params.id, // Skip query jika tidak ada ID praktikum
+      }
+    );
+
   useEffect(() => {
     if (praktikum) {
       setSelectedModul(praktikum.modules[0].id_modul.toString());
@@ -53,7 +67,26 @@ function PenilaianPage() {
     }
   }, [praktikum]);
 
-  if (isLoading || isLoadingPenilaian || isLoadingUser)
+  // Gabungkan data penilaian dengan nilai TP
+  const mergedData = useMemo(() => {
+    if (!penilaian?.data || !tugasPendahuluan?.data) {
+      return penilaian?.data || [];
+    }
+
+    return penilaian.data.map((penilaianItem: any) => {
+      // Cari nilai TP berdasarkan nim atau id_user
+      const tpData = tugasPendahuluan.data.find(
+        (tp: any) => tp.id_user === penilaianItem.id_user || tp.nim === penilaianItem.nim
+      );
+
+      return {
+        ...penilaianItem,
+        nilai_tp: tpData ? tpData.total_score : penilaianItem.nilai_tp,
+      };
+    });
+  }, [penilaian?.data, tugasPendahuluan?.data]);
+
+  if (isLoading || isLoadingPenilaian || isLoadingUser || isLoadingTP)
     return (
       <div className="flex min-h-screen items-center justify-center">
         <main className="flex flex-col items-center gap-4">
@@ -82,7 +115,10 @@ function PenilaianPage() {
   return (
     <>
       <section className="px-8 py-4 text-white text-3xl font-bold">
-        HISTORI PENILAIAN
+        TABEL PENILAIAN
+         <p className="text-lg text-yellow-300 font-semibold">
+          {praktikum?.name}
+        </p>
       </section>
 
       <section className=" px-8">
@@ -126,7 +162,7 @@ function PenilaianPage() {
                     </Select>
                   )}
                   <ExportToExcel
-                    data={penilaian.data}
+                    data={mergedData}
                     filename={`Penilaian Praktikum ${praktikum?.name}.xlsx`}
                   />
                 </div>
@@ -181,7 +217,7 @@ function PenilaianPage() {
                     ? getColumns(selectedModul)
                     : columns
                 }
-                data={penilaian.data}
+                data={mergedData}
               />
             </div>
           </CardContent>

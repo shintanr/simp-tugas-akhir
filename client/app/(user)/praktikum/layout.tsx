@@ -1,22 +1,29 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Navbar from "@/components/shared/navbar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
-  // Daftar path yang ingin disembunyikan navbarnya
   const hiddenRoutes = [
     "/modul",
     "/praktikum/prak-lab-sister/prak-eldas/admin",
     "/praktikum/prak-lab-sister/prak-sdl/admin",
   ];
 
-  // Periksa apakah path sekarang cocok dengan salah satu dari daftar
   const hideNavbar = hiddenRoutes.some((route) => pathname.includes(route));
 
-  // Jika perlu sembunyikan layout, tampilkan children saja
+  const role = session?.user?.role;
+
+  // Tentukan class background berdasarkan role
+const bgClass =
+  role === "asisten"
+    ? "bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800"
+    : "bg-gradient-to-br from-[#0267FE] to-blue-700";
+    
   if (hideNavbar) {
     return <>{children}</>;
   }
@@ -25,12 +32,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen flex flex-col">
       <main className="flex-1">
         <div className="relative">
-          <div className="absolute top-0 left-0 w-full h-72 bg-[#0267FE] z-0"></div>
+          <div className={`absolute top-0 left-0 w-full h-72 ${bgClass} overflow-hidden z-0`}></div>
           <div className="relative z-10 pt-4">
-            {/* Navbar */}
             <Navbar />
-
-            {/* Konten */}
             <div className="px-8 py-12">{children}</div>
           </div>
         </div>

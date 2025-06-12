@@ -276,6 +276,7 @@ export default function AddSubmissionButton() {
     }
   };
 
+
   const handleViewCatatan = (catatan: string) => {
     setCurrentCatatan(catatan || "Tidak ada catatan asistensi");
     setShowCatatanModal(true);
@@ -441,13 +442,13 @@ export default function AddSubmissionButton() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex space-x-2">
-                                <button
+                                {/* <button
                             onClick={() => handleViewFile(item)} // (1)
                             className="p-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                             title="Lihat"
                           >
                             <Eye size={16} />
-                          </button>
+                          </button> */}
                             <button 
                               onClick={() => handleDeleteSubmission(item.id_submission_praktikan)}
                               className="p-1 bg-red-500 text-white rounded hover:bg-red-600 transition"

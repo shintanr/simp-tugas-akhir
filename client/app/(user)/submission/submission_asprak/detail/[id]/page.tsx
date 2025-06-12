@@ -186,7 +186,7 @@ export default function SubmissionAsprakDetail() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Banner */}
-      <div className="relative w-full bg-gradient-to-br from-[#0267FE] to-blue-700 overflow-hidden">
+      <div className="relative w-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="py-12 md:py-16 flex items-center justify-between">
             <div>
