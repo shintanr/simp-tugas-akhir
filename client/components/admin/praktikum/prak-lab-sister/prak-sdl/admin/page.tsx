@@ -266,7 +266,7 @@ function AdminDashboardPage() {
     }
   }, [fetchQuizQuestions]);
 
-  const handleQuestionClick = (question) => {
+  const handleQuestionClick = (question: QuizQuestion) => {
     setSelectedQuestion(question);
     setIsEditingQuestion(true);
     setIsAddingQuestion(false);
@@ -285,11 +285,11 @@ function AdminDashboardPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   const handleOptionChange = (index: number, field: string, value: any) => {
-    setFormData(prev => {
+    setFormData((prev: { options: any; }) => {
       const newOptions = [...prev.options];
       newOptions[index] = { ...newOptions[index], [field]: value };
       
@@ -704,7 +704,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
   console.log("Extracted Quiz ID:", quizId);
   
   // Find the index of the correct option
-  const correctOptionIndex = formData.options.findIndex((option) => option.is_correct);
+  const correctOptionIndex = formData.options.findIndex((option: QuizOption) => option.is_correct);
   
   // Map the correct option to A, B, or C
   const jawaban_benar = 
@@ -738,7 +738,11 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
     }
     
     // ✅ Refresh list setelah update berhasil
-    fetchQuizQuestions(selectedSubmodule.id_submodul);
+    if (selectedSubmodule?.id_submodul) {
+      fetchQuizQuestions(selectedSubmodule.id_submodul);
+    } else {
+      console.error("selectedSubmodule is null or missing id_submodul");
+    }
     setIsEditingQuestion(false);
     setSelectedQuestion(null);
   } catch (err) {
@@ -1314,7 +1318,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   <label className="block text-gray-700 font-medium mb-2">
                     Answer Options (Select one correct answer)
                   </label>
-                  {formData.options.map((option, index) => (
+                  {formData.options.map((option: QuizOption, index: number) => (
                     <div key={index} className="mb-3 flex items-center space-x-3">
                       <input
                         type="radio"
@@ -1398,7 +1402,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   <label className="block text-gray-700 font-medium mb-2">
                     Answer Options (Select one correct answer)
                   </label>
-                  {formData.options.map((option, index) => (
+                  {formData.options.map((option: QuizOption, index: number) => (
                     <div key={index} className="mb-3 flex items-center space-x-3">
                       <input
                         type="radio"

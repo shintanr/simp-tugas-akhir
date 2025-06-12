@@ -6,23 +6,83 @@ import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+// Type definitions
+interface Soal {
+  id_soal: string;
+  pertanyaan: string;
+  pertemuan_ke: number;
+}
+
+interface PraktikumInfo {
+  id: string;
+  name: string;
+}
+
+interface JawabanMap {
+  [soalId: string]: string;
+}
+
+interface FormattedJawaban {
+  soalId: string;
+  jawaban: string;
+  skor: number | null;
+}
+
+interface SubmitPayload {
+  praktikumId: number;
+  pertemuanId: number;
+  userId: string | undefined;
+  totalScore: number | null;
+  jawaban: FormattedJawaban[];
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+interface Notification {
+  show: boolean;
+  message: string;
+  type: "success" | "error" | "";
+}
+
+interface SessionUser {
+  id: string;
+  name?: string;
+  email?: string;
+}
+
+interface UseSessionReturn {
+  data: {
+    user: SessionUser;
+  } | null;
+  status: "loading" | "authenticated" | "unauthenticated";
+}
+
 export default function TugasPendahuluanDetailPage() {
-  const [soalList, setSoalList] = useState([]);
-  const [praktikumInfo, setPraktikumInfo] = useState(null);
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [jawaban, setJawaban] = useState({});
+  const [soalList, setSoalList] = useState<Soal[]>([]);
+  const [praktikumInfo, setPraktikumInfo] = useState<PraktikumInfo | null>(null);
+  const [notification, setNotification] = useState<Notification>({ 
+    show: false, 
+    message: "", 
+    type: "" 
+  });
+  const [loading, setLoading] = useState<boolean>(true);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [jawaban, setJawaban] = useState<JawabanMap>({});
   const router = useRouter();
   const params = useParams();
-  const { praktikumId, pertemuanId } = params;
-  const session = useSession();
+  const praktikumId = params.praktikumId as string;
+  const pertemuanId = params.pertemuanId as string;
+  const session = useSession() as UseSessionReturn;
 
   useEffect(() => {
-    async function fetchPraktikumInfo() {
+    async function fetchPraktikumInfo(): Promise<void> {
       try {
         const response = await fetch(`http://localhost:8080/api/praktikum/`);
-        const data = await response.json();
+        const data: ApiResponse<PraktikumInfo> = await response.json();
         if (response.ok && data.data) {
           setPraktikumInfo(data.data);
         } else {
@@ -33,23 +93,23 @@ export default function TugasPendahuluanDetailPage() {
       }
     }
 
-    async function fetchSoalTP() {
+    async function fetchSoalTP(): Promise<void> {
       setLoading(true);
       try {
         const response = await fetch(`http://localhost:8080/api/tp/${praktikumId}/${pertemuanId}`);
-        const data = await response.json();
+        const data: Soal[] = await response.json();
         
         if (response.ok) {
           setSoalList(data);
           
           // Initialize jawaban object with empty strings for each soal
-          const initialJawaban = {};
+          const initialJawaban: JawabanMap = {};
           data.forEach(soal => {
             initialJawaban[soal.id_soal] = "";
           });
           setJawaban(initialJawaban);
         } else {
-          console.error("Failed to fetch soal TP:", data.message);
+          console.error("Failed to fetch soal TP:", (data as any).message);
           showNotification("Gagal mengambil data soal tugas pendahuluan", "error");
         }
       } catch (error) {
@@ -64,7 +124,7 @@ export default function TugasPendahuluanDetailPage() {
     fetchSoalTP();
   }, [praktikumId, pertemuanId]);
 
-  const showNotification = (message, type) => {
+  const showNotification = (message: string, type: "success" | "error") => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
   };
@@ -73,84 +133,82 @@ export default function TugasPendahuluanDetailPage() {
     router.push("/tugas-pendahuluan");
   };
 
-  const handleJawabanChange = (soalId, value) => {
+  const handleJawabanChange = (soalId: string, value: string) => {
     setJawaban(prev => ({
       ...prev,
       [soalId]: value
     }));
   };
 
-  const handleSubmit = async () => {
-  // Validate if all questions have been answered
-  const unansweredQuestions = Object.entries(jawaban).filter(([_, value]) => !value.trim());
-  if (unansweredQuestions.length > 0) {
-    showNotification(`Mohon jawab semua pertanyaan (${unansweredQuestions.length} belum terjawab)`, "error");
-    return;
-  }
-
-  setSubmitting(true);
-  
-  try {
-    // Format data sesuai dengan API
-    const formattedJawaban = Object.entries(jawaban).map(([soalId, jawabanText]) => ({
-      soalId,
-      jawaban: jawabanText,
-      skor: null // Akan diisi oleh admin nanti
-    }));
-
-    const payload = {
-      praktikumId: parseInt(praktikumId), // Pastikan tipe data sesuai (number)
-      pertemuanId: parseInt(pertemuanId), // Pastikan tipe data sesuai (number)
-      userId: session?.data?.user?.id, // Hardcoded for now, replace with actual user ID later
-      totalScore: null, // Will be calculated by admin
-      jawaban: formattedJawaban
-    };
-
-    console.log("Mengirim data:", payload);
-
-    // Submit to API
-    const response = await fetch("http://localhost:8080/api/submit-tp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    // Check if response is JSON
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      const result = await response.json();
-      
-      if (response.ok) {
-        showNotification("Jawaban berhasil disimpan!", "success");
-        
-        // Optional: Reset form or redirect
-        setTimeout(() => {
-          router.push("/tugas-pendahuluan");
-        }, 2000);
-      } else {
-        console.error("Error response from server:", result);
-        showNotification(result.message || "Gagal menyimpan jawaban", "error");
-      }
-    } else {
-      // Jika bukan JSON, coba dapatkan teks error
-      const textResponse = await response.text();
-      console.error("Server tidak mengembalikan JSON:", textResponse);
-      showNotification("Terjadi kesalahan pada server. Endpoint mungkin tidak tersedia.", "error");
+  const handleSubmit = async (): Promise<void> => {
+    // Validate if all questions have been answered
+    const unansweredQuestions = Object.entries(jawaban).filter(([_, value]) => !value.trim());
+    if (unansweredQuestions.length > 0) {
+      showNotification(`Mohon jawab semua pertanyaan (${unansweredQuestions.length} belum terjawab)`, "error");
+      return;
     }
-  } catch (error) {
-    console.error("Error submitting answers:", error);
-    showNotification("Terjadi kesalahan saat mengirim jawaban. Pastikan server berjalan dan endpoint tersedia.", "error");
-  } finally {
-    setSubmitting(false);
-  }
-};
 
+    setSubmitting(true);
+    
+    try {
+      // Format data sesuai dengan API
+      const formattedJawaban: FormattedJawaban[] = Object.entries(jawaban).map(([soalId, jawabanText]) => ({
+        soalId,
+        jawaban: jawabanText,
+        skor: null // Akan diisi oleh admin nanti
+      }));
 
+      const payload: SubmitPayload = {
+        praktikumId: parseInt(praktikumId),
+        pertemuanId: parseInt(pertemuanId),
+        userId: session?.data?.user?.id,
+        totalScore: null, // Will be calculated by admin
+        jawaban: formattedJawaban
+      };
+
+      console.log("Mengirim data:", payload);
+
+      // Submit to API
+      const response = await fetch("http://localhost:8080/api/submit-tp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Check if response is JSON
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const result: ApiResponse<any> = await response.json();
+        
+        if (response.ok) {
+          showNotification("Jawaban berhasil disimpan!", "success");
+          
+          // Optional: Reset form or redirect
+          setTimeout(() => {
+            router.push("/tugas-pendahuluan");
+          }, 2000);
+        } else {
+          console.error("Error response from server:", result);
+          showNotification(result.message || "Gagal menyimpan jawaban", "error");
+        }
+      } else {
+        // Jika bukan JSON, coba dapatkan teks error
+        const textResponse = await response.text();
+        console.error("Server tidak mengembalikan JSON:", textResponse);
+        showNotification("Terjadi kesalahan pada server. Endpoint mungkin tidak tersedia.", "error");
+      }
+    } catch (error) {
+      console.error("Error submitting answers:", error);
+      showNotification("Terjadi kesalahan saat mengirim jawaban. Pastikan server berjalan dan endpoint tersedia.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Get pertemuan_ke from the first soal (should all be the same)
-  const pertemuanKe = soalList.length > 0 ? soalList[0].pertemuan_ke : "";
+  const pertemuanKe: number | string = soalList.length > 0 ? soalList[0].pertemuan_ke : "";
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

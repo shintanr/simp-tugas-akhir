@@ -227,18 +227,6 @@ function PrakSBDPage() {
     switch (id_submodul) {
       case 2: return <Modul_1 pdfUrl={pdfUrl} />;
       case 3: return <Quiz_1 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={1} />;
-      case 5: return <Modul_2 pdfUrl={pdfUrl} />;
-      case 6: return <Quiz_2 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={2} />;
-      case 8: return <Modul_3 pdfUrl={pdfUrl} />;
-      case 9: return <Quiz_3 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={3} />;
-      case 11: return <Modul_4 pdfUrl={pdfUrl} />;
-      case 12: return <Quiz_4 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={4} />;
-      case 14: return <Modul_5 pdfUrl={pdfUrl} />;
-      case 15: return <Quiz_5 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={5} />;
-      case 17: return <Modul_6 pdfUrl={pdfUrl} />;
-      case 18: return <Quiz_6 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={6} />;
-      case 20: return <Modul_7 pdfUrl={pdfUrl} />;
-      case 21: return <Quiz_7 submodulId={selectedSubmodule?.id_submodul ?? 0} userId={6} />;
       default: return null;
     }
   }, [selectedSubmodule]);
@@ -289,7 +277,7 @@ const getYouTubeEmbedUrl = (url: string): string => {
 };
 
 // Add this helper function to determine the correct icon based on content type
-const getSubmoduleIcon = useCallback((submodule) => {
+const getSubmoduleIcon = useCallback((submodule: { id_submodul: number; judul_submodul: string; video_url: string; pdf_url: any; }) => {
   // First, check if it's a quiz
   if (isQuiz(submodule.id_submodul) || 
       submodule.judul_submodul.toLowerCase().includes("quiz")) {
@@ -524,7 +512,12 @@ const getSubmoduleIcon = useCallback((submodule) => {
                         <ul className="ml-12 mt-1 space-y-1 border-l border-gray-200 pl-4">
                           {submodules[module.id_modul]?.length > 0 ? (
                             submodules[module.id_modul].map((submodule) => {
-                              const iconData = getSubmoduleIcon(submodule);
+const iconData = getSubmoduleIcon(submodule as {
+          id_submodul: number;
+          judul_submodul: string;
+          video_url: string;
+          pdf_url: any;
+        });
                               return (
                                 <li
                                   key={submodule.id_submodul}

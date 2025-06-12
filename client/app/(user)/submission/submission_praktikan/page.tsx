@@ -13,31 +13,53 @@ import { useSession } from 'next-auth/react';
 import Navbar from '@/components/shared/navbar';
 import Link from 'next/link';
 
+// Type definitions
+interface Praktikum {
+  id?: string;
+  id_praktikum?: string;
+  name: string;
+}
+
+interface Pertemuan {
+  id_pertemuan: string;
+  pertemuan_ke: number;
+}
+
+interface SubmissionItem {
+  id_submission_praktikan: string;
+  id_pertemuan: string;
+  jenis: string;
+  status: string;
+  file_revisi_asprak?: string;
+  catatan_asistensi?: string;
+}
+
+interface NotificationState {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error';
+}
 
 export default function AddSubmissionButton() {
   const [open, setOpen] = useState(false);
   const [jenisPraktikum, setJenisPraktikum] = useState("");
   const [pertemuan, setPertemuan] = useState("");
   const [jenisFile, setJenisFile] = useState("");
-  const [praktikumList, setPraktikumList] = useState([]);
-  const [pertemuanList, setPertemuanList] = useState([]);
-  const [pertemuanMapping, setPertemuanMapping] = useState({}); // Tambahkan mapping state
-  const [file, setFile] = useState(null);
+  const [praktikumList, setPraktikumList] = useState<Praktikum[]>([]);
+  const [pertemuanList, setPertemuanList] = useState<Pertemuan[]>([]);
+  const [pertemuanMapping, setPertemuanMapping] = useState<Record<string, number>>({});
+  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-  const [submissionData, setSubmissionData] = useState([]);
+  const [notification, setNotification] = useState<NotificationState>({ show: false, message: "", type: "success" });
+  const [submissionData, setSubmissionData] = useState<SubmissionItem[]>([]);
   const [selectedPraktikum, setSelectedPraktikum] = useState("");
   const [selectedPraktikumName, setSelectedPraktikumName] = useState("");
   const [showCatatanModal, setShowCatatanModal] = useState(false);
   const [currentCatatan, setCurrentCatatan] = useState("");
   const router = useRouter();
   
-
   // handle session
   const session = useSession();
-
-
-
 
   useEffect(() => {
     async function fetchPraktikum() {
@@ -45,7 +67,7 @@ export default function AddSubmissionButton() {
         const response = await fetch("http://localhost:8080/api/praktikum");
         const data = await response.json();
         if (response.ok) {
-          setPraktikumList(data.data);
+          setPraktikumList(data.data || []);
         } else {
           console.error("Failed to fetch praktikum:", data.message);
         }
@@ -56,76 +78,75 @@ export default function AddSubmissionButton() {
     fetchPraktikum();
   }, []);
 
-  // Perbaiki fetchPertemuan sesuai dengan referensi yang diberikan
+  // Fixed fetchPertemuan with proper typing
   useEffect(() => {
-  const fetchPertemuan = async (praktikumId) => {
-    if (!praktikumId) {
-      setPertemuanList([]);
-      setPertemuanMapping({});
-      return;
-    }
-    
-    try {
-      const response = await fetch(`http://localhost:8080/api/pertemuan/${praktikumId}`);
-      const data = await response.json();
+    const fetchPertemuan = async (praktikumId: string) => {
+      if (!praktikumId) {
+        setPertemuanList([]);
+        setPertemuanMapping({});
+        return;
+      }
       
-      if (response.ok && data.data) {
-        setPertemuanList(data.data);
+      try {
+        const response = await fetch(`http://localhost:8080/api/pertemuan/${praktikumId}`);
+        const data = await response.json();
         
-        // Create a mapping of id_pertemuan to pertemuan_ke
-        const mapping = {};
-        data.data.forEach(pertemuan => {
-          mapping[pertemuan.id_pertemuan] = pertemuan.pertemuan_ke;
-        });
-        setPertemuanMapping(mapping);
-        
-        console.log('Pertemuan data:', data.data); // Debug log
-        console.log('Pertemuan mapping:', mapping); // Debug log
-      } else {
-        console.error("Failed to fetch pertemuan:", data.message);
-        showNotification("Gagal mengambil data pertemuan", "error");
+        if (response.ok && data.data) {
+          setPertemuanList(data.data);
+          
+          // Create a mapping of id_pertemuan to pertemuan_ke
+          const mapping: Record<string, number> = {};
+          data.data.forEach((pertemuan: Pertemuan) => {
+            mapping[pertemuan.id_pertemuan] = pertemuan.pertemuan_ke;
+          });
+          setPertemuanMapping(mapping);
+          
+          console.log('Pertemuan data:', data.data); // Debug log
+          console.log('Pertemuan mapping:', mapping); // Debug log
+        } else {
+          console.error("Failed to fetch pertemuan:", data.message);
+          showNotification("Gagal mengambil data pertemuan", "error");
+          setPertemuanList([]);
+          setPertemuanMapping({});
+        }
+      } catch (error) {
+        console.error("Error fetching pertemuan:", error);
+        showNotification("Terjadi kesalahan saat mengambil data pertemuan", "error");
         setPertemuanList([]);
         setPertemuanMapping({});
       }
-    } catch (error) {
-      console.error("Error fetching pertemuan:", error);
-      showNotification("Terjadi kesalahan saat mengambil data pertemuan", "error");
-      setPertemuanList([]);
-      setPertemuanMapping({});
-    }
-  };
+    };
 
-  fetchPertemuan(jenisPraktikum);
-}, [jenisPraktikum]);
+    fetchPertemuan(jenisPraktikum);
+  }, [jenisPraktikum]);
 
-  // Juga fetch pertemuan ketika selectedPraktikum berubah untuk memastikan mapping tersedia
-useEffect(() => {
-  const fetchPertemuanForMapping = async (praktikumId) => {
-    if (!praktikumId) return;
-    
-    try {
-      const response = await fetch(`http://localhost:8080/api/pertemuan/${praktikumId}`);
-      const data = await response.json();
+  // Fixed fetchPertemuanForMapping with proper typing
+  useEffect(() => {
+    const fetchPertemuanForMapping = async (praktikumId: string) => {
+      if (!praktikumId) return;
       
-      if (response.ok && data.data) {
-        // Update mapping untuk praktikum yang dipilih
-        const mapping = {};
-        data.data.forEach(pertemuan => {
-          mapping[pertemuan.id_pertemuan] = pertemuan.pertemuan_ke;
-        });
-        setPertemuanMapping(prevMapping => ({
-          ...prevMapping,
-          ...mapping
-        }));
+      try {
+        const response = await fetch(`http://localhost:8080/api/pertemuan/${praktikumId}`);
+        const data = await response.json();
+        
+        if (response.ok && data.data) {
+          // Update mapping untuk praktikum yang dipilih
+          const mapping: Record<string, number> = {};
+          data.data.forEach((pertemuan: Pertemuan) => {
+            mapping[pertemuan.id_pertemuan] = pertemuan.pertemuan_ke;
+          });
+          setPertemuanMapping(prevMapping => ({
+            ...prevMapping,
+            ...mapping
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching pertemuan for mapping:", error);
       }
-    } catch (error) {
-      console.error("Error fetching pertemuan for mapping:", error);
-    }
-  };
+    };
 
-  fetchPertemuanForMapping(selectedPraktikum);
-}, [selectedPraktikum]);
-
+    fetchPertemuanForMapping(selectedPraktikum);
+  }, [selectedPraktikum]);
 
   useEffect(() => {
     async function fetchSubmissions() {
@@ -134,7 +155,7 @@ useEffect(() => {
         const response = await fetch(`http://localhost:8080/api/submission?idPraktikum=${selectedPraktikum}`);
         const data = await response.json();
         if (response.ok) {
-          setSubmissionData(data.data);
+          setSubmissionData(data.data || []);
         } else {
           console.error("Failed to fetch submission data:", data.message);
         }
@@ -151,14 +172,14 @@ useEffect(() => {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     },
     maxSize: 10 * 1024 * 1024,
-    onDrop: (acceptedFiles) => {
-      setFile(acceptedFiles[0]);
+    onDrop: (acceptedFiles: File[]) => {
+      setFile(acceptedFiles[0] || null);
     },
   });
 
-  const showNotification = (message, type) => {
+  const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ show: true, message, type });
-    setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
+    setTimeout(() => setNotification({ show: false, message: "", type: "success" }), 3000);
   };
 
   const handleSubmit = async () => {
@@ -172,13 +193,19 @@ useEffect(() => {
       return;
     }
 
+    const userId = session?.data?.user?.id;
+    if (!userId) {
+      showNotification("User ID tidak ditemukan", "error");
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("idPraktikum", jenisPraktikum);
     formData.append("idPertemuan", pertemuan);
     formData.append("jenis", jenisFile);
-    formData.append("idUser", session?.data?.user?.id);
+    formData.append("idUser", userId);
 
     try {
       const response = await fetch("http://localhost:8080/api/submission/upload", {
@@ -198,7 +225,7 @@ useEffect(() => {
           const submissionResponse = await fetch(`http://localhost:8080/api/submission?idPraktikum=${selectedPraktikum}`);
           const submissionData = await submissionResponse.json();
           if (submissionResponse.ok) {
-            setSubmissionData(submissionData.data);
+            setSubmissionData(submissionData.data || []);
           }
         }
       } else {
@@ -212,50 +239,50 @@ useEffect(() => {
     }
   };
 
-  const handlePraktikumChange = (value) => {
+  const handlePraktikumChange = (value: string) => {
     setSelectedPraktikum(value);
-    const praktikum = praktikumList.find(p => p.id === value);
+    const praktikum = praktikumList.find(p => (p.id || p.id_praktikum) === value);
     if (praktikum) {
       setSelectedPraktikumName(praktikum.name);
     }
   };
 
+  const handleViewFile = (item: SubmissionItem) => {
+    console.log('handleViewFile called with:', item); // Debug log
+    
+    // Check if item exists
+    if (!item) {
+      console.error('Item is null or undefined');
+      alert('Data submission tidak ditemukan');
+      return;
+    }
+    
+    // Check for id_submission_praktikan
+    if (!item.id_submission_praktikan) {
+      console.error('ID submission tidak ditemukan', item);
+      console.log('Available keys in item:', Object.keys(item)); // Show available properties
+      alert('ID submission tidak valid');
+      return;
+    }
+    
+    console.log('Navigating to:', `/submission_praktikan/preview/${item.id_submission_praktikan}`);
+    
+    // Try navigation with error handling
+    try {
+      router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      alert('Gagal membuka halaman preview');
+    }
+  };
 
-const handleViewFile = (item) => {
-  console.log('handleViewFile called with:', item); // Debug log
-  
-  // Check if item exists
-  if (!item) {
-    console.error('Item is null or undefined');
-    alert('Data submission tidak ditemukan');
-    return;
-  }
-  
-  // Check for id_submission_praktikan
-  if (!item.id_submission_praktikan) {
-    console.error('ID submission tidak ditemukan', item);
-    console.log('Available keys in item:', Object.keys(item)); // Show available properties
-    alert('ID submission tidak valid');
-    return;
-  }
-  
-  console.log('Navigating to:', `/submission_praktikan/preview/${item.id_submission_praktikan}`);
-  
-  // Try navigation with error handling
-  try {
-    router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
-  } catch (error) {
-    console.error('Navigation error:', error);
-    alert('Gagal membuka halaman preview');
-  }
-}
 
-  const handleViewCatatan = (catatan) => {
+  const handleViewCatatan = (catatan: string) => {
     setCurrentCatatan(catatan || "Tidak ada catatan asistensi");
     setShowCatatanModal(true);
   };
 
-  const handleDownloadRevisi = (filePath, submissionId) => {
+  const handleDownloadRevisi = (filePath: string | undefined, submissionId: string) => {
     if (!filePath) {
       showNotification("File revisi tidak tersedia", "error");
       return;
@@ -265,7 +292,7 @@ const handleViewFile = (item) => {
     window.open(`http://localhost:8080/api/submission/download/${submissionId}`, '_blank');
   };
 
-  const handleDeleteSubmission = async (submissionId) => {
+  const handleDeleteSubmission = async (submissionId: string) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus submission ini?')) {
       try {
         const response = await fetch(`http://localhost:8080/api/submission/${submissionId}`, {
@@ -285,7 +312,7 @@ const handleViewFile = (item) => {
           const submissionResponse = await fetch(`http://localhost:8080/api/submission?idPraktikum=${selectedPraktikum}`);
           const submissionData = await submissionResponse.json();
           if (submissionResponse.ok) {
-            setSubmissionData(submissionData.data);
+            setSubmissionData(submissionData.data || []);
           }
         } else {
           const errorMessage = responseData?.message || "Gagal menghapus submission. Silakan coba lagi.";
@@ -299,10 +326,10 @@ const handleViewFile = (item) => {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     if (!status) return null;
     
-    let bgColor, textColor;
+    let bgColor: string, textColor: string;
     switch (status.toLowerCase()) {
       case 'submitted':
         bgColor = 'bg-blue-100';
@@ -328,7 +355,7 @@ const handleViewFile = (item) => {
     );
   };
 
-  const formatJenisLaporan = (jenis) => {
+  const formatJenisLaporan = (jenis: string) => {
     if (jenis === "fd") return "Form Data (FD)";
     if (jenis === "laporan") return "Laporan Praktikum";
     return jenis;
@@ -365,7 +392,7 @@ const handleViewFile = (item) => {
                   {praktikumList.map((praktikum, index) => (
                     <SelectItem 
                     key={`praktikum-${index}`} 
-                    value={praktikum.id || praktikum.id_praktikum || index} 
+                    value={praktikum.id || praktikum.id_praktikum || index.toString()} 
                     >
                       {praktikum.name}
                     </SelectItem>
@@ -450,7 +477,11 @@ const handleViewFile = (item) => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                         {item.catatan_asistensi ? (
                         <Button
-                          onClick={() => handleViewCatatan(item.catatan_asistensi)}
+                          onClick={() => {
+                            if (item.catatan_asistensi) {
+                              handleViewCatatan(item.catatan_asistensi);
+                            }
+                          }}
                           className="bg-blue-500 hover:bg-blue-600 text-white"
                           size="sm"
                         >
@@ -498,21 +529,12 @@ const handleViewFile = (item) => {
                     {praktikumList.map((praktikum, index) => (
                       <SelectItem 
                         key={`praktikum-${index}`} 
-                        value={praktikum.id || praktikum.id_praktikum || index}
+                        value={praktikum.id || praktikum.id_praktikum || index.toString()}
                       >
                         {praktikum.name || 'Nama tidak tersedia'}
                       </SelectItem>
                     ))}
                   </SelectContent>
-                
-                
-                {/* <SelectContent>
-                  {praktikumList.map((praktikum) => (
-                    <SelectItem key={praktikum.id} value={praktikum.id}>
-                      {praktikum.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent> */}
               </Select>
             </div>
 
