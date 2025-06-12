@@ -11,18 +11,44 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaUser } from "react-icons/fa";
 
+// Type definitions
+interface HeaderProps {
+  selectedLab: string | null;
+}
 
+interface MainContentProps {
+  praktikum: Praktikum[];
+}
+
+interface PraktikumListProps {
+  praktikum: Praktikum[];
+  selectedLab: string;
+}
 
 // Header component
-const Header = ({ selectedLab }) => {
+const Header = ({ selectedLab }: HeaderProps) => {
   const session = useSession();
   const router = useRouter();
+
+  const handleProfileClick = (): void => {
+    router.push("/profile");
+  };
+
+  const handleSignOut = (): void => {
+    signOut({
+      callbackUrl: "/login",
+    });
+  };
 
   return (
     <div className="flex justify-between items-center shadow-md border-b border-gray-300 pb-4 px-4 sm:px-6 md:px-10 lg:px-14 w-full">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">{selectedLab || "Dashboard"}</h1>
-        <p className="text-xs sm:text-sm text-gray-500">Sistem Informasi Manajemen Praktikum</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+          {selectedLab || "Dashboard"}
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-500">
+          Sistem Informasi Manajemen Praktikum
+        </p>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
         <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200">
@@ -38,25 +64,21 @@ const Header = ({ selectedLab }) => {
           </div>
         </div>
         <Popover>
-          <PopoverTrigger className="text-sm sm:text-base">{session.data?.user?.name}</PopoverTrigger>
+          <PopoverTrigger className="text-sm sm:text-base">
+            {session.data?.user?.name || "User"}
+          </PopoverTrigger>
           <PopoverContent className="w-48 sm:w-56 mt-4">
             <div className="flex flex-col gap-2 p-1 bg-white">
               <Button
                 className="w-full"
-                onClick={() => {
-                  router.push("/profile");
-                }}
+                onClick={handleProfileClick}
               >
                 Profile
               </Button>
               <Button
                 className="w-full"
                 variant="outline"
-                onClick={() =>
-                  signOut({
-                    callbackUrl: "/login",
-                  })
-                }
+                onClick={handleSignOut}
               >
                 Keluar
               </Button>
@@ -69,13 +91,13 @@ const Header = ({ selectedLab }) => {
 };
 
 // Main content component
-const MainContent = ({ praktikum }) => {
+const MainContent = ({ praktikum }: MainContentProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6 md:p-10 lg:p-14">
       {praktikum.length > 0 &&
-        praktikum.map((module, index) => (
+        praktikum.map((module: Praktikum, index: number) => (
           <Link
-            key={index}
+            key={`praktikum-${module.id_praktikum || index}`}
             href={`/praktikum/${module.id_praktikum}/presensi`}
           >
             <Card className="w-full overflow-hidden rounded-md shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -91,8 +113,12 @@ const MainContent = ({ praktikum }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70 rounded-t-md" />
               </div>
               <CardContent>
-                <h2 className="text-base font-semibold text-gray-800 mb-1 -mt-2 line-clamp-2">{module.name}</h2>
-                <p className="text-gray-500 text-xs pb-6">{module.modul}</p>
+                <h2 className="text-base font-semibold text-gray-800 mb-1 -mt-2 line-clamp-2">
+                  {module.name}
+                </h2>
+                <p className="text-gray-500 text-xs pb-6">
+                  {module.modul || "No module description"}
+                </p>
               </CardContent>
             </Card>
           </Link>
@@ -105,11 +131,6 @@ const MainContent = ({ praktikum }) => {
 };
 
 // Main component
-interface PraktikumListProps {
-  praktikum: Praktikum[];
-  selectedLab: string;
-}
-
 function PraktikumList({ praktikum, selectedLab }: PraktikumListProps) {
   return (
     <div className="flex flex-col min-h-screen w-full">

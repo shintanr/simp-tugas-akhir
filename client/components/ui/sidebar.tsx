@@ -532,7 +532,7 @@ function SidebarMenuButton({
     const dataActiveColor = isAsisten ? "data-[active=true]:bg-accent" : "data-[active=true]:bg-[#74ABFF]"
     const dataOpenColor = isAsisten ? "data-[state=open]:hover:bg-accent" : "data-[state=open]:hover:bg-[#74ABFF]"
     
-    let dynamicClasses = `${hoverColor} hover:text-white ${activeColor} active:text-white ${dataActiveColor} data-[active=true]:font-medium data-[active=true]:text-white ${dataOpenColor} data-[state=open]:hover:text-white`
+    let dynamicClasses = `${hoverColor} hover:text-black ${activeColor} active:text-black ${dataActiveColor} data-[active=true]:font-medium data-[active=true]:text-black ${dataOpenColor} data-[state=open]:hover:text-black`
     
     // Add outline variant specific classes
     if (variant === "outline") {

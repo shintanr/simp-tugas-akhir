@@ -30,7 +30,7 @@ export default function Navbar() {
                 "font-semibold border-b-2 border-yellow-400"
             )}
           >
-            📥 Tugas Pendahuluan
+            📄 Tugas Pendahuluan
           </Link>
         
         <div className="flex items-center gap-2 ml-6">

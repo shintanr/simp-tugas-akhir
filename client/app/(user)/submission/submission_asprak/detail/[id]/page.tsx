@@ -8,14 +8,34 @@ import { AlertCircle, ArrowLeft, CheckCircle, Download, FileText, Loader2, SendH
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 
+// Define types for better type safety
+interface Submission {
+  id: string;
+  id_user: string;
+  praktikum_name?: string;
+  id_pertemuan?: string;
+  jenis: string;
+  nama_praktikan?: string;
+  nim?: string;
+  file_path?: string;
+  status?: string;
+  catatan_asistensi?: string;
+}
+
+interface Notification {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error' | '';
+}
+
 export default function SubmissionAsprakDetail() {
-  const [submission, setSubmission] = useState(null);
+  const [submission, setSubmission] = useState<Submission | null>(null);
   const [status, setStatus] = useState("");
   const [catatan, setCatatan] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [notification, setNotification] = useState<Notification>({ show: false, message: "", type: "" });
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -81,11 +101,21 @@ export default function SubmissionAsprakDetail() {
       return;
     }
 
+    // Check if submission exists and has required properties
+    if (!submission || !submission.id_user) {
+      showNotification("Data submission tidak valid", "error");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       const formData = new FormData();
-      formData.append("id_submission_praktikan", id);
+      // Ensure id is a string before appending
+      const submissionId = Array.isArray(id) ? id[0] : id;
+      if (submissionId) {
+        formData.append("id_submission_praktikan", submissionId);
+      }
       formData.append("id_user", submission.id_user);
       formData.append("status", status);
       formData.append("catatan_asistensi", catatan);
@@ -133,12 +163,12 @@ export default function SubmissionAsprakDetail() {
     router.push(`/submission/submission_asprak${queryString ? `?${queryString}` : ''}`);
   };
 
-  const showNotification = (message, type) => {
+  const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
   };
 
-  const formatJenisLaporan = (jenis) => {
+  const formatJenisLaporan = (jenis: string) => {
     if (jenis === "fd") return "Form Data (FD)";
     if (jenis === "laporan") return "Laporan Praktikum";
     return jenis;

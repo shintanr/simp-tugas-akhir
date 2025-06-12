@@ -1,15 +1,8 @@
 "use client";
 
 import {
-  BarChart3,
-  BookOpenCheck,
   ChevronDown,
-  ClipboardCheck,
-  FileUp,
-  Home,
-  Laptop2,
   LucideProps,
-  UsersRound,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,62 +35,60 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import SelectLabDropdown from "./selectLabDropdown";
 
+
 interface MenuItem {
   title: string;
   url: string;
-  icon: ForwardRefExoticComponent<
+  icon: string | ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
   >;
   activeUrl: string[];
   subMenu?: {
     title: string;
     url: string;
-    icon: ForwardRefExoticComponent<
+    icon: string | ForwardRefExoticComponent<
       Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
     >;
     activeUrl: string[];
-  }[]; // Add this line
+  }[];
 }
 
-// Menu items.
+// Menu items dengan emoji icons
 const items: MenuItem[] = [
   {
     title: "Dashboard",
     url: "/admin/dashboard",
-    icon: Laptop2,
+    icon: "🖥️", // Desktop computer
     activeUrl: ["/admin/dashboard"],
   },
   {
     title: "Manajemen Pengguna",
     url: "/admin/users",
-    icon: UsersRound,
+    icon: "👥", // Users
     activeUrl: ["/admin/users", "/admin/users/create"],
   },
   {
     title: "Manajemen Praktikum",
     url: "/admin/praktikum",
-    icon: Home,
+    icon: "🏠", // Home
     activeUrl: ["/admin/praktikum"],
   },
-
   {
     title: "Praktikum",
     url: "/",
-    icon: Laptop2,
+    icon: "💻", // Laptop
     activeUrl: ["/"],
   },
   {
     title: "Submission",
     url: "/submission",
-    icon: FileUp,
-    activeUrl: [
-    "/submission",
-  ],
+    icon: "📤", // Upload
+    activeUrl: ["/submission"],
   },
   {
     title: "Tugas Pendahuluan",
     url: "/tugas-pendahuluan",
-    icon: BarChart3,
+    icon: "📄", // Chart
     activeUrl: ["/tugas_pendahuluan"],
   },
 ];
@@ -128,23 +119,21 @@ const UserSidebar = () => {
   };
 
   const filteredItems =
-  session?.user?.role === "admin"
-    ? items.filter(
-        (item) =>
-          item.title === "Manajemen Praktikum" ||
-          item.title === "Manajemen Pengguna" ||
-          item.title === "Dashboard" ||
-          item.title === "Manajemen Modul" // ← Tambahkan ini
-      )
-    : items.filter(
-        (item) =>
-          item.title !== "Manajemen Praktikum" &&
-          item.title !== "Manajemen Pengguna" &&
-          item.title !== "Dashboard" &&
-          item.title !== "Manajemen Modul" // ← Pastikan disaring untuk non-admin
-      );
-
-
+    session?.user?.role === "admin"
+      ? items.filter(
+          (item) =>
+            item.title === "Manajemen Praktikum" ||
+            item.title === "Manajemen Pengguna" ||
+            item.title === "Dashboard" ||
+            item.title === "Manajemen Modul"
+        )
+      : items.filter(
+          (item) =>
+            item.title !== "Manajemen Praktikum" &&
+            item.title !== "Manajemen Pengguna" &&
+            item.title !== "Dashboard" &&
+            item.title !== "Manajemen Modul"
+        );
 
   if (!session) {
     return (
@@ -158,38 +147,47 @@ const UserSidebar = () => {
     );
   }
 
+  const renderIcon = (icon: string | ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>) => {
+    if (typeof icon === 'string') {
+      return <span className="text-lg">{icon}</span>;
+    } else {
+      const IconComponent = icon;
+      return <IconComponent />;
+    }
+  };
+
   return (
     <Sidebar className="bg-white">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="h-28 p-4 flex flex-col items-center justify-center text-white">
-              <div className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mr-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <h1 className="text-2xl font-bold">SIMP</h1>
-              </div>
-              <h5 className=" mt-1">SI Manajemen Praktikum</h5>
-            </SidebarGroupLabel>
+            <div className="flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 mr-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <h1 className="text-2xl font-bold">SIMP</h1>
+            </div>
+            <h5 className="mt-1">SI Manajemen Praktikum</h5>
+          </SidebarGroupLabel>
 
-          <SidebarGroupContent className="p-4 ">
+          <SidebarGroupContent className="p-4">
             {!pathname.startsWith("/admin") &&
               session.user.role !== "admin" && (
-                <div className=" ">
+                <div className="">
                   <SelectLabDropdown />
                 </div>
               )}
-              <h1 className="border-b border-b-blue-400 mt-4 "></h1>
+            <h1 className="border-b border-b-blue-400 mt-4"></h1>
             <SidebarMenu className="py-6">
               {filteredItems.map((item) => {
                 const isActive = item.activeUrl.some(
@@ -206,7 +204,7 @@ const UserSidebar = () => {
                       >
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton>
-                            <item.icon />
+                            {renderIcon(item.icon)}
                             <span>{item.title}</span>
                             <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                           </SidebarMenuButton>
@@ -220,7 +218,7 @@ const UserSidebar = () => {
                                   isActive={isActive}
                                 >
                                   <a href={subItem.url}>
-                                    <subItem.icon />
+                                    {renderIcon(subItem.icon)}
                                     <span>{subItem.title}</span>
                                   </a>
                                 </SidebarMenuSubButton>
@@ -232,7 +230,7 @@ const UserSidebar = () => {
                     ) : (
                       <SidebarMenuButton asChild isActive={isActive}>
                         <a href={item.url}>
-                          <item.icon />
+                          {renderIcon(item.icon)}
                           <span>{item.title}</span>
                         </a>
                       </SidebarMenuButton>
@@ -245,8 +243,8 @@ const UserSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button 
-        className="bg-black hover:bg-blue-950 text-white"
+        <Button
+          className="bg-white hover:bg-red-600 text-red-700 hover:text-white"
           onClick={() => {
             signOut({
               callbackUrl: "/login",

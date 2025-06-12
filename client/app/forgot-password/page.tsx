@@ -12,7 +12,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
    
     try {

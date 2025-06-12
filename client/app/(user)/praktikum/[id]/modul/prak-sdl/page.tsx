@@ -44,6 +44,7 @@ interface Module {
 }
 
 interface Submodule {
+  id_modul: any;
   id_submodul: number;
   judul_submodul: string;
   video_url?: string;
@@ -53,6 +54,7 @@ interface Submodule {
 interface ModuleProgress {
   completed: boolean;
   progress: number;
+  visitedSubmodules: number[];
 }
 
 interface SubmodulesMap {
@@ -283,7 +285,7 @@ const getYouTubeEmbedUrl = (url: string): string => {
 };
 
 // Add this helper function to determine the correct icon based on content type
-const getSubmoduleIcon = useCallback((submodule) => {
+const getSubmoduleIcon = useCallback((submodule: { id_submodul: number; judul_submodul: string; video_url: string; pdf_url: any; }) => {
   // First, check if it's a quiz
   if (isQuiz(submodule.id_submodul) || 
       submodule.judul_submodul.toLowerCase().includes("quiz")) {
@@ -516,7 +518,12 @@ const getSubmoduleIcon = useCallback((submodule) => {
                         <ul className="ml-12 mt-1 space-y-1 border-l border-gray-200 pl-4">
                           {submodules[module.id_modul]?.length > 0 ? (
                             submodules[module.id_modul].map((submodule) => {
-                              const iconData = getSubmoduleIcon(submodule);
+const iconData = getSubmoduleIcon(submodule as {
+          id_submodul: number;
+          judul_submodul: string;
+          video_url: string;
+          pdf_url: any;
+        });
                               return (
                                 <li
                                   key={submodule.id_submodul}
