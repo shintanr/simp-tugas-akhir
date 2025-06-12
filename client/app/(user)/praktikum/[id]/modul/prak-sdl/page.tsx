@@ -352,7 +352,7 @@ const getSubmoduleIcon = useCallback((submodule) => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between bg-[#0267FE] p-4 text-white shadow-lg">
+      <div className="flex items-center justify-between bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 p-4 text-white shadow-lg">
         <div className="flex items-center">
           <button 
             onClick={() => router.back()} 
@@ -675,7 +675,7 @@ const getSubmoduleIcon = useCallback((submodule) => {
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full transform scale-150 opacity-30 blur-3xl"></div>
                     <div className="relative">
-                    <div className="inline-flex justify-center items-center w-20 h-20 bg-[#0267FE] rounded-full mb-6 text-white">
+                    <div className="inline-flex justify-center items-center w-20 h-20 bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 rounded-full mb-6 text-white">
                       <FaGraduationCap className="text-3xl" />
                     </div>
 
@@ -686,7 +686,7 @@ const getSubmoduleIcon = useCallback((submodule) => {
                     </p>
 
                     <div className="flex flex-wrap justify-center gap-3">
-                      <button className="bg-[#0267FE] text-white py-2 px-4 rounded-lg hover:bg-[#0255da] transition-colors">
+                      <button className="bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 text-white py-2 px-4 rounded-lg hover:bg-[#0255da] transition-colors">
                         View Introduction
                       </button>
                         <button className="border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors">

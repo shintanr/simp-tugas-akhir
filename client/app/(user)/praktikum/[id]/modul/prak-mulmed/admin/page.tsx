@@ -981,7 +981,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between bg-[#0267FE] p-4 text-white shadow-lg">
+      <div className="flex items-center justify-between bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 p-4 text-white shadow-lg">
         <div className="flex items-center">
           <button 
             onClick={() => router.back()} 
@@ -1048,7 +1048,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   setSelectedSubmodule(null);
                   setFormData({ judul_modul: "", video_url: "", pdf_url: "", youtube_url: "", id_praktikum: 6 });
                 }}
-                className="w-full flex items-center justify-center bg-[#0267FE] hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
               >
                 <FaPlus className="mr-2" />
                 Add New Module
@@ -2443,7 +2443,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     setIsAddingModule(true);
                     setFormData({ judul_modul: "", video_url: "", pdf_url: "", youtube_url: "", id_praktikum: 6 });
                   }}
-                  className="bg-[#0267FE] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+                  className="bg-gradient-to-br  from-purple-600 via-purple-700 to-indigo-800 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
                 >
                   <FaPlus className="mr-2" />
                   Add New Module

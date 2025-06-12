@@ -221,34 +221,34 @@ useEffect(() => {
   };
 
 
-const handleViewFile = (item) => {
-  console.log('handleViewFile called with:', item); // Debug log
-  
-  // Check if item exists
-  if (!item) {
-    console.error('Item is null or undefined');
-    alert('Data submission tidak ditemukan');
-    return;
-  }
-  
-  // Check for id_submission_praktikan
-  if (!item.id_submission_praktikan) {
-    console.error('ID submission tidak ditemukan', item);
-    console.log('Available keys in item:', Object.keys(item)); // Show available properties
-    alert('ID submission tidak valid');
-    return;
-  }
-  
-  console.log('Navigating to:', `/submission_praktikan/preview/${item.id_submission_praktikan}`);
-  
-  // Try navigation with error handling
-  try {
-    router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
-  } catch (error) {
-    console.error('Navigation error:', error);
-    alert('Gagal membuka halaman preview');
-  }
-}
+const handleViewFile = (item: SubmissionItem) => {
+    console.log('handleViewFile called with:', item); // Debug log
+    
+    // Check if item exists
+    if (!item) {
+      console.error('Item is null or undefined');
+      alert('Data submission tidak ditemukan');
+      return;
+    }
+    
+    // Check for id_submission_praktikan
+    if (!item.id_submission_praktikan) {
+      console.error('ID submission tidak ditemukan', item);
+      console.log('Available keys in item:', Object.keys(item)); // Show available properties
+      alert('ID submission tidak valid');
+      return;
+    }
+    
+    console.log('Navigating to:', `/submission_praktikan/preview/${item.id_submission_praktikan}`);
+    
+    // Try navigation with error handling
+    try {
+      router.push(`/submission_praktikan/preview/${item.id_submission_praktikan}`);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      alert('Gagal membuka halaman preview');
+    }
+  };
 
   const handleViewCatatan = (catatan) => {
     setCurrentCatatan(catatan || "Tidak ada catatan asistensi");

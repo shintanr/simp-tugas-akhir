@@ -950,7 +950,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
             href={pdfUrl} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-blue-300 hover:text-blue-100 text-sm underline flex items-center"
+            className="text-purple-300 hover:text-purple-100 text-sm underline flex items-center"
           >
             <FaEye className="mr-1" /> View Full Screen
           </a>
@@ -983,7 +983,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between bg-[#0267FE] p-4 text-white shadow-lg">
+      <div className="flex items-center justify-between bg-purple-600 p-4 text-white shadow-lg">
         <div className="flex items-center">
           <button 
             onClick={() => router.back()} 
@@ -1050,7 +1050,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                   setSelectedSubmodule(null);
                   setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 9 });
                 }}
-                className="w-full flex items-center justify-center bg-[#0267FE] hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors"
               >
                 <FaPlus className="mr-2" />
                 Add New Module
@@ -1102,7 +1102,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                 </span>
                               )}
                               {module.video_url && (
-                                <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full flex items-center">
+                                <span className="text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded-full flex items-center">
                                   <FaVideo className="mr-0.5 text-xs" /> Video
                                 </span>
                               )}
@@ -1154,7 +1154,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                         </span>
                                       )}
                                       {submodule.video_url && (
-                                        <span className="text-xs bg-blue-50 text-blue-500 px-1 py-0.5 rounded-full flex items-center">
+                                        <span className="text-xs bg-purple-50 text-purple-500 px-1 py-0.5 rounded-full flex items-center">
                                           <FaVideo className="mr-0.5 text-xs" /> Video
                                         </span>
                                       )}
@@ -1869,13 +1869,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             Resources
                           </h3>
                           <p className="text-gray-600 mb-2 flex items-center">
-                            <FaVideo className="mr-2 text-blue-500" /> 
+                            <FaVideo className="mr-2 text-purple-500" /> 
                             Video: {selectedSubmodule.video_url ? (
                               <a 
                                 href={selectedSubmodule.video_url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline ml-1"
+                                className="text-purple-500 hover:underline ml-1"
                               >
                                 View Video
                               </a>
@@ -1888,7 +1888,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                 href={selectedSubmodule.pdf_url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline ml-1"
+                                className="text-purple-500 hover:underline ml-1"
                               >
                                 View PDF
                               </a>
@@ -2002,7 +2002,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             href={selectedSubmodule.video_url} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-300 hover:text-blue-100 text-sm underline"
+                            className="text-purple-300 hover:text-purple-100 text-sm underline"
                           >
                             Open in New Tab
                           </a>
@@ -2285,13 +2285,13 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             Resources
                           </h3>
                           <p className="text-gray-600 mb-2 flex items-center">
-                            <FaVideo className="mr-2 text-blue-500" /> 
+                            <FaVideo className="mr-2 text-purple-500" /> 
                             Video: {selectedModule.video_url ? (
                               <a 
                                 href={selectedModule.video_url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline ml-1"
+                                className="text-purple-500 hover:underline ml-1"
                               >
                                 View Video
                               </a>
@@ -2304,7 +2304,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                 href={selectedModule.pdf_url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline ml-1"
+                                className="text-purple-500 hover:underline ml-1"
                               >
                                 View PDF
                               </a>
@@ -2361,15 +2361,15 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                                     <FaClipboardList className="text-yellow-600" />
                                   </div>
                                 ) : (
-                                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                    <FaPlayCircle className="text-blue-600" />
+                                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                    <FaPlayCircle className="text-purple-600" />
                                   </div>
                                 )}
                                 <h4 className="font-medium text-gray-800">{submodule.judul_submodul}</h4>
                               </div>
                               <div className="flex items-center mt-3 text-sm">
                                 {submodule.video_url && (
-                                  <span className="mr-2 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full flex items-center">
+                                  <span className="mr-2 bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full flex items-center">
                                     <FaVideo className="mr-1 text-xs" /> Video
                                   </span>
                                 )}
@@ -2402,7 +2402,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                             href={selectedModule.video_url} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-300 hover:text-blue-100 text-sm underline"
+                            className="text-purple-300 hover:text-purple-100 text-sm underline"
                           >
                             Open in New Tab
                           </a>
@@ -2445,7 +2445,7 @@ const handleUpdateQuestion = async (e: React.FormEvent) => {
                     setIsAddingModule(true);
                     setFormData({ judul_modul: '', video_url: '', pdf_url: '', youtube_url: '', id_praktikum: 9 });
                   }}
-                  className="bg-[#0267FE] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+                  className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center"
                 >
                   <FaPlus className="mr-2" />
                   Add New Module

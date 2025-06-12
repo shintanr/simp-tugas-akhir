@@ -10,15 +10,16 @@ const modulMap: ModulMap = {
   7: "prak-pjk",
   9: "prak-eldas",
   12: "prak-sdl",
-
 };
 
 const ModulIndexPage = async ({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) => {
-  const id = Number(params.id);
+  // Await the params since it's now a Promise
+  const { id: idParam } = await params;
+  const id = Number(idParam);
   const folder = modulMap[id];
 
   if (folder) {
