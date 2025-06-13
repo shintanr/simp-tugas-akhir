@@ -15,17 +15,17 @@ const modulMap: ModulMap = {
 const ModulIndexPage = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) => {
-  const { id: idParam } = await params;
-  const id = Number(idParam);
+  const id = Number(params.id);
   const folder = modulMap[id];
-  
+
   if (folder) {
     redirect(`/praktikum/${id}/modul/${folder}`);
   }
-  
-  return <div>Modul tidak ditemukan untuk ID {id}</div>;
+
+  // Redirect ke halaman khusus jika modul belum tersedia
+  redirect("/praktikum/${id}/modul/empty_modul");
 };
 
 export default ModulIndexPage;
