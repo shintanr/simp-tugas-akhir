@@ -60,7 +60,7 @@ Code quality analysis was performed using SonarQube to improve:
 ## Screenshots
 
 ### Attendance Dashboard
-<img width="709" height="333" alt="image" src="https://github.com/user-attachments/assets/4b74df35-aa8a-4661-8430-bd7321bf0eac" />
+<img width="591" height="281" alt="image" src="https://github.com/user-attachments/assets/4b74df35-aa8a-4661-8430-bd7321bf0eac" />
 
 
 ### Grading System
@@ -68,7 +68,7 @@ Code quality analysis was performed using SonarQube to improve:
 
 
 ### Management Role & Practicum
-<img width="709" height="334" alt="image" src="https://github.com/user-attachments/assets/e79ea2c4-d69d-4218-9dc8-0d32e70e58a3" />
+<img width="591" height="281" alt="image" src="https://github.com/user-attachments/assets/e79ea2c4-d69d-4218-9dc8-0d32e70e58a3" />
 
 
 
