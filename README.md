@@ -1,8 +1,6 @@
 ## SIMP Laboratory System
 
-SIMP Laboratory System is a laboratory management platform used to support practicum activities such as attendance tracking, grading management, integrated learning modules, and complaint handling between students and teaching assistants.
-
-The application was developed using Next.js for the frontend, Express.js for the backend, and MySQL as the database system. The project also includes an automatic grading feature integrated with a Machine Learning Transformer model.
+SIMP Laboratory System is a laboratory management platform used for attendance tracking, grading, integrated learning modules, and complaint handling between students and teaching assistants.
 
 ---
 
@@ -41,19 +39,12 @@ Code quality analysis was performed using SonarQube to improve:
 
 ## Tech Stack
 
-### Frontend
-- Next.js
-
-### Backend
-- Node.js
-- Express.js
-
-### Database
-- MySQL
-
-### Testing Tools
-- Katalon Studio
-- SonarQube
+| Category | Technology |
+|---|---|
+| Frontend | Next.js |
+| Backend | Node.js, Express.js |
+| Database | MySQL |
+| Testing Tools | Katalon Studio, SonarQube |
 
 ---
 
